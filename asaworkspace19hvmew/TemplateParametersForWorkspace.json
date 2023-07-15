@@ -1,0 +1,57 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"workspaceName": {
+			"value": "asaworkspace19hvmew"
+		},
+		"ADLS_KZ_backup_accountKey": {
+			"value": ""
+		},
+		"AzureDataLakeStorage_kzbackup_accountKey": {
+			"value": ""
+		},
+		"asadatalake19hvmew_accountKey": {
+			"value": ""
+		},
+		"asastore19hvmew_connectionString": {
+			"value": ""
+		},
+		"asaworkspace19hvmew-WorkspaceDefaultSqlServer_connectionString": {
+			"value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=tcp:asaworkspace19hvmew.sql.azuresynapse.net,1433;Initial Catalog=@{linkedService().DBName}"
+		},
+		"sqlpool01_connectionString": {
+			"value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=asaworkspace19hvmew.sql.azuresynapse.net;Initial Catalog=SQLPool01;User ID=asa.sql.admin"
+		},
+		"sqlpool01_highperf_connectionString": {
+			"value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=asaworkspace19hvmew.sql.azuresynapse.net;Initial Catalog=SQLPool01;User ID=asa.sql.highperf"
+		},
+		"sqlpool01_import01_connectionString": {
+			"value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=asaworkspace19hvmew.sql.azuresynapse.net;Initial Catalog=SQLPool01;User ID=asa.sql.import01"
+		},
+		"sqlpool01_workload01_connectionString": {
+			"value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=asaworkspace19hvmew.sql.azuresynapse.net;Initial Catalog=SQLPool01;User ID=asa.sql.workload01"
+		},
+		"sqlpool01_workload02_connectionString": {
+			"value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=asaworkspace19hvmew.sql.azuresynapse.net;Initial Catalog=SQLPool01;User ID=asa.sql.workload02"
+		},
+		"tpcdmysql_connectionString": {
+			"value": ""
+		},
+		"ADLS_KZ_backup_properties_typeProperties_url": {
+			"value": "https://kzlongtermbackupstorage.dfs.core.windows.net/"
+		},
+		"AzureDataLakeStorage_kzbackup_properties_typeProperties_url": {
+			"value": "https://kzlongtermbackupstorage.dfs.core.windows.net/"
+		},
+		"asadatalake19hvmew_properties_typeProperties_url": {
+			"value": "https://asadatalake19hvmew.dfs.core.windows.net"
+		},
+		"asakeyvault19hvmew_properties_typeProperties_baseUrl": {
+			"value": "https://asakeyvault19hvmew.vault.azure.net/"
+		},
+		"asaworkspace19hvmew-WorkspaceDefaultStorage_properties_typeProperties_url": {
+			"value": "https://asadatalake19hvmew.dfs.core.windows.net"
+		}
+	}
+}
