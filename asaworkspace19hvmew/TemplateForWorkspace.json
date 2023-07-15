@@ -1750,6 +1750,389 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/TCPDs_date_dim')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy_vpc",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [
+							{
+								"name": "Source",
+								"value": "`date_dim`"
+							},
+							{
+								"name": "Destination",
+								"value": "dbo.date_dim"
+							}
+						],
+						"typeProperties": {
+							"source": {
+								"type": "MySqlSource"
+							},
+							"sink": {
+								"type": "SqlPoolSink",
+								"writeBehavior": "Insert"
+							},
+							"enableStaging": false,
+							"enableSkipIncompatibleRow": true,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "d_date_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "d_date_sk",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "d_date_id",
+											"type": "String"
+										},
+										"sink": {
+											"name": "d_date_id",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "d_date",
+											"type": "DateTime"
+										},
+										"sink": {
+											"name": "d_date",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "d_month_seq",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "d_month_seq",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "d_week_seq",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "d_week_seq",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "d_quarter_seq",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "d_quarter_seq",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "d_year",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "d_year",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "d_dow",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "d_dow",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "d_moy",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "d_moy",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "d_dom",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "d_dom",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "d_qoy",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "d_qoy",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "d_fy_year",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "d_fy_year",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "d_fy_quarter_seq",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "d_fy_quarter_seq",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "d_fy_week_seq",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "d_fy_week_seq",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "d_day_name",
+											"type": "String"
+										},
+										"sink": {
+											"name": "d_day_name",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "d_quarter_name",
+											"type": "String"
+										},
+										"sink": {
+											"name": "d_quarter_name",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "d_holiday",
+											"type": "String"
+										},
+										"sink": {
+											"name": "d_holiday",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "d_weekend",
+											"type": "String"
+										},
+										"sink": {
+											"name": "d_weekend",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "d_following_holiday",
+											"type": "String"
+										},
+										"sink": {
+											"name": "d_following_holiday",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "d_first_dom",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "d_first_dom",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "d_last_dom",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "d_last_dom",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "d_same_day_ly",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "d_same_day_ly",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "d_same_day_lq",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "d_same_day_lq",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "d_current_day",
+											"type": "String"
+										},
+										"sink": {
+											"name": "d_current_day",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "d_current_week",
+											"type": "String"
+										},
+										"sink": {
+											"name": "d_current_week",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "d_current_month",
+											"type": "String"
+										},
+										"sink": {
+											"name": "d_current_month",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "d_current_quarter",
+											"type": "String"
+										},
+										"sink": {
+											"name": "d_current_quarter",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "d_current_year",
+											"type": "String"
+										},
+										"sink": {
+											"name": "d_current_year",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "SourceDataset_vpc",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "DestinationDataset_vpc",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/datasets/SourceDataset_vpc')]",
+				"[concat(variables('workspaceId'), '/datasets/DestinationDataset_vpc')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/TPCD__all_Coppy')]",
 			"type": "Microsoft.Synapse/workspaces/pipelines",
 			"apiVersion": "2019-06-01-preview",
@@ -6689,6 +7072,156 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/DestinationDataset_vpc')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "SqlPoolTable",
+				"schema": [
+					{
+						"name": "d_date_sk",
+						"type": "bigint",
+						"precision": 19
+					},
+					{
+						"name": "d_date_id",
+						"type": "nvarchar"
+					},
+					{
+						"name": "d_date",
+						"type": "nvarchar"
+					},
+					{
+						"name": "d_month_seq",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "d_week_seq",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "d_quarter_seq",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "d_year",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "d_dow",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "d_moy",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "d_dom",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "d_qoy",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "d_fy_year",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "d_fy_quarter_seq",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "d_fy_week_seq",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "d_day_name",
+						"type": "nvarchar"
+					},
+					{
+						"name": "d_quarter_name",
+						"type": "nvarchar"
+					},
+					{
+						"name": "d_holiday",
+						"type": "nvarchar"
+					},
+					{
+						"name": "d_weekend",
+						"type": "nvarchar"
+					},
+					{
+						"name": "d_following_holiday",
+						"type": "nvarchar"
+					},
+					{
+						"name": "d_first_dom",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "d_last_dom",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "d_same_day_ly",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "d_same_day_lq",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "d_current_day",
+						"type": "nvarchar"
+					},
+					{
+						"name": "d_current_week",
+						"type": "nvarchar"
+					},
+					{
+						"name": "d_current_month",
+						"type": "nvarchar"
+					},
+					{
+						"name": "d_current_quarter",
+						"type": "nvarchar"
+					},
+					{
+						"name": "d_current_year",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "date_dim"
+				},
+				"sqlPool": {
+					"referenceName": "SQLPool01",
+					"type": "SqlPoolReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/sqlPools/SQLPool01')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/SourceDataset_3c2')]",
 			"type": "Microsoft.Synapse/workspaces/datasets",
 			"apiVersion": "2019-06-01-preview",
@@ -6786,6 +7319,26 @@
 						"value": "@dataset().cw_tableName",
 						"type": "Expression"
 					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/tpcdmysql')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SourceDataset_vpc')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "tpcdmysql",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "MySqlTable",
+				"schema": [],
+				"typeProperties": {
+					"tableName": "`date_dim`"
 				}
 			},
 			"dependsOn": [
@@ -7197,10 +7750,52 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/TPCDs_export')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "\n--- https://kzlongtermbackupstorage.blob.core.windows.net/tcpds?sp=racwdl&st=2023-07-15T18:26:44Z&se=2028-07-16T02:26:44Z&spr=https&sv=2022-11-02&sr=c&sig=dSesYyTiP9aOlQeJfOGNyIZmXVVSuLJEJjUfdnVkRQY%3D\n-- errro 105019;External file access failed due to internal error: 'The method or operation is not implemented.'\n \nCREATE DATABASE SCOPED CREDENTIAL [SasTokenTCPDS]\nWITH IDENTITY = 'SHARED ACCESS SIGNATURE',\n     SECRET = 'sp=racwdl&st=2023-07-15T18:26:44Z&se=2028-07-16T02:26:44Z&spr=https&sv=2022-11-02&sr=c&sig=dSesYyTiP9aOlQeJfOGNyIZmXVVSuLJEJjUfdnVkRQY%3D';\nGO\nCREATE EXTERNAL DATA SOURCE [DataSourceTCPDS] WITH (\n    LOCATION = ' https://kzlongtermbackupstorage.blob.core.windows.net/tcpds', CREDENTIAL = [SasTokenTCPDS]\n);\nGO\nCREATE EXTERNAL FILE FORMAT [ParquetFormat] WITH (\n    FORMAT_TYPE = PARQUET,\n    DATA_COMPRESSION = 'org.apache.hadoop.io.compress.SnappyCodec'\n);\nGO\nCREATE EXTERNAL TABLE [customer_parquet] WITH (\n        LOCATION = 'customer/parquet/',\n        DATA_SOURCE = [DataSourceTCPDS],\n        FILE_FORMAT = [ParquetFormat]\n) AS\nSELECT * FROM customer;\nGO\n     \n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "SQLPool01",
+						"poolName": "SQLPool01"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/TPCDs_query30')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"description": "https://www.albertnogues.com/load-data-from-azure-blob-storage-and-run-tpc-ds-queries-on-azure-synapse/",
+				"content": {
+					"query": "WITH customer_total_return \n     AS (SELECT wr_returning_customer_sk AS ctr_customer_sk, \n                ca_state                 AS ctr_state, \n                Sum(wr_return_amt)       AS ctr_total_return \n         FROM   web_returns, \n         \n                customer_address \n         WHERE  wr_returned_date_sk = d_date_sk \n          \n                AND wr_returning_addr_sk = ca_address_sk \n         GROUP  BY wr_returning_customer_sk, \n                   ca_state) \nSELECT TOP 100 c_customer_id, \n               c_salutation, \n               c_first_name, \n               c_last_name, \n               c_preferred_cust_flag, \n               c_birth_day, \n               c_birth_month, \n               c_birth_year, \n               c_birth_country, \n               c_login, \n               c_email_address, \n               c_last_review_date, \n               ctr_total_return \nFROM   customer_total_return ctr1, \n       customer_address, \n       customer \nWHERE  ctr1.ctr_total_return > (SELECT Avg(ctr_total_return) * 1.2 \n                                FROM   customer_total_return ctr2 \n                                WHERE  ctr1.ctr_state = ctr2.ctr_state) \n       AND ca_address_sk = c_current_addr_sk \n       AND ca_state = 'IN' \n       AND ctr1.ctr_customer_sk = c_customer_sk \nORDER  BY c_customer_id, \n          c_salutation, \n          c_first_name, \n          c_last_name, \n          c_preferred_cust_flag, \n          c_birth_day, \n          c_birth_month, \n          c_birth_year, \n          c_birth_country, \n          c_login, \n          c_email_address, \n          c_last_review_date, \n          ctr_total_return",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "SQLPool01",
+						"poolName": "SQLPool01"
+					},
+					"resultLimit": -1
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/genTPC-DS_crate_tables')]",
 			"type": "Microsoft.Synapse/workspaces/sqlscripts",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
+				"description": "https://www.albertnogues.com/load-data-from-azure-blob-storage-and-run-tpc-ds-queries-on-azure-synapse/",
 				"content": {
 					"query": "create table customer_address (\n    ca_address_sk             bigint,\n    ca_address_id             nvarchar(16),\n    ca_street_number          nvarchar(10),\n    ca_street_name            nvarchar(60),\n    ca_street_type            nvarchar(15),\n    ca_suite_number           nvarchar(10),\n    ca_city                   nvarchar(60),\n    ca_county                 nvarchar(30),\n    ca_state                  nvarchar(2),\n    ca_zip                    nvarchar(10),\n    ca_country                nvarchar(20),\n    ca_gmt_offset             float,\n    ca_location_type          nvarchar(20)\n)\nWITH\n( \n  DISTRIBUTION = REPLICATE,\n  CLUSTERED COLUMNSTORE INDEX\n)\nGO\n\ncreate table customer (\n    c_customer_sk             bigint,\n    c_customer_id             nvarchar(16),\n    c_current_cdemo_sk        bigint,\n    c_current_hdemo_sk        bigint,\n    c_current_addr_sk         bigint,\n    c_first_shipto_date_sk    bigint,\n    c_first_sales_date_sk     bigint,\n    c_salutation              nvarchar(10),\n    c_first_name              nvarchar(20),\n    c_last_name               nvarchar(30),\n    c_preferred_cust_flag     nvarchar(1),\n    c_birth_day               int,\n    c_birth_month             int,\n    c_birth_year              int,\n    c_birth_country           nvarchar(20),\n    c_login                   nvarchar(13),\n    c_email_address           nvarchar(50),\n    c_last_review_date        nvarchar(10)\n)\nWITH\n( \n  DISTRIBUTION = REPLICATE,\n  CLUSTERED COLUMNSTORE INDEX\n)\nGO\n\ncreate table date_dim (\n    d_date_sk                 bigint,\n    d_date_id                 nvarchar(16),\n    d_date                    nvarchar(10),\n    d_month_seq               int,\n    d_week_seq                int,\n    d_quarter_seq             int,\n    d_year                    int,\n    d_dow                     int,\n    d_moy                     int,\n    d_dom                     int,\n    d_qoy                     int,\n    d_fy_year                 int,\n    d_fy_quarter_seq          int,\n    d_fy_week_seq             int,\n    d_day_name                nvarchar(9),\n    d_quarter_name            nvarchar(6),\n    d_holiday                 nvarchar(1),\n    d_weekend                 nvarchar(1),\n    d_following_holiday       nvarchar(1),\n    d_first_dom               int,\n    d_last_dom                int,\n    d_same_day_ly             int,\n    d_same_day_lq             int,\n    d_current_day             nvarchar(1),\n    d_current_week            nvarchar(1),\n    d_current_month           nvarchar(1),\n    d_current_quarter         nvarchar(1),\n    d_current_year            nvarchar(1) \n)\nWITH\n( \n  DISTRIBUTION = REPLICATE,\n  CLUSTERED COLUMNSTORE INDEX\n)\nGO\n\ncreate table web_returns (\n    wr_returned_date_sk       bigint,\n    wr_returned_time_sk       bigint,\n    wr_item_sk                bigint,\n    wr_refunded_customer_sk   bigint,\n    wr_refunded_cdemo_sk      bigint,\n    wr_refunded_hdemo_sk      bigint,\n    wr_refunded_addr_sk       bigint,\n    wr_returning_customer_sk  bigint,\n    wr_returning_cdemo_sk     bigint,\n    wr_returning_hdemo_sk     bigint,\n    wr_returning_addr_sk      bigint,\n    wr_web_page_sk            bigint,\n    wr_reason_sk              bigint,\n    wr_order_number           bigint,\n    wr_return_quantity        int,\n    wr_return_amt             float,\n    wr_return_tax             float,\n    wr_return_amt_inc_tax     float,\n    wr_fee                    float,\n    wr_return_ship_cost       float,\n    wr_refunded_cash          float,\n    wr_reversed_charge        float,\n    wr_account_credit         float,\n    wr_net_loss               float\n)\nWITH\n( \n  DISTRIBUTION = HASH(wr_item_sk),\n  CLUSTERED COLUMNSTORE INDEX\n)\nGO",
 					"metadata": {
@@ -7239,14 +7834,11 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "840a7ec8-874b-4dfe-bf2c-366921740bfc"
+						"spark.autotune.trackingId": "251285c3-97a7-4612-a266-935d4996d896"
 					}
 				},
 				"metadata": {
 					"saveOutput": true,
-					"synapse_widget": {
-						"version": "0.1"
-					},
 					"enableDebugMode": false,
 					"kernelspec": {
 						"name": "synapse_pyspark",
@@ -7262,20 +7854,20 @@
 						"endpoint": "https://asaworkspace19hvmew.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/SparkPool01",
 						"auth": {
 							"type": "AAD",
-							"authResource": "https://dev.azuresynapse.net",
-							"authHeader": null
+							"authResource": "https://dev.azuresynapse.net"
 						},
 						"sparkVersion": "2.4",
 						"nodeCount": 3,
 						"cores": 4,
 						"memory": 28,
-						"extraHeader": null
+						"automaticScaleJobs": false
 					},
 					"sessionKeepAliveTimeout": 30
 				},
 				"cells": [
 					{
 						"cell_type": "code",
+						"metadata": {},
 						"source": [
 							"from hyperspace import *  \r\n",
 							"from com.microsoft.hyperspace import *\r\n",
@@ -7302,18 +7894,6 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('workspaceName'), '/SQLPool01')]",
-			"type": "Microsoft.Synapse/workspaces/sqlPools",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"collation": "SQL_Latin1_General_CP1_CI_AS",
-				"maxSizeBytes": 263882790666240,
-				"annotations": []
-			},
-			"dependsOn": [],
-			"location": "australiaeast"
-		},
-		{
 			"name": "[concat(parameters('workspaceName'), '/SparkPool01')]",
 			"type": "Microsoft.Synapse/workspaces/bigDataPools",
 			"apiVersion": "2019-06-01-preview",
@@ -7333,6 +7913,18 @@
 				"sparkVersion": "2.4",
 				"isComputeIsolationEnabled": false,
 				"sessionLevelPackagesEnabled": false,
+				"annotations": []
+			},
+			"dependsOn": [],
+			"location": "australiaeast"
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SQLPool01')]",
+			"type": "Microsoft.Synapse/workspaces/sqlPools",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"collation": "SQL_Latin1_General_CP1_CI_AS",
+				"maxSizeBytes": 263882790666240,
 				"annotations": []
 			},
 			"dependsOn": [],
