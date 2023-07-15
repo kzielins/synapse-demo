@@ -1,0 +1,15 @@
+{
+	"name": "DestinationDataset_2az",
+	"properties": {
+		"annotations": [],
+		"type": "SqlPoolTable",
+		"schema": [],
+		"typeProperties": {
+			"table": "`date_dim`"
+		},
+		"sqlPool": {
+			"referenceName": "SQLPool01",
+			"type": "SqlPoolReference"
+		}
+	}
+}
