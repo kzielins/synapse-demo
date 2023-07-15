@@ -1,0 +1,15 @@
+{
+	"name": "SourceDataset_2az",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "tpcdmysql",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "MySqlTable",
+		"schema": [],
+		"typeProperties": {
+			"tableName": "`date_dim`"
+		}
+	}
+}
