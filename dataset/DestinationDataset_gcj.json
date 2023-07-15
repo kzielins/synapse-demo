@@ -1,0 +1,16 @@
+{
+	"name": "DestinationDataset_gcj",
+	"properties": {
+		"annotations": [],
+		"type": "SqlPoolTable",
+		"schema": [],
+		"typeProperties": {
+			"table": "`time_dim`"
+		},
+		"sqlPool": {
+			"referenceName": "SQLPool01",
+			"type": "SqlPoolReference"
+		}
+	},
+	"type": "Microsoft.Synapse/workspaces/datasets"
+}

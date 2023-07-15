@@ -1,0 +1,375 @@
+{
+	"name": "CopyPipeline_all",
+	"properties": {
+		"activities": [
+			{
+				"name": "ForEach_m5a",
+				"type": "ForEach",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@pipeline().parameters.cw_items",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Copy_m5a",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [
+								{
+									"name": "Source",
+									"value": "@{item().source.tableName}"
+								},
+								{
+									"name": "Destination",
+									"value": "@{item().destination.schema}.@{item().destination.table}"
+								}
+							],
+							"typeProperties": {
+								"source": {
+									"type": "MySqlSource"
+								},
+								"sink": {
+									"type": "SqlPoolSink",
+									"writeBehavior": "Insert",
+									"tableOption": {
+										"value": "@item().copySink.tableOption",
+										"type": "Expression"
+									}
+								},
+								"enableStaging": false,
+								"enableSkipIncompatibleRow": true
+							},
+							"inputs": [
+								{
+									"referenceName": "SourceDataset_m5a",
+									"type": "DatasetReference",
+									"parameters": {
+										"cw_tableName": "@item().source.tableName"
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "DestinationDataset_m5a",
+									"type": "DatasetReference",
+									"parameters": {
+										"cw_schema": "@item().destination.schema",
+										"cw_table": "@item().destination.table"
+									}
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"cw_items": {
+				"type": "Array",
+				"defaultValue": [
+					{
+						"source": {
+							"tableName": "`call_center`"
+						},
+						"destination": {
+							"schema": null,
+							"table": "`call_center`"
+						},
+						"copySink": {
+							"tableOption": "autoCreate"
+						}
+					},
+					{
+						"source": {
+							"tableName": "`catalog_page`"
+						},
+						"destination": {
+							"schema": null,
+							"table": "`catalog_page`"
+						},
+						"copySink": {
+							"tableOption": "autoCreate"
+						}
+					},
+					{
+						"source": {
+							"tableName": "`catalog_returns`"
+						},
+						"destination": {
+							"schema": null,
+							"table": "`catalog_returns`"
+						},
+						"copySink": {
+							"tableOption": "autoCreate"
+						}
+					},
+					{
+						"source": {
+							"tableName": "`catalog_sales`"
+						},
+						"destination": {
+							"schema": null,
+							"table": "`catalog_sales`"
+						},
+						"copySink": {
+							"tableOption": "autoCreate"
+						}
+					},
+					{
+						"source": {
+							"tableName": "`customer_address`"
+						},
+						"destination": {
+							"schema": null,
+							"table": "`customer_address`"
+						},
+						"copySink": {
+							"tableOption": "autoCreate"
+						}
+					},
+					{
+						"source": {
+							"tableName": "`customer_demographics`"
+						},
+						"destination": {
+							"schema": null,
+							"table": "`customer_demographics`"
+						},
+						"copySink": {
+							"tableOption": "autoCreate"
+						}
+					},
+					{
+						"source": {
+							"tableName": "`customer`"
+						},
+						"destination": {
+							"schema": null,
+							"table": "`customer`"
+						},
+						"copySink": {
+							"tableOption": "autoCreate"
+						}
+					},
+					{
+						"source": {
+							"tableName": "`date_dim`"
+						},
+						"destination": {
+							"schema": null,
+							"table": "`date_dim`"
+						},
+						"copySink": {
+							"tableOption": "autoCreate"
+						}
+					},
+					{
+						"source": {
+							"tableName": "`household_demographics`"
+						},
+						"destination": {
+							"schema": null,
+							"table": "`household_demographics`"
+						},
+						"copySink": {
+							"tableOption": "autoCreate"
+						}
+					},
+					{
+						"source": {
+							"tableName": "`income_band`"
+						},
+						"destination": {
+							"schema": null,
+							"table": "`income_band`"
+						},
+						"copySink": {
+							"tableOption": "autoCreate"
+						}
+					},
+					{
+						"source": {
+							"tableName": "`inventory`"
+						},
+						"destination": {
+							"schema": null,
+							"table": "`inventory`"
+						},
+						"copySink": {
+							"tableOption": "autoCreate"
+						}
+					},
+					{
+						"source": {
+							"tableName": "`item`"
+						},
+						"destination": {
+							"schema": null,
+							"table": "`item`"
+						},
+						"copySink": {
+							"tableOption": "autoCreate"
+						}
+					},
+					{
+						"source": {
+							"tableName": "`promotion`"
+						},
+						"destination": {
+							"schema": null,
+							"table": "`promotion`"
+						},
+						"copySink": {
+							"tableOption": "autoCreate"
+						}
+					},
+					{
+						"source": {
+							"tableName": "`reason`"
+						},
+						"destination": {
+							"schema": null,
+							"table": "`reason`"
+						},
+						"copySink": {
+							"tableOption": "autoCreate"
+						}
+					},
+					{
+						"source": {
+							"tableName": "`ship_mode`"
+						},
+						"destination": {
+							"schema": null,
+							"table": "`ship_mode`"
+						},
+						"copySink": {
+							"tableOption": "autoCreate"
+						}
+					},
+					{
+						"source": {
+							"tableName": "`store_returns`"
+						},
+						"destination": {
+							"schema": null,
+							"table": "`store_returns`"
+						},
+						"copySink": {
+							"tableOption": "autoCreate"
+						}
+					},
+					{
+						"source": {
+							"tableName": "`store_sales`"
+						},
+						"destination": {
+							"schema": null,
+							"table": "`store_sales`"
+						},
+						"copySink": {
+							"tableOption": "autoCreate"
+						}
+					},
+					{
+						"source": {
+							"tableName": "`store`"
+						},
+						"destination": {
+							"schema": null,
+							"table": "`store`"
+						},
+						"copySink": {
+							"tableOption": "autoCreate"
+						}
+					},
+					{
+						"source": {
+							"tableName": "`time_dim`"
+						},
+						"destination": {
+							"schema": "dbo",
+							"table": "`time_dim`"
+						},
+						"copySink": {
+							"tableOption": null
+						}
+					},
+					{
+						"source": {
+							"tableName": "`warehouse`"
+						},
+						"destination": {
+							"schema": null,
+							"table": "`warehouse`"
+						},
+						"copySink": {
+							"tableOption": "autoCreate"
+						}
+					},
+					{
+						"source": {
+							"tableName": "`web_page`"
+						},
+						"destination": {
+							"schema": null,
+							"table": "`web_page`"
+						},
+						"copySink": {
+							"tableOption": "autoCreate"
+						}
+					},
+					{
+						"source": {
+							"tableName": "`web_returns`"
+						},
+						"destination": {
+							"schema": null,
+							"table": "`web_returns`"
+						},
+						"copySink": {
+							"tableOption": "autoCreate"
+						}
+					},
+					{
+						"source": {
+							"tableName": "`web_sales`"
+						},
+						"destination": {
+							"schema": null,
+							"table": "`web_sales`"
+						},
+						"copySink": {
+							"tableOption": "autoCreate"
+						}
+					},
+					{
+						"source": {
+							"tableName": "`web_site`"
+						},
+						"destination": {
+							"schema": null,
+							"table": "`web_site`"
+						},
+						"copySink": {
+							"tableOption": "autoCreate"
+						}
+					}
+				]
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-07-14T20:39:49Z"
+	},
+	"type": "Microsoft.Synapse/workspaces/pipelines"
+}

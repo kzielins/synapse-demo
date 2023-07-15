@@ -1,0 +1,16 @@
+{
+	"name": "SourceDataset_gcj",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "tpcdmysql",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "MySqlTable",
+		"schema": [],
+		"typeProperties": {
+			"tableName": "`time_dim`"
+		}
+	},
+	"type": "Microsoft.Synapse/workspaces/datasets"
+}

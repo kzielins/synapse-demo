@@ -1,0 +1,81 @@
+{
+	"name": "IndexDataLakeWithHyperspace",
+	"properties": {
+		"description": "Index DataLake With Spark Hyperspace ",
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "SparkPool01",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 2,
+			"runAsWorkspaceSystemIdentity": false,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "840a7ec8-874b-4dfe-bf2c-366921740bfc"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"synapse_widget": {
+				"version": "0.1"
+			},
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/bf55d59f-9a89-4c29-9b5f-a906c8355065/resourceGroups/data-engineering-synapse-19hvmew/providers/Microsoft.Synapse/workspaces/asaworkspace19hvmew/bigDataPools/SparkPool01",
+				"name": "SparkPool01",
+				"type": "Spark",
+				"endpoint": "https://asaworkspace19hvmew.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/SparkPool01",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net",
+					"authHeader": null
+				},
+				"sparkVersion": "2.4",
+				"nodeCount": 3,
+				"cores": 4,
+				"memory": 28,
+				"extraHeader": null
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"source": [
+					"from hyperspace import *  \r\n",
+					"from com.microsoft.hyperspace import *\r\n",
+					"from com.microsoft.hyperspace.index import *\r\n",
+					"\r\n",
+					"# Disable BroadcastHashJoin, so Spark will use standard SortMergeJoin. Currently, Hyperspace indexes utilize SortMergeJoin to speed up query.\r\n",
+					"spark.conf.set(\"spark.sql.autoBroadcastJoinThreshold\", -1)\r\n",
+					"\r\n",
+					"# Replace the value below with the name of your primary ADLS Gen2 account for your Synapse workspace\r\n",
+					"datalake = 'asadatalakenz4uojt'\r\n",
+					"\r\n",
+					"dfSales = spark.read.parquet(\"abfss://wwi-02@\" + datalake + \".dfs.core.windows.net/sale-small/Year=2019/Quarter=Q4/Month=12/*/*.parquet\")\r\n",
+					"dfSales.show(10)\r\n",
+					"\r\n",
+					"dfCustomers = spark.read.load(\"abfss://wwi-02@\" + datalake + \".dfs.core.windows.net/data-generators/generator-customer-clean.csv\", format=\"csv\", header=True)\r\n",
+					"dfCustomers.show(10)\r\n",
+					""
+				],
+				"execution_count": 1
+			}
+		]
+	}
+}

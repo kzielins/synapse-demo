@@ -1,0 +1,4818 @@
+{
+	"name": "TPCD__all_Coppy",
+	"properties": {
+		"activities": [
+			{
+				"name": "ForEach_3c2",
+				"type": "ForEach",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@pipeline().parameters.cw_items",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Copy_3c2",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [
+								{
+									"name": "Source",
+									"value": "@{item().source.tableName}"
+								},
+								{
+									"name": "Destination",
+									"value": ".@{item().destination.table}"
+								}
+							],
+							"typeProperties": {
+								"source": {
+									"type": "MySqlSource"
+								},
+								"sink": {
+									"type": "SqlPoolSink",
+									"writeBehavior": "Insert",
+									"tableOption": "autoCreate"
+								},
+								"enableStaging": false,
+								"parallelCopies": 1,
+								"enableSkipIncompatibleRow": true,
+								"translator": {
+									"value": "@item().copyActivity.translator",
+									"type": "Expression"
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "SourceDataset_3c2",
+									"type": "DatasetReference",
+									"parameters": {
+										"cw_tableName": "@item().source.tableName"
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "DestinationDataset_3c2",
+									"type": "DatasetReference",
+									"parameters": {
+										"cw_table": "@item().destination.table"
+									}
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"cw_items": {
+				"type": "Array",
+				"defaultValue": [
+					{
+						"source": {
+							"tableName": "`call_center`"
+						},
+						"destination": {
+							"table": "`call_center`"
+						},
+						"copyActivity": {
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "cc_call_center_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "cc_call_center_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "cc_call_center_id",
+											"type": "String"
+										},
+										"sink": {
+											"name": "cc_call_center_id",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "cc_rec_start_date",
+											"type": "DateTime"
+										},
+										"sink": {
+											"name": "cc_rec_start_date",
+											"type": "DateTime"
+										}
+									},
+									{
+										"source": {
+											"name": "cc_rec_end_date",
+											"type": "DateTime"
+										},
+										"sink": {
+											"name": "cc_rec_end_date",
+											"type": "DateTime"
+										}
+									},
+									{
+										"source": {
+											"name": "cc_closed_date_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "cc_closed_date_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "cc_open_date_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "cc_open_date_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "cc_name",
+											"type": "String"
+										},
+										"sink": {
+											"name": "cc_name",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "cc_class",
+											"type": "String"
+										},
+										"sink": {
+											"name": "cc_class",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "cc_employees",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "cc_employees",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "cc_sq_ft",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "cc_sq_ft",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "cc_hours",
+											"type": "String"
+										},
+										"sink": {
+											"name": "cc_hours",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "cc_manager",
+											"type": "String"
+										},
+										"sink": {
+											"name": "cc_manager",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "cc_mkt_id",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "cc_mkt_id",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "cc_mkt_class",
+											"type": "String"
+										},
+										"sink": {
+											"name": "cc_mkt_class",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "cc_mkt_desc",
+											"type": "String"
+										},
+										"sink": {
+											"name": "cc_mkt_desc",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "cc_market_manager",
+											"type": "String"
+										},
+										"sink": {
+											"name": "cc_market_manager",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "cc_division",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "cc_division",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "cc_division_name",
+											"type": "String"
+										},
+										"sink": {
+											"name": "cc_division_name",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "cc_company",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "cc_company",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "cc_company_name",
+											"type": "String"
+										},
+										"sink": {
+											"name": "cc_company_name",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "cc_street_number",
+											"type": "String"
+										},
+										"sink": {
+											"name": "cc_street_number",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "cc_street_name",
+											"type": "String"
+										},
+										"sink": {
+											"name": "cc_street_name",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "cc_street_type",
+											"type": "String"
+										},
+										"sink": {
+											"name": "cc_street_type",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "cc_suite_number",
+											"type": "String"
+										},
+										"sink": {
+											"name": "cc_suite_number",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "cc_city",
+											"type": "String"
+										},
+										"sink": {
+											"name": "cc_city",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "cc_county",
+											"type": "String"
+										},
+										"sink": {
+											"name": "cc_county",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "cc_state",
+											"type": "String"
+										},
+										"sink": {
+											"name": "cc_state",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "cc_zip",
+											"type": "String"
+										},
+										"sink": {
+											"name": "cc_zip",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "cc_country",
+											"type": "String"
+										},
+										"sink": {
+											"name": "cc_country",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "cc_gmt_offset",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "cc_gmt_offset",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "cc_tax_percentage",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "cc_tax_percentage",
+											"type": "Decimal"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						}
+					},
+					{
+						"source": {
+							"tableName": "`catalog_page`"
+						},
+						"destination": {
+							"table": "`catalog_page`"
+						},
+						"copyActivity": {
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "cp_catalog_page_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "cp_catalog_page_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "cp_catalog_page_id",
+											"type": "String"
+										},
+										"sink": {
+											"name": "cp_catalog_page_id",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "cp_start_date_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "cp_start_date_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "cp_end_date_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "cp_end_date_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "cp_department",
+											"type": "String"
+										},
+										"sink": {
+											"name": "cp_department",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "cp_catalog_number",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "cp_catalog_number",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "cp_catalog_page_number",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "cp_catalog_page_number",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "cp_description",
+											"type": "String"
+										},
+										"sink": {
+											"name": "cp_description",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "cp_type",
+											"type": "String"
+										},
+										"sink": {
+											"name": "cp_type",
+											"type": "String"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						}
+					},
+					{
+						"source": {
+							"tableName": "`catalog_returns`"
+						},
+						"destination": {
+							"table": "`catalog_returns`"
+						},
+						"copyActivity": {
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "cr_returned_date_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "cr_returned_date_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "cr_returned_time_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "cr_returned_time_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "cr_item_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "cr_item_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "cr_refunded_customer_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "cr_refunded_customer_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "cr_refunded_cdemo_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "cr_refunded_cdemo_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "cr_refunded_hdemo_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "cr_refunded_hdemo_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "cr_refunded_addr_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "cr_refunded_addr_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "cr_returning_customer_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "cr_returning_customer_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "cr_returning_cdemo_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "cr_returning_cdemo_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "cr_returning_hdemo_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "cr_returning_hdemo_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "cr_returning_addr_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "cr_returning_addr_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "cr_call_center_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "cr_call_center_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "cr_catalog_page_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "cr_catalog_page_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "cr_ship_mode_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "cr_ship_mode_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "cr_warehouse_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "cr_warehouse_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "cr_reason_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "cr_reason_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "cr_order_number",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "cr_order_number",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "cr_return_quantity",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "cr_return_quantity",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "cr_return_amount",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "cr_return_amount",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "cr_return_tax",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "cr_return_tax",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "cr_return_amt_inc_tax",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "cr_return_amt_inc_tax",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "cr_fee",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "cr_fee",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "cr_return_ship_cost",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "cr_return_ship_cost",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "cr_refunded_cash",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "cr_refunded_cash",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "cr_reversed_charge",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "cr_reversed_charge",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "cr_store_credit",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "cr_store_credit",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "cr_net_loss",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "cr_net_loss",
+											"type": "Decimal"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						}
+					},
+					{
+						"source": {
+							"tableName": "`catalog_sales`"
+						},
+						"destination": {
+							"table": "`catalog_sales`"
+						},
+						"copyActivity": {
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "cs_sold_date_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "cs_sold_date_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "cs_sold_time_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "cs_sold_time_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "cs_ship_date_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "cs_ship_date_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "cs_bill_customer_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "cs_bill_customer_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "cs_bill_cdemo_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "cs_bill_cdemo_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "cs_bill_hdemo_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "cs_bill_hdemo_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "cs_bill_addr_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "cs_bill_addr_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "cs_ship_customer_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "cs_ship_customer_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "cs_ship_cdemo_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "cs_ship_cdemo_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "cs_ship_hdemo_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "cs_ship_hdemo_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "cs_ship_addr_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "cs_ship_addr_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "cs_call_center_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "cs_call_center_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "cs_catalog_page_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "cs_catalog_page_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "cs_ship_mode_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "cs_ship_mode_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "cs_warehouse_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "cs_warehouse_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "cs_item_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "cs_item_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "cs_promo_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "cs_promo_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "cs_order_number",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "cs_order_number",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "cs_quantity",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "cs_quantity",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "cs_wholesale_cost",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "cs_wholesale_cost",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "cs_list_price",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "cs_list_price",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "cs_sales_price",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "cs_sales_price",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "cs_ext_discount_amt",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "cs_ext_discount_amt",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "cs_ext_sales_price",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "cs_ext_sales_price",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "cs_ext_wholesale_cost",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "cs_ext_wholesale_cost",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "cs_ext_list_price",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "cs_ext_list_price",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "cs_ext_tax",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "cs_ext_tax",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "cs_coupon_amt",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "cs_coupon_amt",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "cs_ext_ship_cost",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "cs_ext_ship_cost",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "cs_net_paid",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "cs_net_paid",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "cs_net_paid_inc_tax",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "cs_net_paid_inc_tax",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "cs_net_paid_inc_ship",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "cs_net_paid_inc_ship",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "cs_net_paid_inc_ship_tax",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "cs_net_paid_inc_ship_tax",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "cs_net_profit",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "cs_net_profit",
+											"type": "Decimal"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						}
+					},
+					{
+						"source": {
+							"tableName": "`customer_address`"
+						},
+						"destination": {
+							"table": "`customer_address`"
+						},
+						"copyActivity": {
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "ca_address_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "ca_address_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "ca_address_id",
+											"type": "String"
+										},
+										"sink": {
+											"name": "ca_address_id",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "ca_street_number",
+											"type": "String"
+										},
+										"sink": {
+											"name": "ca_street_number",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "ca_street_name",
+											"type": "String"
+										},
+										"sink": {
+											"name": "ca_street_name",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "ca_street_type",
+											"type": "String"
+										},
+										"sink": {
+											"name": "ca_street_type",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "ca_suite_number",
+											"type": "String"
+										},
+										"sink": {
+											"name": "ca_suite_number",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "ca_city",
+											"type": "String"
+										},
+										"sink": {
+											"name": "ca_city",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "ca_county",
+											"type": "String"
+										},
+										"sink": {
+											"name": "ca_county",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "ca_state",
+											"type": "String"
+										},
+										"sink": {
+											"name": "ca_state",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "ca_zip",
+											"type": "String"
+										},
+										"sink": {
+											"name": "ca_zip",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "ca_country",
+											"type": "String"
+										},
+										"sink": {
+											"name": "ca_country",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "ca_gmt_offset",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "ca_gmt_offset",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "ca_location_type",
+											"type": "String"
+										},
+										"sink": {
+											"name": "ca_location_type",
+											"type": "String"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						}
+					},
+					{
+						"source": {
+							"tableName": "`customer_demographics`"
+						},
+						"destination": {
+							"table": "`customer_demographics`"
+						},
+						"copyActivity": {
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "cd_demo_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "cd_demo_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "cd_gender",
+											"type": "String"
+										},
+										"sink": {
+											"name": "cd_gender",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "cd_marital_status",
+											"type": "String"
+										},
+										"sink": {
+											"name": "cd_marital_status",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "cd_education_status",
+											"type": "String"
+										},
+										"sink": {
+											"name": "cd_education_status",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "cd_purchase_estimate",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "cd_purchase_estimate",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "cd_credit_rating",
+											"type": "String"
+										},
+										"sink": {
+											"name": "cd_credit_rating",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "cd_dep_count",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "cd_dep_count",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "cd_dep_employed_count",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "cd_dep_employed_count",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "cd_dep_college_count",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "cd_dep_college_count",
+											"type": "Int32"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						}
+					},
+					{
+						"source": {
+							"tableName": "`customer`"
+						},
+						"destination": {
+							"table": "`customer`"
+						},
+						"copyActivity": {
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "c_customer_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "c_customer_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "c_customer_id",
+											"type": "String"
+										},
+										"sink": {
+											"name": "c_customer_id",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "c_current_cdemo_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "c_current_cdemo_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "c_current_hdemo_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "c_current_hdemo_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "c_current_addr_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "c_current_addr_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "c_first_shipto_date_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "c_first_shipto_date_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "c_first_sales_date_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "c_first_sales_date_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "c_salutation",
+											"type": "String"
+										},
+										"sink": {
+											"name": "c_salutation",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "c_first_name",
+											"type": "String"
+										},
+										"sink": {
+											"name": "c_first_name",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "c_last_name",
+											"type": "String"
+										},
+										"sink": {
+											"name": "c_last_name",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "c_preferred_cust_flag",
+											"type": "String"
+										},
+										"sink": {
+											"name": "c_preferred_cust_flag",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "c_birth_day",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "c_birth_day",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "c_birth_month",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "c_birth_month",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "c_birth_year",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "c_birth_year",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "c_birth_country",
+											"type": "String"
+										},
+										"sink": {
+											"name": "c_birth_country",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "c_login",
+											"type": "String"
+										},
+										"sink": {
+											"name": "c_login",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "c_email_address",
+											"type": "String"
+										},
+										"sink": {
+											"name": "c_email_address",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "c_last_review_date",
+											"type": "String"
+										},
+										"sink": {
+											"name": "c_last_review_date",
+											"type": "String"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						}
+					},
+					{
+						"source": {
+							"tableName": "`date_dim`"
+						},
+						"destination": {
+							"table": "`date_dim`"
+						},
+						"copyActivity": {
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "d_date_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "d_date_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "d_date_id",
+											"type": "String"
+										},
+										"sink": {
+											"name": "d_date_id",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "d_date",
+											"type": "DateTime"
+										},
+										"sink": {
+											"name": "d_date",
+											"type": "DateTime"
+										}
+									},
+									{
+										"source": {
+											"name": "d_month_seq",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "d_month_seq",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "d_week_seq",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "d_week_seq",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "d_quarter_seq",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "d_quarter_seq",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "d_year",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "d_year",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "d_dow",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "d_dow",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "d_moy",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "d_moy",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "d_dom",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "d_dom",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "d_qoy",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "d_qoy",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "d_fy_year",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "d_fy_year",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "d_fy_quarter_seq",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "d_fy_quarter_seq",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "d_fy_week_seq",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "d_fy_week_seq",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "d_day_name",
+											"type": "String"
+										},
+										"sink": {
+											"name": "d_day_name",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "d_quarter_name",
+											"type": "String"
+										},
+										"sink": {
+											"name": "d_quarter_name",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "d_holiday",
+											"type": "String"
+										},
+										"sink": {
+											"name": "d_holiday",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "d_weekend",
+											"type": "String"
+										},
+										"sink": {
+											"name": "d_weekend",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "d_following_holiday",
+											"type": "String"
+										},
+										"sink": {
+											"name": "d_following_holiday",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "d_first_dom",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "d_first_dom",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "d_last_dom",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "d_last_dom",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "d_same_day_ly",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "d_same_day_ly",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "d_same_day_lq",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "d_same_day_lq",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "d_current_day",
+											"type": "String"
+										},
+										"sink": {
+											"name": "d_current_day",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "d_current_week",
+											"type": "String"
+										},
+										"sink": {
+											"name": "d_current_week",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "d_current_month",
+											"type": "String"
+										},
+										"sink": {
+											"name": "d_current_month",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "d_current_quarter",
+											"type": "String"
+										},
+										"sink": {
+											"name": "d_current_quarter",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "d_current_year",
+											"type": "String"
+										},
+										"sink": {
+											"name": "d_current_year",
+											"type": "String"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						}
+					},
+					{
+						"source": {
+							"tableName": "`household_demographics`"
+						},
+						"destination": {
+							"table": "`household_demographics`"
+						},
+						"copyActivity": {
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "hd_demo_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "hd_demo_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "hd_income_band_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "hd_income_band_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "hd_buy_potential",
+											"type": "String"
+										},
+										"sink": {
+											"name": "hd_buy_potential",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "hd_dep_count",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "hd_dep_count",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "hd_vehicle_count",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "hd_vehicle_count",
+											"type": "Int32"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						}
+					},
+					{
+						"source": {
+							"tableName": "`income_band`"
+						},
+						"destination": {
+							"table": "`income_band`"
+						},
+						"copyActivity": {
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "ib_income_band_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "ib_income_band_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "ib_lower_bound",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "ib_lower_bound",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "ib_upper_bound",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "ib_upper_bound",
+											"type": "Int32"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						}
+					},
+					{
+						"source": {
+							"tableName": "`inventory`"
+						},
+						"destination": {
+							"table": "`inventory`"
+						},
+						"copyActivity": {
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "inv_date_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "inv_date_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "inv_item_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "inv_item_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "inv_warehouse_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "inv_warehouse_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "inv_quantity_on_hand",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "inv_quantity_on_hand",
+											"type": "Int32"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						}
+					},
+					{
+						"source": {
+							"tableName": "`item`"
+						},
+						"destination": {
+							"table": "`item`"
+						},
+						"copyActivity": {
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "i_item_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "i_item_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "i_item_id",
+											"type": "String"
+										},
+										"sink": {
+											"name": "i_item_id",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "i_rec_start_date",
+											"type": "DateTime"
+										},
+										"sink": {
+											"name": "i_rec_start_date",
+											"type": "DateTime"
+										}
+									},
+									{
+										"source": {
+											"name": "i_rec_end_date",
+											"type": "DateTime"
+										},
+										"sink": {
+											"name": "i_rec_end_date",
+											"type": "DateTime"
+										}
+									},
+									{
+										"source": {
+											"name": "i_item_desc",
+											"type": "String"
+										},
+										"sink": {
+											"name": "i_item_desc",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "i_current_price",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "i_current_price",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "i_wholesale_cost",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "i_wholesale_cost",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "i_brand_id",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "i_brand_id",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "i_brand",
+											"type": "String"
+										},
+										"sink": {
+											"name": "i_brand",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "i_class_id",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "i_class_id",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "i_class",
+											"type": "String"
+										},
+										"sink": {
+											"name": "i_class",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "i_category_id",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "i_category_id",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "i_category",
+											"type": "String"
+										},
+										"sink": {
+											"name": "i_category",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "i_manufact_id",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "i_manufact_id",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "i_manufact",
+											"type": "String"
+										},
+										"sink": {
+											"name": "i_manufact",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "i_size",
+											"type": "String"
+										},
+										"sink": {
+											"name": "i_size",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "i_formulation",
+											"type": "String"
+										},
+										"sink": {
+											"name": "i_formulation",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "i_color",
+											"type": "String"
+										},
+										"sink": {
+											"name": "i_color",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "i_units",
+											"type": "String"
+										},
+										"sink": {
+											"name": "i_units",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "i_container",
+											"type": "String"
+										},
+										"sink": {
+											"name": "i_container",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "i_manager_id",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "i_manager_id",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "i_product_name",
+											"type": "String"
+										},
+										"sink": {
+											"name": "i_product_name",
+											"type": "String"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						}
+					},
+					{
+						"source": {
+							"tableName": "`promotion`"
+						},
+						"destination": {
+							"table": "`promotion`"
+						},
+						"copyActivity": {
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "p_promo_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "p_promo_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "p_promo_id",
+											"type": "String"
+										},
+										"sink": {
+											"name": "p_promo_id",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "p_start_date_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "p_start_date_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "p_end_date_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "p_end_date_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "p_item_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "p_item_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "p_cost",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "p_cost",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "p_response_target",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "p_response_target",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "p_promo_name",
+											"type": "String"
+										},
+										"sink": {
+											"name": "p_promo_name",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "p_channel_dmail",
+											"type": "String"
+										},
+										"sink": {
+											"name": "p_channel_dmail",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "p_channel_email",
+											"type": "String"
+										},
+										"sink": {
+											"name": "p_channel_email",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "p_channel_catalog",
+											"type": "String"
+										},
+										"sink": {
+											"name": "p_channel_catalog",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "p_channel_tv",
+											"type": "String"
+										},
+										"sink": {
+											"name": "p_channel_tv",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "p_channel_radio",
+											"type": "String"
+										},
+										"sink": {
+											"name": "p_channel_radio",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "p_channel_press",
+											"type": "String"
+										},
+										"sink": {
+											"name": "p_channel_press",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "p_channel_event",
+											"type": "String"
+										},
+										"sink": {
+											"name": "p_channel_event",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "p_channel_demo",
+											"type": "String"
+										},
+										"sink": {
+											"name": "p_channel_demo",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "p_channel_details",
+											"type": "String"
+										},
+										"sink": {
+											"name": "p_channel_details",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "p_purpose",
+											"type": "String"
+										},
+										"sink": {
+											"name": "p_purpose",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "p_discount_active",
+											"type": "String"
+										},
+										"sink": {
+											"name": "p_discount_active",
+											"type": "String"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						}
+					},
+					{
+						"source": {
+							"tableName": "`reason`"
+						},
+						"destination": {
+							"table": "`reason`"
+						},
+						"copyActivity": {
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "r_reason_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "r_reason_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "r_reason_id",
+											"type": "String"
+										},
+										"sink": {
+											"name": "r_reason_id",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "r_reason_desc",
+											"type": "String"
+										},
+										"sink": {
+											"name": "r_reason_desc",
+											"type": "String"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						}
+					},
+					{
+						"source": {
+							"tableName": "`ship_mode`"
+						},
+						"destination": {
+							"table": "`ship_mode`"
+						},
+						"copyActivity": {
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "sm_ship_mode_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "sm_ship_mode_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "sm_ship_mode_id",
+											"type": "String"
+										},
+										"sink": {
+											"name": "sm_ship_mode_id",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "sm_type",
+											"type": "String"
+										},
+										"sink": {
+											"name": "sm_type",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "sm_code",
+											"type": "String"
+										},
+										"sink": {
+											"name": "sm_code",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "sm_carrier",
+											"type": "String"
+										},
+										"sink": {
+											"name": "sm_carrier",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "sm_contract",
+											"type": "String"
+										},
+										"sink": {
+											"name": "sm_contract",
+											"type": "String"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						}
+					},
+					{
+						"source": {
+							"tableName": "`store_returns`"
+						},
+						"destination": {
+							"table": "`store_returns`"
+						},
+						"copyActivity": {
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "sr_returned_date_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "sr_returned_date_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "sr_return_time_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "sr_return_time_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "sr_item_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "sr_item_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "sr_customer_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "sr_customer_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "sr_cdemo_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "sr_cdemo_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "sr_hdemo_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "sr_hdemo_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "sr_addr_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "sr_addr_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "sr_store_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "sr_store_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "sr_reason_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "sr_reason_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "sr_ticket_number",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "sr_ticket_number",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "sr_return_quantity",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "sr_return_quantity",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "sr_return_amt",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "sr_return_amt",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "sr_return_tax",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "sr_return_tax",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "sr_return_amt_inc_tax",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "sr_return_amt_inc_tax",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "sr_fee",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "sr_fee",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "sr_return_ship_cost",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "sr_return_ship_cost",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "sr_refunded_cash",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "sr_refunded_cash",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "sr_reversed_charge",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "sr_reversed_charge",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "sr_store_credit",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "sr_store_credit",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "sr_net_loss",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "sr_net_loss",
+											"type": "Decimal"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						}
+					},
+					{
+						"source": {
+							"tableName": "`store_sales`"
+						},
+						"destination": {
+							"table": "`store_sales`"
+						},
+						"copyActivity": {
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "ss_sold_date_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "ss_sold_date_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "ss_sold_time_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "ss_sold_time_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "ss_item_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "ss_item_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "ss_customer_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "ss_customer_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "ss_cdemo_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "ss_cdemo_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "ss_hdemo_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "ss_hdemo_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "ss_addr_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "ss_addr_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "ss_store_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "ss_store_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "ss_promo_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "ss_promo_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "ss_ticket_number",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "ss_ticket_number",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "ss_quantity",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "ss_quantity",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "ss_wholesale_cost",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "ss_wholesale_cost",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "ss_list_price",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "ss_list_price",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "ss_sales_price",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "ss_sales_price",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "ss_ext_discount_amt",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "ss_ext_discount_amt",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "ss_ext_sales_price",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "ss_ext_sales_price",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "ss_ext_wholesale_cost",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "ss_ext_wholesale_cost",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "ss_ext_list_price",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "ss_ext_list_price",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "ss_ext_tax",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "ss_ext_tax",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "ss_coupon_amt",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "ss_coupon_amt",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "ss_net_paid",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "ss_net_paid",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "ss_net_paid_inc_tax",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "ss_net_paid_inc_tax",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "ss_net_profit",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "ss_net_profit",
+											"type": "Decimal"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						}
+					},
+					{
+						"source": {
+							"tableName": "`store`"
+						},
+						"destination": {
+							"table": "`store`"
+						},
+						"copyActivity": {
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "s_store_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "s_store_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "s_store_id",
+											"type": "String"
+										},
+										"sink": {
+											"name": "s_store_id",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "s_rec_start_date",
+											"type": "DateTime"
+										},
+										"sink": {
+											"name": "s_rec_start_date",
+											"type": "DateTime"
+										}
+									},
+									{
+										"source": {
+											"name": "s_rec_end_date",
+											"type": "DateTime"
+										},
+										"sink": {
+											"name": "s_rec_end_date",
+											"type": "DateTime"
+										}
+									},
+									{
+										"source": {
+											"name": "s_closed_date_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "s_closed_date_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "s_store_name",
+											"type": "String"
+										},
+										"sink": {
+											"name": "s_store_name",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "s_number_employees",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "s_number_employees",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "s_floor_space",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "s_floor_space",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "s_hours",
+											"type": "String"
+										},
+										"sink": {
+											"name": "s_hours",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "s_manager",
+											"type": "String"
+										},
+										"sink": {
+											"name": "s_manager",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "s_market_id",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "s_market_id",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "s_geography_class",
+											"type": "String"
+										},
+										"sink": {
+											"name": "s_geography_class",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "s_market_desc",
+											"type": "String"
+										},
+										"sink": {
+											"name": "s_market_desc",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "s_market_manager",
+											"type": "String"
+										},
+										"sink": {
+											"name": "s_market_manager",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "s_division_id",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "s_division_id",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "s_division_name",
+											"type": "String"
+										},
+										"sink": {
+											"name": "s_division_name",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "s_company_id",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "s_company_id",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "s_company_name",
+											"type": "String"
+										},
+										"sink": {
+											"name": "s_company_name",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "s_street_number",
+											"type": "String"
+										},
+										"sink": {
+											"name": "s_street_number",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "s_street_name",
+											"type": "String"
+										},
+										"sink": {
+											"name": "s_street_name",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "s_street_type",
+											"type": "String"
+										},
+										"sink": {
+											"name": "s_street_type",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "s_suite_number",
+											"type": "String"
+										},
+										"sink": {
+											"name": "s_suite_number",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "s_city",
+											"type": "String"
+										},
+										"sink": {
+											"name": "s_city",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "s_county",
+											"type": "String"
+										},
+										"sink": {
+											"name": "s_county",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "s_state",
+											"type": "String"
+										},
+										"sink": {
+											"name": "s_state",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "s_zip",
+											"type": "String"
+										},
+										"sink": {
+											"name": "s_zip",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "s_country",
+											"type": "String"
+										},
+										"sink": {
+											"name": "s_country",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "s_gmt_offset",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "s_gmt_offset",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "s_tax_precentage",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "s_tax_precentage",
+											"type": "Decimal"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						}
+					},
+					{
+						"source": {
+							"tableName": "`time_dim`"
+						},
+						"destination": {
+							"table": "`time_dim`"
+						},
+						"copyActivity": {
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "t_time_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "t_time_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "t_time_id",
+											"type": "String"
+										},
+										"sink": {
+											"name": "t_time_id",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "t_time",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "t_time",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "t_hour",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "t_hour",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "t_minute",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "t_minute",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "t_second",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "t_second",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "t_am_pm",
+											"type": "String"
+										},
+										"sink": {
+											"name": "t_am_pm",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "t_shift",
+											"type": "String"
+										},
+										"sink": {
+											"name": "t_shift",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "t_sub_shift",
+											"type": "String"
+										},
+										"sink": {
+											"name": "t_sub_shift",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "t_meal_time",
+											"type": "String"
+										},
+										"sink": {
+											"name": "t_meal_time",
+											"type": "String"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						}
+					},
+					{
+						"source": {
+							"tableName": "`warehouse`"
+						},
+						"destination": {
+							"table": "`warehouse`"
+						},
+						"copyActivity": {
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "w_warehouse_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "w_warehouse_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "w_warehouse_id",
+											"type": "String"
+										},
+										"sink": {
+											"name": "w_warehouse_id",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "w_warehouse_name",
+											"type": "String"
+										},
+										"sink": {
+											"name": "w_warehouse_name",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "w_warehouse_sq_ft",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "w_warehouse_sq_ft",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "w_street_number",
+											"type": "String"
+										},
+										"sink": {
+											"name": "w_street_number",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "w_street_name",
+											"type": "String"
+										},
+										"sink": {
+											"name": "w_street_name",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "w_street_type",
+											"type": "String"
+										},
+										"sink": {
+											"name": "w_street_type",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "w_suite_number",
+											"type": "String"
+										},
+										"sink": {
+											"name": "w_suite_number",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "w_city",
+											"type": "String"
+										},
+										"sink": {
+											"name": "w_city",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "w_county",
+											"type": "String"
+										},
+										"sink": {
+											"name": "w_county",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "w_state",
+											"type": "String"
+										},
+										"sink": {
+											"name": "w_state",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "w_zip",
+											"type": "String"
+										},
+										"sink": {
+											"name": "w_zip",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "w_country",
+											"type": "String"
+										},
+										"sink": {
+											"name": "w_country",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "w_gmt_offset",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "w_gmt_offset",
+											"type": "Decimal"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						}
+					},
+					{
+						"source": {
+							"tableName": "`web_page`"
+						},
+						"destination": {
+							"table": "`web_page`"
+						},
+						"copyActivity": {
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "wp_web_page_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "wp_web_page_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "wp_web_page_id",
+											"type": "String"
+										},
+										"sink": {
+											"name": "wp_web_page_id",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "wp_rec_start_date",
+											"type": "DateTime"
+										},
+										"sink": {
+											"name": "wp_rec_start_date",
+											"type": "DateTime"
+										}
+									},
+									{
+										"source": {
+											"name": "wp_rec_end_date",
+											"type": "DateTime"
+										},
+										"sink": {
+											"name": "wp_rec_end_date",
+											"type": "DateTime"
+										}
+									},
+									{
+										"source": {
+											"name": "wp_creation_date_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "wp_creation_date_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "wp_access_date_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "wp_access_date_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "wp_autogen_flag",
+											"type": "String"
+										},
+										"sink": {
+											"name": "wp_autogen_flag",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "wp_customer_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "wp_customer_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "wp_url",
+											"type": "String"
+										},
+										"sink": {
+											"name": "wp_url",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "wp_type",
+											"type": "String"
+										},
+										"sink": {
+											"name": "wp_type",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "wp_char_count",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "wp_char_count",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "wp_link_count",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "wp_link_count",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "wp_image_count",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "wp_image_count",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "wp_max_ad_count",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "wp_max_ad_count",
+											"type": "Int32"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						}
+					},
+					{
+						"source": {
+							"tableName": "`web_returns`"
+						},
+						"destination": {
+							"table": "`web_returns`"
+						},
+						"copyActivity": {
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "wr_returned_date_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "wr_returned_date_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "wr_returned_time_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "wr_returned_time_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "wr_item_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "wr_item_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "wr_refunded_customer_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "wr_refunded_customer_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "wr_refunded_cdemo_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "wr_refunded_cdemo_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "wr_refunded_hdemo_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "wr_refunded_hdemo_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "wr_refunded_addr_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "wr_refunded_addr_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "wr_returning_customer_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "wr_returning_customer_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "wr_returning_cdemo_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "wr_returning_cdemo_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "wr_returning_hdemo_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "wr_returning_hdemo_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "wr_returning_addr_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "wr_returning_addr_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "wr_web_page_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "wr_web_page_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "wr_reason_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "wr_reason_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "wr_order_number",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "wr_order_number",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "wr_return_quantity",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "wr_return_quantity",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "wr_return_amt",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "wr_return_amt",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "wr_return_tax",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "wr_return_tax",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "wr_return_amt_inc_tax",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "wr_return_amt_inc_tax",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "wr_fee",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "wr_fee",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "wr_return_ship_cost",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "wr_return_ship_cost",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "wr_refunded_cash",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "wr_refunded_cash",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "wr_reversed_charge",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "wr_reversed_charge",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "wr_account_credit",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "wr_account_credit",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "wr_net_loss",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "wr_net_loss",
+											"type": "Decimal"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						}
+					},
+					{
+						"source": {
+							"tableName": "`web_sales`"
+						},
+						"destination": {
+							"table": "`web_sales`"
+						},
+						"copyActivity": {
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "ws_sold_date_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "ws_sold_date_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "ws_sold_time_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "ws_sold_time_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "ws_ship_date_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "ws_ship_date_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "ws_item_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "ws_item_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "ws_bill_customer_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "ws_bill_customer_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "ws_bill_cdemo_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "ws_bill_cdemo_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "ws_bill_hdemo_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "ws_bill_hdemo_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "ws_bill_addr_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "ws_bill_addr_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "ws_ship_customer_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "ws_ship_customer_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "ws_ship_cdemo_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "ws_ship_cdemo_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "ws_ship_hdemo_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "ws_ship_hdemo_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "ws_ship_addr_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "ws_ship_addr_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "ws_web_page_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "ws_web_page_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "ws_web_site_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "ws_web_site_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "ws_ship_mode_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "ws_ship_mode_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "ws_warehouse_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "ws_warehouse_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "ws_promo_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "ws_promo_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "ws_order_number",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "ws_order_number",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "ws_quantity",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "ws_quantity",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "ws_wholesale_cost",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "ws_wholesale_cost",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "ws_list_price",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "ws_list_price",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "ws_sales_price",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "ws_sales_price",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "ws_ext_discount_amt",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "ws_ext_discount_amt",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "ws_ext_sales_price",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "ws_ext_sales_price",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "ws_ext_wholesale_cost",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "ws_ext_wholesale_cost",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "ws_ext_list_price",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "ws_ext_list_price",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "ws_ext_tax",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "ws_ext_tax",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "ws_coupon_amt",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "ws_coupon_amt",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "ws_ext_ship_cost",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "ws_ext_ship_cost",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "ws_net_paid",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "ws_net_paid",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "ws_net_paid_inc_tax",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "ws_net_paid_inc_tax",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "ws_net_paid_inc_ship",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "ws_net_paid_inc_ship",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "ws_net_paid_inc_ship_tax",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "ws_net_paid_inc_ship_tax",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "ws_net_profit",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "ws_net_profit",
+											"type": "Decimal"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						}
+					},
+					{
+						"source": {
+							"tableName": "`web_site`"
+						},
+						"destination": {
+							"table": "`web_site`"
+						},
+						"copyActivity": {
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "web_site_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "web_site_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "web_site_id",
+											"type": "String"
+										},
+										"sink": {
+											"name": "web_site_id",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "web_rec_start_date",
+											"type": "DateTime"
+										},
+										"sink": {
+											"name": "web_rec_start_date",
+											"type": "DateTime"
+										}
+									},
+									{
+										"source": {
+											"name": "web_rec_end_date",
+											"type": "DateTime"
+										},
+										"sink": {
+											"name": "web_rec_end_date",
+											"type": "DateTime"
+										}
+									},
+									{
+										"source": {
+											"name": "web_name",
+											"type": "String"
+										},
+										"sink": {
+											"name": "web_name",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "web_open_date_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "web_open_date_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "web_close_date_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "web_close_date_sk",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "web_class",
+											"type": "String"
+										},
+										"sink": {
+											"name": "web_class",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "web_manager",
+											"type": "String"
+										},
+										"sink": {
+											"name": "web_manager",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "web_mkt_id",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "web_mkt_id",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "web_mkt_class",
+											"type": "String"
+										},
+										"sink": {
+											"name": "web_mkt_class",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "web_mkt_desc",
+											"type": "String"
+										},
+										"sink": {
+											"name": "web_mkt_desc",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "web_market_manager",
+											"type": "String"
+										},
+										"sink": {
+											"name": "web_market_manager",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "web_company_id",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "web_company_id",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "web_company_name",
+											"type": "String"
+										},
+										"sink": {
+											"name": "web_company_name",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "web_street_number",
+											"type": "String"
+										},
+										"sink": {
+											"name": "web_street_number",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "web_street_name",
+											"type": "String"
+										},
+										"sink": {
+											"name": "web_street_name",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "web_street_type",
+											"type": "String"
+										},
+										"sink": {
+											"name": "web_street_type",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "web_suite_number",
+											"type": "String"
+										},
+										"sink": {
+											"name": "web_suite_number",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "web_city",
+											"type": "String"
+										},
+										"sink": {
+											"name": "web_city",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "web_county",
+											"type": "String"
+										},
+										"sink": {
+											"name": "web_county",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "web_state",
+											"type": "String"
+										},
+										"sink": {
+											"name": "web_state",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "web_zip",
+											"type": "String"
+										},
+										"sink": {
+											"name": "web_zip",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "web_country",
+											"type": "String"
+										},
+										"sink": {
+											"name": "web_country",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "web_gmt_offset",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "web_gmt_offset",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "web_tax_percentage",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "web_tax_percentage",
+											"type": "Decimal"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						}
+					}
+				]
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-07-14T20:51:17Z"
+	},
+	"type": "Microsoft.Synapse/workspaces/pipelines"
+}
