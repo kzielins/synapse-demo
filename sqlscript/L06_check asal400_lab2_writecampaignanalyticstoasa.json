@@ -1,0 +1,18 @@
+{
+	"name": "L06_check asal400_lab2_writecampaignanalyticstoasa",
+	"properties": {
+		"description": "https://github.com/MicrosoftLearning/DP-203-Data-Engineer/blob/master/Instructions/Labs/LAB_06_transform_data_with_pipelines.md",
+		"content": {
+			"query": "SELECT ProductCategory\n,SUM(Revenue) AS TotalRevenue\n,SUM(RevenueTarget) AS TotalRevenueTarget\n,(SUM(RevenueTarget) - SUM(Revenue)) AS Delta\nFROM [wwi].[CampaignAnalytics]\nGROUP BY ProductCategory",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "SQLPool01",
+				"poolName": "SQLPool01"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
