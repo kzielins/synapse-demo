@@ -7,7 +7,40 @@
 		},
 		"annotations": [],
 		"type": "CosmosDbSqlApiCollection",
-		"schema": {},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"userId": {
+					"type": "integer"
+				},
+				"cartId": {
+					"type": "string"
+				},
+				"preferredProducts": {
+					"type": "array",
+					"items": {
+						"type": "integer"
+					}
+				},
+				"productReviews": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"properties": {
+							"productId": {
+								"type": "integer"
+							},
+							"reviewText": {
+								"type": "string"
+							},
+							"reviewDate": {
+								"type": "string"
+							}
+						}
+					}
+				}
+			}
+		},
 		"typeProperties": {
 			"collectionName": "OnlineUserProfile01"
 		}
