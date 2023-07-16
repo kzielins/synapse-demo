@@ -32,6 +32,12 @@
 				},
 				{
 					"name": "UserPreferredProducts"
+				},
+				{
+					"name": "JoinTopProductsWithPreferredProducts"
+				},
+				{
+					"name": "DerivedColumnsForMerge"
 				}
 			],
 			"scriptLines": [
@@ -70,7 +76,19 @@
 				"          userId",
 				"     ),",
 				"     skipDuplicateMapInputs: false,",
-				"     skipDuplicateMapOutputs: false) ~> UserPreferredProducts"
+				"     skipDuplicateMapOutputs: false) ~> UserPreferredProducts",
+				"DeriveProductColumns, UserPreferredProducts join(visitorId == userId,",
+				"     joinType:'outer',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     partitionBy('hash', 30,",
+				"          productId",
+				"     ),",
+				"     broadcast: 'left')~> JoinTopProductsWithPreferredProducts",
+				"JoinTopProductsWithPreferredProducts derive(isTopProduct = toBoolean(iif(isNull(productId), 'false', 'true')),",
+				"          isPreferredProduct = toBoolean(iif(isNull(preferredProductId), 'false', 'true')),",
+				"          productId = iif(isNull(productId), preferredProductId, productId),",
+				"          userId = iif(isNull(userId), visitorId, userId)) ~> DerivedColumnsForMerge"
 			]
 		}
 	}
