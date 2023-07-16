@@ -15,6 +15,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'accountKey' of 'AzureDataLakeStorage_kzbackup'"
 		},
+		"asacosmosdb01_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'asacosmosdb01'"
+		},
 		"asadatalake19hvmew_accountKey": {
 			"type": "secureString",
 			"metadata": "Secure string for 'accountKey' of 'asadatalake19hvmew'"
@@ -82,24 +86,6 @@
 		"workspaceId": "[concat('Microsoft.Synapse/workspaces/', parameters('workspaceName'))]"
 	},
 	"resources": [
-		{
-			"name": "[concat(parameters('workspaceName'), '/SQLPool01')]",
-			"type": "Microsoft.Synapse/workspaces/sqlPools",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"annotations": []
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/SparkPool01')]",
-			"type": "Microsoft.Synapse/workspaces/bigDataPools",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"annotations": []
-			},
-			"dependsOn": []
-		},
 		{
 			"name": "[concat(parameters('workspaceName'), '/CopyPipeline_all')]",
 			"type": "Microsoft.Synapse/workspaces/pipelines",
@@ -659,6 +645,261 @@
 			"dependsOn": [
 				"[concat(variables('workspaceId'), '/datasets/SourceDataset_gcj')]",
 				"[concat(variables('workspaceId'), '/datasets/DestinationDataset_gcj')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/InsertJsonToCosmosDB')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy_v8o",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [
+							{
+								"name": "Source",
+								"value": "wwi-02/online-user-profiles-01/UserIdBucket=001/"
+							},
+							{
+								"name": "Destination",
+								"value": "OnlineUserProfile01"
+							}
+						],
+						"typeProperties": {
+							"source": {
+								"type": "JsonSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"wildcardFileName": "*.json",
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "JsonReadSettings"
+								}
+							},
+							"sink": {
+								"type": "CosmosDbSqlApiSink",
+								"writeBehavior": "insert"
+							},
+							"enableStaging": false,
+							"validateDataConsistency": false
+						},
+						"inputs": [
+							{
+								"referenceName": "SourceDataset_v8o",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "DestinationDataset_v8o",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/datasets/SourceDataset_v8o')]",
+				"[concat(variables('workspaceId'), '/datasets/DestinationDataset_v8o')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/L05_E2_Copy December Sales')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy sales",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "ParquetSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "ParquetReadSettings"
+								}
+							},
+							"sink": {
+								"type": "SqlDWSink",
+								"preCopyScript": "TRUNCATE TABLE wwi_perf.Sale_Heap",
+								"allowCopyCommand": true,
+								"copyCommandSettings": {},
+								"disableMetricsCollection": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "TransactionId",
+											"type": "String"
+										},
+										"sink": {
+											"name": "TransactionId",
+											"type": "Guid"
+										}
+									},
+									{
+										"source": {
+											"name": "CustomerId",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "CustomerId",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "ProductId",
+											"type": "Int16"
+										},
+										"sink": {
+											"name": "ProductId",
+											"type": "Int16"
+										}
+									},
+									{
+										"source": {
+											"name": "Quantity",
+											"type": "SByte"
+										},
+										"sink": {
+											"name": "Quantity",
+											"type": "Byte"
+										}
+									},
+									{
+										"source": {
+											"name": "Price",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "Price",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "TotalAmount",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "TotalAmount",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "TransactionDate",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "TransactionDateId",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "ProfitAmount",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "ProfitAmount",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "Hour",
+											"type": "SByte"
+										},
+										"sink": {
+											"name": "Hour",
+											"type": "Byte"
+										}
+									},
+									{
+										"source": {
+											"name": "Minute",
+											"type": "SByte"
+										},
+										"sink": {
+											"name": "Minute",
+											"type": "Byte"
+										}
+									},
+									{
+										"source": {
+											"name": "StoreId",
+											"type": "Int16"
+										},
+										"sink": {
+											"name": "StoreId",
+											"type": "Int16"
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "asal400_december_sales",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "asal400_saleheap_asa",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/datasets/asal400_december_sales')]",
+				"[concat(variables('workspaceId'), '/datasets/asal400_saleheap_asa')]"
 			]
 		},
 		{
@@ -7317,6 +7558,118 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/Write Campaign Analytics to ASA')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "asal400_lab2_writecampaignanalyticstoasa",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "asal400_lab2_writecampaignanalyticstoasa",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"CampaignAnalytics": {},
+									"CampaignAnalyticsASA": {}
+								}
+							},
+							"staging": {
+								"linkedService": {
+									"referenceName": "asadatalake19hvmew",
+									"type": "LinkedServiceReference"
+								},
+								"folderPath": "wwi-02/campaign-analytics-write"
+							},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/dataflows/asal400_lab2_writecampaignanalyticstoasa')]",
+				"[concat(variables('workspaceId'), '/linkedServices/asadatalake19hvmew')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Write User Profile Data to ASA')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "write_user_profile_to_asa",
+						"description": "userprofiles",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "write_user_profile_to_asa",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"EcommerceUserProfiles": {},
+									"UserProfiles": {},
+									"UserTopProductPurchasesASA": {},
+									"DataLake": {}
+								}
+							},
+							"staging": {
+								"linkedService": {
+									"referenceName": "asastore19hvmew",
+									"type": "LinkedServiceReference"
+								},
+								"folderPath": "staging"
+							},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/dataflows/write_user_profile_to_asa')]",
+				"[concat(variables('workspaceId'), '/linkedServices/asastore19hvmew')]",
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/DestinationDataset_2az')]",
 			"type": "Microsoft.Synapse/workspaces/datasets",
 			"apiVersion": "2019-06-01-preview",
@@ -7446,6 +7799,26 @@
 			},
 			"dependsOn": [
 				"[concat(variables('workspaceId'), '/sqlPools/SQLPool01')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/DestinationDataset_v8o')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "asacosmosdb01",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "CosmosDbSqlApiCollection",
+				"schema": {},
+				"typeProperties": {
+					"collectionName": "OnlineUserProfile01"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/asacosmosdb01')]"
 			]
 		},
 		{
@@ -7723,6 +8096,63 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/SourceDataset_v8o')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "asadatalake19hvmew",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "online-user-profiles-01/",
+						"fileSystem": "wwi-02"
+					}
+				},
+				"schema": {
+					"type": "object",
+					"properties": {
+						"userId": {
+							"type": "integer"
+						},
+						"cartId": {
+							"type": "string"
+						},
+						"preferredProducts": {
+							"type": "array",
+							"items": {
+								"type": "integer"
+							}
+						},
+						"productReviews": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"productId": {
+										"type": "integer"
+									},
+									"reviewText": {
+										"type": "string"
+									},
+									"reviewDate": {
+										"type": "string"
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/asadatalake19hvmew')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/SourceDataset_vpc')]",
 			"type": "Microsoft.Synapse/workspaces/datasets",
 			"apiVersion": "2019-06-01-preview",
@@ -7740,6 +8170,417 @@
 			},
 			"dependsOn": [
 				"[concat(variables('workspaceId'), '/linkedServices/tpcdmysql')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/asal400_campaign_analytics_source')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "asadatalake19hvmew",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "campaignanalytics.csv",
+						"folderPath": "campaign-analytics",
+						"fileSystem": "wwi-02"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": false,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/asadatalake19hvmew')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/asal400_customerprofile_cosmosdb')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "asacosmosdb01",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "CosmosDbSqlApiCollection",
+				"schema": {
+					"type": "object",
+					"properties": {
+						"userId": {
+							"type": "integer"
+						},
+						"cartId": {
+							"type": "string"
+						},
+						"preferredProducts": {
+							"type": "array",
+							"items": {
+								"type": "integer"
+							}
+						},
+						"productReviews": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"productId": {
+										"type": "integer"
+									},
+									"reviewText": {
+										"type": "string"
+									},
+									"reviewDate": {
+										"type": "string"
+									}
+								}
+							}
+						}
+					}
+				},
+				"typeProperties": {
+					"collectionName": "OnlineUserProfile01"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/asacosmosdb01')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/asal400_december_sales')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "asadatalake19hvmew",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "sale-20161230-snappy.parquet",
+						"folderPath": "campaign-analytics",
+						"fileSystem": "wwi-02"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": [
+					{
+						"name": "TransactionId",
+						"type": "UTF8"
+					},
+					{
+						"name": "CustomerId",
+						"type": "INT32"
+					},
+					{
+						"name": "ProductId",
+						"type": "INT_16"
+					},
+					{
+						"name": "Quantity",
+						"type": "INT_8"
+					},
+					{
+						"name": "Price",
+						"type": "DECIMAL",
+						"precision": 38,
+						"scale": 18
+					},
+					{
+						"name": "TotalAmount",
+						"type": "DECIMAL",
+						"precision": 38,
+						"scale": 18
+					},
+					{
+						"name": "TransactionDate",
+						"type": "INT32"
+					},
+					{
+						"name": "ProfitAmount",
+						"type": "DECIMAL",
+						"precision": 38,
+						"scale": 18
+					},
+					{
+						"name": "Hour",
+						"type": "INT_8"
+					},
+					{
+						"name": "Minute",
+						"type": "INT_8"
+					},
+					{
+						"name": "StoreId",
+						"type": "INT_16"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/asadatalake19hvmew')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/asal400_ecommerce_userprofiles_source')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "asadatalake19hvmew",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "online-user-profiles-02",
+						"fileSystem": "wwi-02"
+					}
+				},
+				"schema": {
+					"type": "object",
+					"properties": {
+						"visitorId": {
+							"type": "integer"
+						},
+						"topProductPurchases": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"productId": {
+										"type": "integer"
+									},
+									"itemsPurchasedLast12Months": {
+										"type": "integer"
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/asadatalake19hvmew')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/asal400_saleheap_asa')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "sqlpool01_import01",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlDWTable",
+				"schema": [
+					{
+						"name": "TransactionId",
+						"type": "uniqueidentifier"
+					},
+					{
+						"name": "CustomerId",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ProductId",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "Quantity",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "Price",
+						"type": "decimal",
+						"precision": 9,
+						"scale": 2
+					},
+					{
+						"name": "TotalAmount",
+						"type": "decimal",
+						"precision": 9,
+						"scale": 2
+					},
+					{
+						"name": "TransactionDateId",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ProfitAmount",
+						"type": "decimal",
+						"precision": 9,
+						"scale": 2
+					},
+					{
+						"name": "Hour",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "Minute",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "StoreId",
+						"type": "smallint",
+						"precision": 5
+					}
+				],
+				"typeProperties": {
+					"schema": "wwi_perf",
+					"table": "Sale_Heap"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/sqlpool01_import01')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/asal400_wwi_campaign_analytics_asa')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "sqlpool01",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlDWTable",
+				"schema": [
+					{
+						"name": "Region",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Country",
+						"type": "nvarchar"
+					},
+					{
+						"name": "ProductCategory",
+						"type": "nvarchar"
+					},
+					{
+						"name": "CampaignName",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Revenue",
+						"type": "decimal",
+						"precision": 10,
+						"scale": 2
+					},
+					{
+						"name": "RevenueTarget",
+						"type": "decimal",
+						"precision": 10,
+						"scale": 2
+					},
+					{
+						"name": "City",
+						"type": "nvarchar"
+					},
+					{
+						"name": "State",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "wwi",
+					"table": "CampaignAnalytics"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/sqlpool01')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/asal400_wwi_usertopproductpurchases_asa')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "sqlpool01",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlDWTable",
+				"schema": [
+					{
+						"name": "UserId",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ProductId",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ItemsPurchasedLast12Months",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "IsTopProduct",
+						"type": "bit"
+					},
+					{
+						"name": "IsPreferredProduct",
+						"type": "bit"
+					}
+				],
+				"typeProperties": {
+					"schema": "wwi",
+					"table": "UserTopProductPurchases"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/sqlpool01')]"
 			]
 		},
 		{
@@ -7772,6 +8613,25 @@
 						"type": "SecureString",
 						"value": "[parameters('AzureDataLakeStorage_kzbackup_accountKey')]"
 					}
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/asacosmosdb01')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "CosmosDb",
+				"typeProperties": {
+					"connectionString": "[parameters('asacosmosdb01_connectionString')]"
 				},
 				"connectVia": {
 					"referenceName": "AutoResolveIntegrationRuntime",
@@ -8041,31 +8901,303 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/asal400_lab2_writecampaignanalyticstoasa')]",
+			"type": "Microsoft.Synapse/workspaces/dataflows",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "asal400_campaign_analytics_source",
+								"type": "DatasetReference"
+							},
+							"name": "CampaignAnalytics"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "asal400_wwi_campaign_analytics_asa",
+								"type": "DatasetReference"
+							},
+							"name": "CampaignAnalyticsASA"
+						}
+					],
+					"transformations": [
+						{
+							"name": "MapCampaignAnalytics"
+						},
+						{
+							"name": "ConvertColumnTypesAndValues"
+						},
+						{
+							"name": "SelectCampaignAnalyticsColumns"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          {_col0_} as string,",
+						"          {_col1_} as string,",
+						"          {_col2_} as string,",
+						"          {_col3_} as string,",
+						"          {_col4_} as string,",
+						"          {_col5_} as double,",
+						"          {_col6_} as string,",
+						"          {_col7_} as double,",
+						"          {_col8_} as string,",
+						"          {_col9_} as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     skipLines: 1) ~> CampaignAnalytics",
+						"CampaignAnalytics select(mapColumn(",
+						"          Region = {_col0_},",
+						"          Country = {_col1_},",
+						"          ProductCategory = {_col2_},",
+						"          CampaignName = {_col3_},",
+						"          RevenuePart1 = {_col4_},",
+						"          Revenue = {_col5_},",
+						"          RevenueTargetPart1 = {_col6_},",
+						"          RevenueTarget = {_col7_},",
+						"          City = {_col8_},",
+						"          State = {_col9_}",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> MapCampaignAnalytics",
+						"MapCampaignAnalytics derive(Revenue = toDecimal(replace(concat(toString(RevenuePart1), toString(Revenue)), '\\\\', ''), 10, 2, '$###,###.##'),",
+						"          RevenueTarget = toDecimal(replace(concat(toString(RevenueTargetPart1), toString(RevenueTarget)), '\\\\', ''), 10, 2, '$###,###.##')) ~> ConvertColumnTypesAndValues",
+						"ConvertColumnTypesAndValues select(mapColumn(",
+						"          Region,",
+						"          Country,",
+						"          ProductCategory,",
+						"          CampaignName,",
+						"          Revenue,",
+						"          RevenueTarget,",
+						"          City,",
+						"          State",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> SelectCampaignAnalyticsColumns",
+						"SelectCampaignAnalyticsColumns sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          Region as string,",
+						"          Country as string,",
+						"          ProductCategory as string,",
+						"          CampaignName as string,",
+						"          Revenue as decimal(10,2),",
+						"          RevenueTarget as decimal(10,2),",
+						"          City as string,",
+						"          State as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     truncate:true,",
+						"     format: 'table',",
+						"     staged: true,",
+						"     allowCopyCommand: true,",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> CampaignAnalyticsASA"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/datasets/asal400_campaign_analytics_source')]",
+				"[concat(variables('workspaceId'), '/datasets/asal400_wwi_campaign_analytics_asa')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/write_user_profile_to_asa')]",
+			"type": "Microsoft.Synapse/workspaces/dataflows",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "asal400_ecommerce_userprofiles_source",
+								"type": "DatasetReference"
+							},
+							"name": "EcommerceUserProfiles"
+						},
+						{
+							"dataset": {
+								"referenceName": "asal400_customerprofile_cosmosdb",
+								"type": "DatasetReference"
+							},
+							"name": "UserProfiles"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "asal400_wwi_usertopproductpurchases_asa",
+								"type": "DatasetReference"
+							},
+							"name": "UserTopProductPurchasesASA"
+						},
+						{
+							"linkedService": {
+								"referenceName": "asaworkspace19hvmew-WorkspaceDefaultStorage",
+								"type": "LinkedServiceReference"
+							},
+							"name": "DataLake"
+						}
+					],
+					"transformations": [
+						{
+							"name": "userId"
+						},
+						{
+							"name": "UserTopProducts"
+						},
+						{
+							"name": "DeriveProductColumns"
+						},
+						{
+							"name": "UserPreferredProducts"
+						},
+						{
+							"name": "JoinTopProductsWithPreferredProducts"
+						},
+						{
+							"name": "DerivedColumnsForMerge"
+						},
+						{
+							"name": "filter1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          visitorId as string,",
+						"          topProductPurchases as (productId as string, itemsPurchasedLast12Months as string)[]",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     documentForm: 'arrayOfDocuments',",
+						"     wildcardPaths:['online-user-profiles-02/*.json']) ~> EcommerceUserProfiles",
+						"source(output(",
+						"          cartId as string,",
+						"          preferredProducts as integer[],",
+						"          productReviews as (productId as integer, reviewDate as string, reviewText as string)[],",
+						"          userId as integer",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     format: 'document') ~> UserProfiles",
+						"EcommerceUserProfiles derive(visitorId = toInteger(visitorId)) ~> userId",
+						"userId foldDown(unroll(topProductPurchases),",
+						"     mapColumn(",
+						"          visitorId,",
+						"          productId = topProductPurchases.productId,",
+						"          itemsPurchasedLast12Months = topProductPurchases.itemsPurchasedLast12Months",
+						"     ),",
+						"     skipDuplicateMapInputs: false,",
+						"     skipDuplicateMapOutputs: false) ~> UserTopProducts",
+						"UserTopProducts derive(productId = toInteger(productId),",
+						"          itemsPurchasedLast12Months = toInteger(itemsPurchasedLast12Months)) ~> DeriveProductColumns",
+						"UserProfiles foldDown(unroll(preferredProducts),",
+						"     mapColumn(",
+						"          preferredProductId = preferredProducts,",
+						"          userId",
+						"     ),",
+						"     skipDuplicateMapInputs: false,",
+						"     skipDuplicateMapOutputs: false) ~> UserPreferredProducts",
+						"DeriveProductColumns, UserPreferredProducts join(visitorId == userId,",
+						"     joinType:'outer',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     partitionBy('hash', 30,",
+						"          productId",
+						"     ),",
+						"     broadcast: 'left')~> JoinTopProductsWithPreferredProducts",
+						"JoinTopProductsWithPreferredProducts derive(isTopProduct = toBoolean(iif(isNull(productId), 'false', 'true')),",
+						"          isPreferredProduct = toBoolean(iif(isNull(preferredProductId), 'false', 'true')),",
+						"          productId = iif(isNull(productId), preferredProductId, productId),",
+						"          userId = iif(isNull(userId), visitorId, userId)) ~> DerivedColumnsForMerge",
+						"DerivedColumnsForMerge filter(!isNull(productId)) ~> filter1",
+						"filter1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          UserId as integer,",
+						"          ProductId as integer,",
+						"          ItemsPurchasedLast12Months as integer,",
+						"          IsTopProduct as boolean,",
+						"          IsPreferredProduct as boolean",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     truncate:true,",
+						"     format: 'table',",
+						"     staged: true,",
+						"     allowCopyCommand: true,",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          UserId = userId,",
+						"          ProductId = productId,",
+						"          ItemsPurchasedLast12Months = itemsPurchasedLast12Months,",
+						"          IsTopProduct = isTopProduct,",
+						"          IsPreferredProduct = isPreferredProduct",
+						"     )) ~> UserTopProductPurchasesASA",
+						"filter1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     format: 'delta',",
+						"     compressionType: 'snappy',",
+						"     compressionLevel: 'Fastest',",
+						"     fileSystem: 'wwi-02',",
+						"     folderPath: 'top-products',",
+						"     deltaTruncate: true,",
+						"     mergeSchema: false,",
+						"     autoCompact: false,",
+						"     optimizedWrite: false,",
+						"     vacuum: 0,",
+						"     deletable: false,",
+						"     insertable: true,",
+						"     updateable: false,",
+						"     upsertable: false,",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          visitorId,",
+						"          productId,",
+						"          itemsPurchasedLast12Months,",
+						"          preferredProductId,",
+						"          userId,",
+						"          isTopProduct,",
+						"          isPreferredProduct",
+						"     )) ~> DataLake"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/datasets/asal400_ecommerce_userprofiles_source')]",
+				"[concat(variables('workspaceId'), '/datasets/asal400_customerprofile_cosmosdb')]",
+				"[concat(variables('workspaceId'), '/datasets/asal400_wwi_usertopproductpurchases_asa')]",
+				"[concat(variables('workspaceId'), '/linkedServices/asaworkspace19hvmew-WorkspaceDefaultStorage')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/WorkspaceSystemIdentity')]",
 			"type": "Microsoft.Synapse/workspaces/credentials",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
 				"type": "ManagedIdentity",
 				"typeProperties": {}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/Column Level Security')]",
-			"type": "Microsoft.Synapse/workspaces/sqlscripts",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"content": {
-					"query": null,
-					"metadata": {
-						"language": "sql"
-					},
-					"currentConnection": {
-						"name": "SQLPool01",
-						"type": "SqlPool"
-					}
-				},
-				"type": "SqlQuery"
 			},
 			"dependsOn": []
 		},
@@ -8089,38 +9221,161 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('workspaceName'), '/Dynamic Data Masking')]",
+			"name": "[concat(parameters('workspaceName'), '/L05_Ex01_T1_T2_staging_T3_Copy_T4')]",
 			"type": "Microsoft.Synapse/workspaces/sqlscripts",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
 				"content": {
-					"query": null,
+					"query": "-- SELECT * FROM sys.schemas WHERE name = 'wwi_staging';\nCREATE TABLE [wwi_staging].[SaleHeap]\n( \n    [TransactionId] [uniqueidentifier]  NOT NULL,\n    [CustomerId] [int]  NOT NULL,\n    [ProductId] [smallint]  NOT NULL,\n    [Quantity] [smallint]  NOT NULL,\n    [Price] [decimal](9,2)  NOT NULL,\n    [TotalAmount] [decimal](9,2)  NOT NULL,\n    [TransactionDate] [int]  NOT NULL,\n    [ProfitAmount] [decimal](9,2)  NOT NULL,\n    [Hour] [tinyint]  NOT NULL,\n    [Minute] [tinyint]  NOT NULL,\n    [StoreId] [smallint]  NOT NULL\n)\nWITH\n(\n    DISTRIBUTION = ROUND_ROBIN,\n    HEAP\n);\nGO\n\nCREATE TABLE [wwi_staging].[Sale]\n(\n    [TransactionId] [uniqueidentifier]  NOT NULL,\n    [CustomerId] [int]  NOT NULL,\n    [ProductId] [smallint]  NOT NULL,\n    [Quantity] [smallint]  NOT NULL,\n    [Price] [decimal](9,2)  NOT NULL,\n    [TotalAmount] [decimal](9,2)  NOT NULL,\n    [TransactionDate] [int]  NOT NULL,\n    [ProfitAmount] [decimal](9,2)  NOT NULL,\n    [Hour] [tinyint]  NOT NULL,\n    [Minute] [tinyint]  NOT NULL,\n    [StoreId] [smallint]  NOT NULL\n)\nWITH\n(\n    DISTRIBUTION = HASH ( [CustomerId] ),\n    CLUSTERED COLUMNSTORE INDEX,\n    PARTITION\n    (\n        [TransactionDate] RANGE RIGHT FOR VALUES (20100101, 20100201, 20100301, 20100401, 20100501, 20100601, 20100701, 20100801, 20100901, 20101001, 20101101, 20101201, 20110101, 20110201, 20110301, 20110401, 20110501, 20110601, 20110701, 20110801, 20110901, 20111001, 20111101, 20111201, 20120101, 20120201, 20120301, 20120401, 20120501, 20120601, 20120701, 20120801, 20120901, 20121001, 20121101, 20121201, 20130101, 20130201, 20130301, 20130401, 20130501, 20130601, 20130701, 20130801, 20130901, 20131001, 20131101, 20131201, 20140101, 20140201, 20140301, 20140401, 20140501, 20140601, 20140701, 20140801, 20140901, 20141001, 20141101, 20141201, 20150101, 20150201, 20150301, 20150401, 20150501, 20150601, 20150701, 20150801, 20150901, 20151001, 20151101, 20151201, 20160101, 20160201, 20160301, 20160401, 20160501, 20160601, 20160701, 20160801, 20160901, 20161001, 20161101, 20161201, 20170101, 20170201, 20170301, 20170401, 20170501, 20170601, 20170701, 20170801, 20170901, 20171001, 20171101, 20171201, 20180101, 20180201, 20180301, 20180401, 20180501, 20180601, 20180701, 20180801, 20180901, 20181001, 20181101, 20181201, 20190101, 20190201, 20190301, 20190401, 20190501, 20190601, 20190701, 20190801, 20190901, 20191001, 20191101, 20191201)\n    )\n)\nGo;\n\n \nCREATE EXTERNAL DATA SOURCE ABSS\nWITH\n( TYPE = HADOOP,\n    LOCATION = 'abfss://wwi-02@asadatalake19hvmew.dfs.core.windows.net'\n);\n\n\nCREATE EXTERNAL FILE FORMAT [ParquetFormat]\nWITH (\n    FORMAT_TYPE = PARQUET,\n    DATA_COMPRESSION = 'org.apache.hadoop.io.compress.SnappyCodec'\n)\nGO\n\nCREATE SCHEMA [wwi_external];\nGO\n\n\nCREATE EXTERNAL TABLE [wwi_external].Sales\n    (\n        [TransactionId] [nvarchar](36)  NOT NULL,\n        [CustomerId] [int]  NOT NULL,\n        [ProductId] [smallint]  NOT NULL,\n        [Quantity] [smallint]  NOT NULL,\n        [Price] [decimal](9,2)  NOT NULL,\n        [TotalAmount] [decimal](9,2)  NOT NULL,\n        [TransactionDate] [int]  NOT NULL,\n        [ProfitAmount] [decimal](9,2)  NOT NULL,\n        [Hour] [tinyint]  NOT NULL,\n        [Minute] [tinyint]  NOT NULL,\n        [StoreId] [smallint]  NOT NULL\n    )\nWITH\n    (\n        LOCATION = '/sale-small/Year=2019',  \n        DATA_SOURCE = ABSS,\n        FILE_FORMAT = [ParquetFormat]  \n    )  \nGO\n\n-- count  [wwi_external].Sales;\n\nselect COUNT(1) from [wwi_external].Sales;\nGO\n\n-- instert to wwi_staging using PolyBase\n--  Import data with PolyBase\nINSERT INTO [wwi_staging].[SaleHeap]\nSELECT *\nFROM [wwi_external].[Sales];\nGO\n\n\n----------------- COPY using T-SQL \n\nTRUNCATE TABLE wwi_staging.SaleHeap;\nGO\n\n--  insert method COPY using T-SQL\nCOPY INTO wwi_staging.SaleHeap\nFROM 'https://asadatalake19hvmew.dfs.core.windows.net/wwi-02/sale-small/Year=2019'\nWITH (\n    FILE_TYPE = 'PARQUET',\n    COMPRESSION = 'SNAPPY'\n)\nGO\n\n--count\nSELECT COUNT(1) FROM wwi_staging.SaleHeap(nolock)\n\n\n\n----- other delimiter COPY\nCREATE TABLE [wwi_staging].DailySalesCounts\n    (\n        [Date] [int]  NOT NULL,\n        [NorthAmerica] [int]  NOT NULL,\n        [SouthAmerica] [int]  NOT NULL,\n        [Europe] [int]  NOT NULL,\n        [Africa] [int]  NOT NULL,\n        [Asia] [int]  NOT NULL\n    )\nGO\n\nCOPY INTO wwi_staging.DailySalesCounts\nFROM 'https://asadatalake19hvmew.dfs.core.windows.net/wwi-02/campaign-analytics/dailycounts.txt'\nWITH (\n    FILE_TYPE = 'CSV',\n    FIELDTERMINATOR='.',\n    ROWTERMINATOR=','\n)\nGO\n\n\n--check\nSELECT * FROM [wwi_staging].DailySalesCounts\nORDER BY [Date] DESC\n\n\n--- Polybase load\n\nCREATE EXTERNAL FILE FORMAT csv_dailysales\nWITH (\n    FORMAT_TYPE = DELIMITEDTEXT,\n    FORMAT_OPTIONS (\n        FIELD_TERMINATOR = '.',\n        DATE_FORMAT = '',\n        USE_TYPE_DEFAULT = False\n    )\n);\nGO\n\nCREATE EXTERNAL TABLE [wwi_external].DailySalesCounts\n    (\n        [Date] [int]  NOT NULL,\n        [NorthAmerica] [int]  NOT NULL,\n        [SouthAmerica] [int]  NOT NULL,\n        [Europe] [int]  NOT NULL,\n        [Africa] [int]  NOT NULL,\n        [Asia] [int]  NOT NULL\n    )\nWITH\n    (\n        LOCATION = '/campaign-analytics/dailycounts.txt',  \n        DATA_SOURCE = ABSS,\n        FILE_FORMAT = csv_dailysales\n    )  \nGO\n\n-- problem with load PolyBase\n/*\nINSERT INTO [wwi_staging].[DailySalesCounts]\nSELECT *\nFROM [wwi_external].[DailySalesCounts]\n*/\n",
 					"metadata": {
 						"language": "sql"
 					},
 					"currentConnection": {
-						"name": "SQLPool01",
-						"type": "SqlPool"
-					}
+						"databaseName": "SQLPool01",
+						"poolName": "SQLPool01"
+					},
+					"resultLimit": 5000
 				},
 				"type": "SqlQuery"
 			},
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('workspaceName'), '/Row Level Security')]",
+			"name": "[concat(parameters('workspaceName'), '/L05_Ex02')]",
 			"type": "Microsoft.Synapse/workspaces/sqlscripts",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
 				"content": {
-					"query": null,
+					"query": "CREATE USER [krzychzet@gmail.com] FROM EXTERNAL PROVIDER;\nSELECT * FROM sys.database_role_members;\nselect * from sys.database_principals;\nSELECT\n\tr.[name]     AS [Role]\n\t, m.[name]   AS [Member]\n\t, m.Create_date AS [Created Date]\n\t, m.modify_Date AS [Modified Date]\nFROM\n\tsys.database_role_members rm\n\tJOIN sys.database_principals AS r ON rm.[role_principal_id] = r.[principal_id]\n\tJOIN sys.database_principals AS m ON rm.[member_principal_id] = m.[principal_id]\nWHERE\n\tr.[type_desc] = 'DATABASE_ROLE';\n\n\n\n-- Drop objects if they exist\nIF EXISTS (SELECT * FROM sys.workload_management_workload_classifiers WHERE [name] = 'HeavyLoaderKZ')\nBEGIN\n    DROP WORKLOAD CLASSIFIER HeavyLoaderKZ\nEND;\n\nIF EXISTS (SELECT * FROM sys.workload_management_workload_groups WHERE name = 'BigDataLoadKZ')\nBEGIN\n    DROP WORKLOAD GROUP BigDataLoadKZ\nEND;\n\n--Create workload group\nCREATE WORKLOAD GROUP BigDataLoadKZ WITH\n  (\n      MIN_PERCENTAGE_RESOURCE = 50, -- integer value \n      REQUEST_MIN_RESOURCE_GRANT_PERCENT = 25, --  (guaranteed min 4 concurrency)\n      CAP_PERCENTAGE_RESOURCE = 100\n  );\n\n-- Create workload classifier   that assigns the user to the BigDataLoad workload group.\nCREATE WORKLOAD Classifier HeavyLoader_Krzychzet WITH\n(\n    Workload_Group ='BigDataLoad',\n    MemberName='krzychzet@gmail.com',\n    IMPORTANCE = HIGH\n);\n\n\n-------\n\n-- Drop objects if they exist\nIF EXISTS (SELECT * FROM sys.workload_management_workload_classifiers WHERE [name] = 'HeavyLoader')\nBEGIN\n    DROP WORKLOAD CLASSIFIER HeavyLoader\nEND;\n\nIF EXISTS (SELECT * FROM sys.workload_management_workload_groups WHERE name = 'BigDataLoad')\nBEGIN\n    DROP WORKLOAD GROUP BigDataLoad\nEND;\n\n--Create workload group\nCREATE WORKLOAD GROUP BigDataLoad WITH\n  (\n      MIN_PERCENTAGE_RESOURCE = 50, -- integer value\n      REQUEST_MIN_RESOURCE_GRANT_PERCENT = 25, --  (guaranteed min 4 concurrency)\n      CAP_PERCENTAGE_RESOURCE = 100\n  );\n\n-- Create workload classifier  that assigns the asa.sql.import01 user to the BigDataLoad workload group.\nCREATE WORKLOAD Classifier HeavyLoader WITH\n(\n    Workload_Group ='BigDataLoad',\n    MemberName='asa.sql.import01',\n    IMPORTANCE = HIGH\n);\n\n-- View classifiers\nSELECT * FROM sys.workload_management_workload_classifiers",
 					"metadata": {
 						"language": "sql"
 					},
 					"currentConnection": {
-						"name": "SQLPool01",
-						"type": "SqlPool"
-					}
+						"databaseName": "SQLPool01",
+						"poolName": "SQLPool01"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/L06_E1')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "CREATE TABLE [wwi].[UserTopProductPurchases]\n(\n    [UserId] [int]  NOT NULL,\n    [ProductId] [int]  NOT NULL,\n    [ItemsPurchasedLast12Months] [int]  NULL,\n    [IsTopProduct] [bit]  NOT NULL,\n    [IsPreferredProduct] [bit]  NOT NULL\n)\nWITH\n(\n    DISTRIBUTION = HASH ( [UserId] ),\n    CLUSTERED COLUMNSTORE INDEX\n);\nGO\n\nCREATE TABLE [wwi].[CampaignAnalytics]\n(\n    [Region] [nvarchar](50)  NOT NULL,\n    [Country] [nvarchar](30)  NOT NULL,\n    [ProductCategory] [nvarchar](50)  NOT NULL,\n    [CampaignName] [nvarchar](500)  NOT NULL,\n    [Revenue] [decimal](10,2)  NULL,\n    [RevenueTarget] [decimal](10,2)  NULL,\n    [City] [nvarchar](50)  NULL,\n    [State] [nvarchar](25)  NULL\n)\nWITH\n(\n    DISTRIBUTION = HASH ( [Region] ),\n    CLUSTERED COLUMNSTORE INDEX\n);\nGO",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "SQLPool01",
+						"poolName": "SQLPool01"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/L06_check asal400_lab2_writecampaignanalyticstoasa')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"description": "https://github.com/MicrosoftLearning/DP-203-Data-Engineer/blob/master/Instructions/Labs/LAB_06_transform_data_with_pipelines.md",
+				"content": {
+					"query": "SELECT ProductCategory\n,SUM(Revenue) AS TotalRevenue\n,SUM(RevenueTarget) AS TotalRevenueTarget\n,(SUM(RevenueTarget) - SUM(Revenue)) AS Delta\nFROM [wwi].[CampaignAnalytics]\nGROUP BY ProductCategory",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "SQLPool01",
+						"poolName": "SQLPool01"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Lab_02_Task1_queries')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "\n-- Q1\n-- This is auto-generated code\nSELECT\n    TOP 100 *\nFROM\n    OPENROWSET(\n        BULK 'https://asadatalake19hvmew.dfs.core.windows.net/wwi-02/sale-small/Year=2019/Quarter=Q4/Month=12/Day=20191231/sale-small-20191231-snappy.parquet',\n        FORMAT = 'PARQUET'\n    ) AS [result]\n\n;\n\n--Q2\nSELECT\n    TransactionDate, ProductId,\n        CAST(SUM(ProfitAmount) AS decimal(18,2)) AS [(sum) Profit],\n        CAST(AVG(ProfitAmount) AS decimal(18,2)) AS [(avg) Profit],\n        SUM(Quantity) AS [(sum) Quantity]\nFROM\n    OPENROWSET(\n        BULK 'https://asadatalake19hvmew.dfs.core.windows.net/wwi-02/sale-small/Year=2019/Quarter=Q4/Month=12/Day=20191231/sale-small-20191231-snappy.parquet',\n        FORMAT = 'PARQUET'\n    ) AS [r] GROUP BY r.TransactionDate, r.ProductId;\n-- Q3\nSELECT\n    count(*)\nFROM\n    OPENROWSET(\n        BULK 'https://asadatalake19hvmew.dfs.core.windows.net/wwi-02/sale-small/Year=2019/*/*/*/*',\n        FORMAT = 'PARQUET'\n    ) AS [result]\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "master",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Lab_02_Task2_queries_create_external_table')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "IF NOT EXISTS (SELECT * FROM sys.external_file_formats WHERE name = 'SynapseParquetFormat') \n\tCREATE EXTERNAL FILE FORMAT [SynapseParquetFormat] \n\tWITH ( FORMAT_TYPE = PARQUET)\nGO\n\nIF NOT EXISTS (SELECT * FROM sys.external_data_sources WHERE name = 'wwi-02_asadatalake19hvmew_dfs_core_windows_net') \n\tCREATE EXTERNAL DATA SOURCE [wwi-02_asadatalake19hvmew_dfs_core_windows_net] \n\tWITH (\n\t\tLOCATION = 'abfss://wwi-02@asadatalake19hvmew.dfs.core.windows.net' \n\t)\nGO\n\nCREATE EXTERNAL TABLE dbo.All2019Sales (\n\t[TransactionId] nvarchar(4000),\n\t[CustomerId] int,\n\t[ProductId] smallint,\n\t[Quantity] smallint,\n\t[Price] numeric(38,18),\n\t[TotalAmount] numeric(38,18),\n\t[TransactionDate] int,\n\t[ProfitAmount] numeric(38,18),\n\t[Hour] smallint,\n\t[Minute] smallint,\n\t[StoreId] smallint\n\t)\n\tWITH (\n\tLOCATION = 'sale-small/Year=2019/*/*/*/*.parquet',\n\tDATA_SOURCE = [wwi-02_asadatalake19hvmew_dfs_core_windows_net],\n\tFILE_FORMAT = [SynapseParquetFormat]\n\t)\nGO\n\n--------------------------------------------\n--- https://kzlongtermbackupstorage.blob.core.windows.net/wwi?st=2023-07-15T16:21:26Z&se=2028-07-16T00:21:26Z&si=kzz&spr=https&sv=2022-11-02&sr=c&sig=cJhI7pKAc8nBKRGYPiOkil0kdWvfg8FgWSy%2Bwzf83Bg%3D\n--\n \nUSE [demo];\nGO\nCREATE MASTER KEY ENCRYPTION BY PASSWORD ='123qewASD!@#$' ;\nGO\n\nDROP EXTERNAL DATA SOURCE [MyDataSourceWWI];\nGO\n\nDROP  DATABASE SCOPED CREDENTIAL [SasTokenWriteWWI];\nGO \nCREATE DATABASE SCOPED CREDENTIAL [SasTokenWriteWWI]\nWITH IDENTITY = 'SHARED ACCESS SIGNATURE',\n     SECRET = 'st=2023-07-15T16:21:26Z&se=2028-07-16T00:21:26Z&si=kzz&spr=https&sv=2022-11-02&sr=c&sig=cJhI7pKAc8nBKRGYPiOkil0kdWvfg8FgWSy%2Bwzf83Bg%3D';\nGO\nCREATE EXTERNAL DATA SOURCE [MyDataSourceWWI] WITH (\n    LOCATION = 'https://kzlongtermbackupstorage.blob.core.windows.net/wwi', CREDENTIAL = [SasTokenWriteWWI]\n);\nGO\n\nCREATE EXTERNAL FILE FORMAT parquetfile \nWITH ( FORMAT_TYPE = PARQUET, DATA_COMPRESSION = 'org.apache.hadoop.io.compress.SnappyCodec' );\n GO\n \nCREATE EXTERNAL FILE FORMAT QuotedCsvWithHeader\nWITH (  \n    FORMAT_TYPE = DELIMITEDTEXT,\n    FORMAT_OPTIONS (\n        FIELD_TERMINATOR = ',',\n        STRING_DELIMITER = '\"',\n        FIRST_ROW = 2\n    )\n);\nGO\nCREATE EXTERNAL FILE FORMAT QuotedCsvWithoutHeader\nWITH (  \n    FORMAT_TYPE = DELIMITEDTEXT,\n    FORMAT_OPTIONS (\n        FIELD_TERMINATOR = ',',\n        STRING_DELIMITER = '\"',\n        FIRST_ROW = 1\n    )\n);\nGO \n\n\nCREATE EXTERNAL TABLE All2019SalesCSV\nWITH (\n\tLOCATION = '/csv/all2019Sales',\n\tDATA_SOURCE = MyDataSourceWWI,\n\tFILE_FORMAT = QuotedCsvWithHeader\n\t)\nAS\nselect * from dbo.All2019Sales\nGO\n\nCREATE EXTERNAL TABLE All2019SalesParquet\nWITH (\n\tLOCATION = '/parquet/all2019Sales',\n\tDATA_SOURCE = MyDataSourceWWI,\n\tFILE_FORMAT = parquetfile\n\t)\nAS\nselect * from dbo.All2019Sales\nGO\n \n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "demo",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Lab_02_Task3-4_external_and_view')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "IF NOT EXISTS (SELECT * FROM sys.symmetric_keys) BEGIN\n    declare @pasword nvarchar(400) = CAST(newid() as VARCHAR(400));\n    EXEC('CREATE MASTER KEY ENCRYPTION BY PASSWORD = ''' + @pasword + '''')\nEND\n\nCREATE DATABASE SCOPED CREDENTIAL [sqlondemand]\nWITH IDENTITY='SHARED ACCESS SIGNATURE',  \nSECRET = 'sv=2018-03-28&ss=bf&srt=sco&sp=rl&st=2019-10-14T12%3A10%3A25Z&se=2061-12-31T12%3A10%3A00Z&sig=KlSU2ullCscyTS0An0nozEpo4tO5JAgGBvw%2FJX2lguw%3D'\nGO\n\n-- Create external data source secured using credential\nCREATE EXTERNAL DATA SOURCE SqlOnDemandDemo WITH (\n    LOCATION = 'https://sqlondemandstorage.blob.core.windows.net',\n    CREDENTIAL = sqlondemand\n);\nGO\n\nCREATE EXTERNAL FILE FORMAT QuotedCsvWithHeader\nWITH (  \n    FORMAT_TYPE = DELIMITEDTEXT,\n    FORMAT_OPTIONS (\n        FIELD_TERMINATOR = ',',\n        STRING_DELIMITER = '\"',\n        FIRST_ROW = 2\n    )\n);\nGO\n\nCREATE EXTERNAL TABLE [population]\n(\n    [country_code] VARCHAR (5) COLLATE Latin1_General_BIN2,\n    [country_name] VARCHAR (100) COLLATE Latin1_General_BIN2,\n    [year] smallint,\n    [population] bigint\n)\nWITH (\n    LOCATION = 'csv/population/population.csv',\n    DATA_SOURCE = SqlOnDemandDemo,\n    FILE_FORMAT = QuotedCsvWithHeader\n);\nGO\n\n---- export to gen2 storage\nCREATE DATABASE SCOPED CREDENTIAL [SasTokenWriteWWI]\nWITH IDENTITY = 'SHARED ACCESS SIGNATURE',\n     SECRET = 'st=2023-07-15T16:21:26Z&se=2028-07-16T00:21:26Z&si=kzz&spr=https&sv=2022-11-02&sr=c&sig=cJhI7pKAc8nBKRGYPiOkil0kdWvfg8FgWSy%2Bwzf83Bg%3D';\nGO\nCREATE EXTERNAL DATA SOURCE [MyDataSourceWWI] WITH (\n    LOCATION = 'https://kzlongtermbackupstorage.blob.core.windows.net/wwi', CREDENTIAL = [SasTokenWriteWWI]\n);\nGO\n\nCREATE EXTERNAL FILE FORMAT parquetfile \nWITH ( FORMAT_TYPE = PARQUET, DATA_COMPRESSION = 'org.apache.hadoop.io.compress.SnappyCodec' );\nGO\n \nCREATE EXTERNAL FILE FORMAT QuotedCsvWithHeader\nWITH (  \n    FORMAT_TYPE = DELIMITEDTEXT,\n    FORMAT_OPTIONS (\n        FIELD_TERMINATOR = ',',\n        STRING_DELIMITER = '\"',\n        FIRST_ROW = 2\n    )\n);\nGO\nCREATE EXTERNAL FILE FORMAT QuotedCsvWithoutHeader\nWITH (  \n    FORMAT_TYPE = DELIMITEDTEXT,\n    FORMAT_OPTIONS (\n        FIELD_TERMINATOR = ',',\n        STRING_DELIMITER = '\"',\n        FIRST_ROW = 1\n    )\n);\nGO \n\n\nCREATE EXTERNAL TABLE populationsCSV\nWITH (\n\tLOCATION = '/csv/population',\n\tDATA_SOURCE = MyDataSourceWWI,\n\tFILE_FORMAT = QuotedCsvWithHeader\n\t)\nAS\nselect * from population\nGO\n\nCREATE EXTERNAL TABLE populationParquet\nWITH (\n\tLOCATION = '/parquet/population',\n\tDATA_SOURCE = MyDataSourceWWI,\n\tFILE_FORMAT = parquetfile\n\t)\nAS\nselect * from population\nGO\n\n\n-------\n\n\nSELECT [country_code]\n    ,[country_name]\n    ,[year]\n    ,[population]\nFROM [dbo].[population]\nWHERE [year] = 2019 and population > 100000000\n\n---\nCREATE VIEW CustomerInfo AS\n    SELECT * \nFROM OPENROWSET(\n        BULK 'https://asadatalake19hvmew.dfs.core.windows.net/wwi-02/customer-info/customerinfo.csv',\n        FORMAT = 'CSV',\n        PARSER_VERSION='2.0',\n        FIRSTROW=2\n    )\n    WITH (\n    [UserName] NVARCHAR (50),\n    [Gender] NVARCHAR (10),\n    [Phone] NVARCHAR (50),\n    [Email] NVARCHAR (100),\n    [CreditCard] NVARCHAR (50)\n    ) AS [r];\n    GO\n\nSELECT * FROM CustomerInfo;\nGO\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "demo",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Lab_04_ex1')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "-- This is auto-generated code\nSELECT\n    TOP 100 *\nFROM\n    OPENROWSET(\n        BULK 'https://asadatalake19hvmew.dfs.core.windows.net/wwi-02/sale-poc/sale-20170501.csv',\n        FORMAT = 'CSV',\n        PARSER_VERSION = '2.0',\n        FIRSTROW = 2\n    ) WITH (\n        [TransactionId] varchar(50),\n        [CustomerId] int,\n        [ProductId] int,\n        [Quantity] int,\n        [Price] decimal(10,3),\n        [TotalAmount] decimal(10,3),\n        [TransactionDate] varchar(8),\n        [ProfitAmount] decimal(10,3),\n        [Hour] int,\n        [Minute] int,\n        [StoreId] int\n    ) AS [result]\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "master",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
 				},
 				"type": "SqlQuery"
 			},
@@ -8132,13 +9387,54 @@
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
 				"content": {
-					"query": "CREATE TABLE [dbo].[Trip]\n(\n    [DateID] int NOT NULL,\n    [MedallionID] int NOT NULL,\n    [HackneyLicenseID] int NOT NULL,\n    [PickupTimeID] int NOT NULL,\n    [DropoffTimeID] int NOT NULL,\n    [PickupGeographyID] int NULL,\n    [DropoffGeographyID] int NULL,\n    [PickupLatitude] float NULL,\n    [PickupLongitude] float NULL,\n    [PickupLatLong] varchar(50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,\n    [DropoffLatitude] float NULL,\n    [DropoffLongitude] float NULL,\n    [DropoffLatLong] varchar(50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,\n    [PassengerCount] int NULL,\n    [TripDurationSeconds] int NULL,\n    [TripDistanceMiles] float NULL,\n    [PaymentType] varchar(50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,\n    [FareAmount] money NULL,\n    [SurchargeAmount] money NULL,\n    [TaxAmount] money NULL,\n    [TipAmount] money NULL,\n    [TollsAmount] money NULL,\n    [TotalAmount] money NULL\n)\nWITH\n(\n    DISTRIBUTION = ROUND_ROBIN,\n    CLUSTERED COLUMNSTORE INDEX\n);",
+					"query": "SELECT TOP (100) [TransactionId]\n,[CustomerId]\n,[ProductId]\n,[Quantity]\n,[Price]\n,[TotalAmount]\n,[TransactionDateId]\n,[ProfitAmount]\n,[Hour]\n,[Minute]\n,[StoreId]\n FROM [wwi_perf].[Sale_Heap]",
 					"metadata": {
 						"language": "sql"
 					},
 					"currentConnection": {
-						"databaseName": "master",
+						"databaseName": "SQLPool01",
+						"poolName": "SQLPool01"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SampleDB_generation_write_GEN2')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "--- based on https://github.com/Azure-Samples/Synapse/blob/main/SQL/Samples/LdwSample/SampleDB.sql \n-- for https://learn.microsoft.com/en-us/azure/synapse-analytics/sql/create-external-table-as-select\n\nif db_name() = 'master'\n    throw 50001, 'This script cannot be executed in master database. Create new database and run the script there.', 1;\n\nif SERVERPROPERTY('EngineEdition') <> 11\n    throw 50001, 'This script must be executed on Azure Synapse - Serverless SQL endpoint.', 1;\n\n------------------------------------------------------------------------------------------\n--      Part 1 - Cleanup script\n--      This part removes objects from sample database\n------------------------------------------------------------------------------------------\nDROP VIEW IF EXISTS parquet.YellowTaxi\nGO\nDROP VIEW IF EXISTS json.Books\nGO\nDROP VIEW IF EXISTS csv.YellowTaxi\nGO\nDROP VIEW IF EXISTS cosmosdb.Ecdc\nGO\nIF (EXISTS(SELECT * FROM sys.external_tables WHERE name = 'Population')) BEGIN\n    DROP EXTERNAL TABLE csv.Population\nEND\nIF (EXISTS(SELECT * FROM sys.external_tables WHERE name = 'Covid')) BEGIN\n    DROP EXTERNAL TABLE delta.Covid\nEND\nIF (EXISTS(SELECT * FROM sys.external_file_formats WHERE name = 'QuotedCsvWithHeader')) BEGIN\n    DROP EXTERNAL FILE FORMAT QuotedCsvWithHeader\nEND\nGO\nIF (EXISTS(SELECT * FROM sys.external_file_formats WHERE name = 'QuotedCsvWithoutHeader')) BEGIN\n    DROP EXTERNAL FILE FORMAT QuotedCsvWithoutHeader\nEND\nGO\nIF (EXISTS(SELECT * FROM sys.external_file_formats WHERE name = 'NativeParquet')) BEGIN\n    DROP EXTERNAL FILE FORMAT NativeParquet\nEND\nGO\nIF (EXISTS(SELECT * FROM sys.external_file_formats WHERE name = 'DeltaLakeFormat')) BEGIN\n    DROP EXTERNAL FILE FORMAT DeltaLakeFormat\nEND\nGO\nDROP SCHEMA IF EXISTS parquet;\nGO\nDROP SCHEMA IF EXISTS csv;\nGO\nDROP SCHEMA IF EXISTS json;\nGO\nDROP SCHEMA IF EXISTS cosmosdb;\nGO\nDROP SCHEMA IF EXISTS delta;\nGO\nIF (EXISTS(SELECT * FROM sys.external_data_sources WHERE name = 'SqlOnDemandDemo')) BEGIN\n    DROP EXTERNAL DATA SOURCE SqlOnDemandDemo\nEND\n\nIF (EXISTS(SELECT * FROM sys.external_data_sources WHERE name = 'DeltaLakeStorage')) BEGIN\n    DROP EXTERNAL DATA SOURCE DeltaLakeStorage\nEND\n\nIF (EXISTS(SELECT * FROM sys.external_data_sources WHERE name = 'AzureOpenData')) BEGIN\n    DROP EXTERNAL DATA SOURCE AzureOpenData\nEND\n\nIF (EXISTS(SELECT * FROM sys.external_data_sources WHERE name = 'YellowTaxi')) BEGIN\n    DROP EXTERNAL DATA SOURCE YellowTaxi\nEND\n\nIF (EXISTS(SELECT * FROM sys.external_data_sources WHERE name = 'GreenTaxi')) BEGIN\n    DROP EXTERNAL DATA SOURCE GreenTaxi\nEND\n\nIF NOT EXISTS (SELECT * FROM sys.symmetric_keys) BEGIN\n    declare @pasword nvarchar(400) = CAST(newid() as VARCHAR(400));\n    EXEC('CREATE MASTER KEY ENCRYPTION BY PASSWORD = ''' + @pasword + '''')\nEND\n\nIF EXISTS\n   (SELECT * FROM sys.credentials\n   WHERE name = 'https://sqlondemandstorage.blob.core.windows.net')\n   DROP CREDENTIAL [https://sqlondemandstorage.blob.core.windows.net]\nGO\n\nIF EXISTS\n   (SELECT * FROM sys.credentials\n   WHERE name = 'MyCosmosDbAccountCredential')\n   DROP CREDENTIAL [MyCosmosDbAccountCredential]\nGO\n\nIF EXISTS\n   (SELECT * FROM sys.database_scoped_credentials\n   WHERE name = 'sqlondemand')\n   DROP DATABASE SCOPED CREDENTIAL [sqlondemand]\nGO\n\nIF EXISTS\n   (SELECT * FROM sys.database_scoped_credentials\n   WHERE name = 'WorkspaceIdentity')\n   DROP DATABASE SCOPED CREDENTIAL [WorkspaceIdentity]\nGO\n\n\n------------------------------------------------------------------------------------------\n--      Part 2 - initialization script\n--      This part creates required objects in sample database\n------------------------------------------------------------------------------------------\n\n-- create database-scoped credential for the containers in demo storage account\n-- this credential will be used in OPENROWSET function with data source that uses relative file URL\nCREATE DATABASE SCOPED CREDENTIAL [sqlondemand]\nWITH IDENTITY='SHARED ACCESS SIGNATURE',  \nSECRET = 'sv=2018-03-28&ss=bf&srt=sco&sp=rl&st=2019-10-14T12%3A10%3A25Z&se=2061-12-31T12%3A10%3A00Z&sig=KlSU2ullCscyTS0An0nozEpo4tO5JAgGBvw%2FJX2lguw%3D'\nGO\n-- Create credential that will allow user to impersonate using Managed Identity assigned to workspace\nCREATE DATABASE SCOPED CREDENTIAL WorkspaceIdentity WITH IDENTITY = 'Managed Identity'\nGO\n\n-- SQL logins only:\n-- create server-scoped credential for the containers in demo storage account\n-- SQL logins will use this credential in OPENROWSET function without data source that uses absolute file URL\nCREATE CREDENTIAL [https://sqlondemandstorage.blob.core.windows.net]\nWITH IDENTITY='SHARED ACCESS SIGNATURE',  \nSECRET = 'sv=2018-03-28&ss=bf&srt=sco&sp=rl&st=2019-10-14T12%3A10%3A25Z&se=2061-12-31T12%3A10%3A00Z&sig=KlSU2ullCscyTS0An0nozEpo4tO5JAgGBvw%2FJX2lguw%3D'\nGO\n\nCREATE CREDENTIAL MyCosmosDbAccountCredential\nWITH IDENTITY = 'SHARED ACCESS SIGNATURE', SECRET = 's5zarR2pT0JWH9k8roipnWxUYBegOuFGjJpSjGlR36y86cW0GQ6RaaG8kGjsRAQoWMw1QKTkkX8HQtFpJjC8Hg==';\nGO\n\nCREATE SCHEMA parquet;\nGO\nCREATE SCHEMA csv;\nGO\nCREATE SCHEMA json;\nGO\nCREATE SCHEMA cosmosdb;\nGO\nCREATE SCHEMA delta;\nGO\n\n-- Create external data source secured using credential\nCREATE EXTERNAL DATA SOURCE SqlOnDemandDemo WITH (\n    LOCATION = 'https://sqlondemandstorage.blob.core.windows.net',\n    CREDENTIAL = sqlondemand\n);\nGO\n\n-- Data source referencing Delta Lake folders\nCREATE EXTERNAL DATA SOURCE DeltaLakeStorage WITH (\n    LOCATION = 'https://sqlondemandstorage.blob.core.windows.net/delta-lake',\n    CREDENTIAL = sqlondemand\n);\nGO\n\n-- Create publicly available external data sources\nCREATE EXTERNAL DATA SOURCE AzureOpenData\nWITH ( LOCATION = 'https://azureopendatastorage.blob.core.windows.net/')\nGO\nCREATE EXTERNAL DATA SOURCE YellowTaxi\nWITH ( LOCATION = 'https://azureopendatastorage.blob.core.windows.net/nyctlc/yellow/')\nGO\nCREATE EXTERNAL DATA SOURCE GreenTaxi\nWITH ( LOCATION = 'https://azureopendatastorage.blob.core.windows.net/nyctlc/green/')\nGO\n\nCREATE EXTERNAL FILE FORMAT QuotedCsvWithHeader\nWITH (  \n    FORMAT_TYPE = DELIMITEDTEXT,\n    FORMAT_OPTIONS (\n        FIELD_TERMINATOR = ',',\n        STRING_DELIMITER = '\"',\n        FIRST_ROW = 2\n    )\n);\nGO\nCREATE EXTERNAL FILE FORMAT QuotedCsvWithoutHeader\nWITH (  \n    FORMAT_TYPE = DELIMITEDTEXT,\n    FORMAT_OPTIONS (\n        FIELD_TERMINATOR = ',',\n        STRING_DELIMITER = '\"',\n        FIRST_ROW = 1\n    )\n);\nGO\nCREATE EXTERNAL FILE FORMAT NativeParquet\nWITH (  \n    FORMAT_TYPE = PARQUET\n);\nGO\nCREATE EXTERNAL FILE FORMAT DeltaLakeFormat\nWITH (  \n    FORMAT_TYPE = DELTA\n);\nGO\n\nCREATE OR ALTER VIEW cosmosdb.Ecdc\nAS SELECT *\nFROM OPENROWSET(\n      PROVIDER = 'CosmosDB',\n      CONNECTION = 'Account=synapselink-cosmosdb-sqlsample;Database=covid',\n      OBJECT = 'Ecdc',\n      SERVER_CREDENTIAL = 'MyCosmosDbAccountCredential'\n    ) with ( date_rep varchar(20), cases bigint, geo_id varchar(6) ) as rows\nGO\n\n\nCREATE EXTERNAL TABLE csv.population\n(\n    [country_code] VARCHAR (5) COLLATE Latin1_General_BIN2,\n    [country_name] VARCHAR (100) COLLATE Latin1_General_BIN2,\n    [year] smallint,\n    [population] bigint\n)\nWITH (\n    LOCATION = 'csv/population/population.csv',\n    DATA_SOURCE = SqlOnDemandDemo,\n    FILE_FORMAT = QuotedCsvWithHeader\n);\nGO\n\nCREATE VIEW parquet.YellowTaxi\nAS SELECT *, nyc.filepath(1) AS [year], nyc.filepath(2) AS [month]\nFROM\n    OPENROWSET(\n        BULK 'parquet/taxi/year=*/month=*/*.parquet',\n        DATA_SOURCE = 'SqlOnDemandDemo',\n        FORMAT='PARQUET'\n    ) AS nyc\nGO\n\nCREATE VIEW csv.YellowTaxi\nAS\nSELECT  *, nyc.filepath(1) AS [year], nyc.filepath(2) AS [month]\nFROM OPENROWSET(\n        BULK 'csv/taxi/yellow_tripdata_*-*.csv',\n        DATA_SOURCE = 'SqlOnDemandDemo',\n        FORMAT = 'CSV', \n        FIRSTROW = 2\n    )\n    WITH (\n          vendor_id VARCHAR(100) COLLATE Latin1_General_BIN2, \n          pickup_datetime DATETIME2, \n          dropoff_datetime DATETIME2,\n          passenger_count INT,\n          trip_distance FLOAT,\n          rate_code INT,\n          store_and_fwd_flag VARCHAR(100) COLLATE Latin1_General_BIN2,\n          pickup_location_id INT,\n          dropoff_location_id INT,\n          payment_type INT,\n          fare_amount FLOAT,\n          extra FLOAT,\n          mta_tax FLOAT,\n          tip_amount FLOAT,\n          tolls_amount FLOAT,\n          improvement_surcharge FLOAT,\n          total_amount FLOAT\n    ) AS nyc\nGO\n\nCREATE VIEW json.Books\nAS SELECT *\nFROM\n    OPENROWSET(\n        BULK 'json/books/*.json',\n        DATA_SOURCE = 'SqlOnDemandDemo',\n        FORMAT='CSV',\n        FIELDTERMINATOR ='0x0b',\n        FIELDQUOTE = '0x0b',\n        ROWTERMINATOR = '0x0b',\n\t\tROWSET_OPTIONS = '{\"READ_OPTIONS\":[\"ALLOW_INCONSISTENT_READS\"]}'\n    )\n    WITH (\n        content varchar(8000)\n    ) AS books;\nGO\n\nCREATE EXTERNAL TABLE delta.Covid (\n     date_rep date,\n     cases int,\n     geo_id varchar(6)\n) WITH (\n        LOCATION = 'covid', --> the root folder containing the Delta Lake files\n        data_source = DeltaLakeStorage,\n        FILE_FORMAT = DeltaLakeFormat\n);\n\n\n\n\n\n\n---=====\n\nUSE [SampleDB];\nGO\n\nDROP EXTERNAL DATA SOURCE [MyDataSourceCSV];\nGO\nDROP DATABASE SCOPED CREDENTIAL [SasTokenWriteCSV];\nGO\n\nCREATE DATABASE SCOPED CREDENTIAL [SasTokenWritePARQUET]\nWITH IDENTITY = 'SHARED ACCESS SIGNATURE',\n     SECRET = 'sp=racwdl&st=2023-07-15T16:08:42Z&se=2028-07-16T00:08:42Z&spr=https&sv=2022-11-02&sr=c&sig=UQVsM4BIbW%2BNKkVPFX9ttI3FgCL3lMSVRxkzBv5il70%3D';\nGO\nCREATE EXTERNAL DATA SOURCE [MyDataSourcePARQUET] WITH (\n    LOCATION = 'https://kzlongtermbackupstorage.blob.core.windows.net/parquet', CREDENTIAL = [SasTokenWritePARQUET]\n);\nGO\n\nCREATE DATABASE SCOPED CREDENTIAL [SasTokenWriteCSV]\nWITH IDENTITY = 'SHARED ACCESS SIGNATURE',\n     SECRET = 'sp=racwdl&st=2023-07-15T16:00:15Z&se=2026-07-16T00:00:15Z&spr=https&sv=2022-11-02&sr=c&sig=uMgFHx41x8OmKhwJxAxuL0PK%2BG6ATSKC1cUS8E0qn4o%3D';\nGO\nCREATE EXTERNAL DATA SOURCE [MyDataSourceCSV] WITH (\n    LOCATION = 'https://kzlongtermbackupstorage.blob.core.windows.net/csv', CREDENTIAL = [SasTokenWriteCSV]\n);\nGO\n\nDROP EXTERNAL FILE FORMAT [ParquetFF];\nGO\nCREATE EXTERNAL FILE FORMAT [ParquetFF] WITH (\n    FORMAT_TYPE = PARQUET,\n    DATA_COMPRESSION = 'org.apache.hadoop.io.compress.SnappyCodec'\n);\nGO\n\nCREATE EXTERNAL FILE FORMAT QuotedCsvWithHeader\nWITH (  \n    FORMAT_TYPE = DELIMITEDTEXT,\n    FORMAT_OPTIONS (\n        FIELD_TERMINATOR = ',',\n        STRING_DELIMITER = '\"',\n        FIRST_ROW = 2\n    )\n);\nGO\nCREATE EXTERNAL FILE FORMAT QuotedCsvWithoutHeader\nWITH (  \n    FORMAT_TYPE = DELIMITEDTEXT,\n    FORMAT_OPTIONS (\n        FIELD_TERMINATOR = ',',\n        STRING_DELIMITER = '\"',\n        FIRST_ROW = 1\n    )\n);\nGO \n\nDROP  EXTERNAL TABLE [PopulationCETAS] ;\nCREATE EXTERNAL TABLE [PopulationCETAS] WITH (\n        LOCATION = 'populationCSV/',\n        DATA_SOURCE = [MyDataSourceCSV],\n        FILE_FORMAT = [QuotedCsvWithHeader]\n) AS\nSELECT\n    *\nFROM\n    OPENROWSET(\n        BULK 'csv/population-unix/population.csv',\n        DATA_SOURCE = 'sqlondemanddemo',\n        FORMAT = 'CSV', PARSER_VERSION = '2.0'\n    ) WITH (\n        CountryCode varchar(4),\n        CountryName varchar(64),\n        Year int,\n        PopulationCount int\n    ) AS r;\n\nDROP  EXTERNAL TABLE [PopulationCETASParquet] ;\nCREATE EXTERNAL TABLE [PopulationCETASParquet] WITH (\n        LOCATION = 'populationParquet/',\n        DATA_SOURCE = [MyDataSourceParquet],\n        FILE_FORMAT = [ParquetFF]\n) AS\nSELECT\n    *\nFROM\n    OPENROWSET(\n        BULK 'csv/population-unix/population.csv',\n        DATA_SOURCE = 'sqlondemanddemo',\n        FORMAT = 'CSV', PARSER_VERSION = '2.0'\n    ) WITH (\n        CountryCode varchar(4),\n        CountryName varchar(64),\n        Year int,\n        PopulationCount int\n    ) AS r;\n\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "SampleDB",
 						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/TCPD_export_GEN2')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"description": "export TCPD to GEN2",
+				"content": {
+					"query": "---https://kzlongtermbackupstorage.blob.core.windows.net/tcpds?sp=racwdl&st=2023-07-15T16:41:35Z&se=2029-07-16T00:41:35Z&spr=https&sv=2022-11-02&sr=c&sig=%2FkSouIEQb8iSsPoKVGtdA%2Baobq7QeSq9ZKblnOIiMKY%3D\n\n\n\n\nCREATE MASTER KEY ENCRYPTION BY PASSWORD ='123qewASD!@#$' ;\nGO\nCREATE DATABASE SCOPED CREDENTIAL [SasToken_tcpds]\nWITH IDENTITY = 'SHARED ACCESS SIGNATURE',\n     SECRET = 'sp=racwdl&st=2023-07-15T16:41:35Z&se=2029-07-16T00:41:35Z&spr=https&sv=2022-11-02&sr=c&sig=%2FkSouIEQb8iSsPoKVGtdA%2Baobq7QeSq9ZKblnOIiMKY%3D';\nGO\nCREATE EXTERNAL DATA SOURCE [MyDataSource_tcpds] WITH (\n    LOCATION = 'https://kzlongtermbackupstorage.blob.core.windows.net/tcpds', CREDENTIAL = [SasToken_tcpds]\n);\nGO\nCREATE EXTERNAL FILE FORMAT [ParquetF] WITH (\n    FORMAT_TYPE = PARQUET,\n    DATA_COMPRESSION = 'org.apache.hadoop.io.compress.SnappyCodec'\n);\nGO\n\n\nCREATE EXTERNAL TABLE [customer_tcpds] WITH (\n        LOCATION = 'customer/parquet/',\n        DATA_SOURCE = [MyDataSource_tcpds],\n        FILE_FORMAT = [ParquetF]\n) AS\nSELECT * FROM [dbo].[customer];\nGO;\nCREATE EXTERNAL TABLE [customer_address_tcpd] WITH (\n        LOCATION = 'customer_address/',\n        DATA_SOURCE = [MyDataSource_tcpd],\n        FILE_FORMAT = [Parquet]\n) AS\nSELECT * FROM [dbo].[customer_address];\nGO;",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "SQLPool01",
+						"poolName": "SQLPool01"
 					},
 					"resultLimit": 5000
 				},
@@ -8205,6 +9501,453 @@
 					"resultLimit": 5000
 				},
 				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/trip-ddl')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "CREATE TABLE [dbo].[Trip]\n(\n    [DateID] int NOT NULL,\n    [MedallionID] int NOT NULL,\n    [HackneyLicenseID] int NOT NULL,\n    [PickupTimeID] int NOT NULL,\n    [DropoffTimeID] int NOT NULL,\n    [PickupGeographyID] int NULL,\n    [DropoffGeographyID] int NULL,\n    [PickupLatitude] float NULL,\n    [PickupLongitude] float NULL,\n    [PickupLatLong] varchar(50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,\n    [DropoffLatitude] float NULL,\n    [DropoffLongitude] float NULL,\n    [DropoffLatLong] varchar(50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,\n    [PassengerCount] int NULL,\n    [TripDurationSeconds] int NULL,\n    [TripDistanceMiles] float NULL,\n    [PaymentType] varchar(50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,\n    [FareAmount] money NULL,\n    [SurchargeAmount] money NULL,\n    [TaxAmount] money NULL,\n    [TipAmount] money NULL,\n    [TollsAmount] money NULL,\n    [TotalAmount] money NULL\n)\nWITH\n(\n    DISTRIBUTION = ROUND_ROBIN,\n    CLUSTERED COLUMNSTORE INDEX\n);",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "master",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Explore with Spark')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "SparkPool01",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "28g",
+					"driverCores": 4,
+					"executorMemory": "28g",
+					"executorCores": 4,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "b5467d73-e12f-4aca-ba98-bde7b52c05e2"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "Synapse PySpark"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/bf55d59f-9a89-4c29-9b5f-a906c8355065/resourceGroups/data-engineering-synapse-19hvmew/providers/Microsoft.Synapse/workspaces/asaworkspace19hvmew/bigDataPools/SparkPool01",
+						"name": "SparkPool01",
+						"type": "Spark",
+						"endpoint": "https://asaworkspace19hvmew.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/SparkPool01",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "2.4",
+						"nodeCount": 3,
+						"cores": 4,
+						"memory": 28
+					},
+					"sessionKeepAliveTimeout": 30
+				},
+				"cells": [
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"import numpy as np\r\n",
+							"\r\n",
+							"rdd = sc.textFile(f'abfss://csv@kzlongtermbackupstorage.dfs.core.windows.net/brokencsv.csv') \r\n",
+							"#rdd = sc.textFile(f'abfss://wwi-02@asadatalake19hvmew.dfs.core.windows.net/sale-poc/sale-20170502.csv')\r\n",
+							"data = rdd.first().split(',')\r\n",
+							"\r\n",
+							"field_count = len(data)\r\n",
+							" \r\n",
+							"print(field_count)"
+						],
+						"outputs": [],
+						"execution_count": 32
+					},
+					{
+						"cell_type": "markdown",
+						"source": [
+							"# Exploring and fixing data with Synapse Spark\r\n",
+							"\r\n",
+							"In this task, you will use a Synapse Spark notebook to explore a few of the files in the **wwi-02/sale-poc** folder in the data lake. You will also use Python code to fix the issues with the **sale-20170502.csv** file.\r\n",
+							"\r\n",
+							"1. First, attach this notebook to the **SparkPool01** Spark pool.\r\n",
+							"2. In the code cell below, replace **asadatalake*SUFFIX*** `with the name of the primary data lake storage account associated with your Syanpse workspace. Then execute the cell by selecting the **Run cell** button that becomes visible when you select the cell.\r\n",
+							"\r\n",
+							"> **Note**: The cell may take some time to run because the spark cluster must be started."
+						]
+					},
+					{
+						"cell_type": "code",
+						"source": [
+							"adls_account_name = 'asadatalake19hvmew'"
+						],
+						"outputs": [],
+						"execution_count": 24
+					},
+					{
+						"cell_type": "markdown",
+						"source": [
+							"## Exploring files with Spark\r\n",
+							"\r\n",
+							"1. The first step in exploring data using Synapse Spark is to load a file from the data lake. For this, we'll use the **spark.read.load()** method of the **SparkSession** to load the **sale-20170501.csv** file into a [DataFrame](https://spark.apache.org/docs/2.2.0/sql-programming-guide.html#datasets-and-dataframes).\r\n",
+							""
+						]
+					},
+					{
+						"cell_type": "code",
+						"source": [
+							"# First, load the file `sale-20170501.csv` file, which we know from our previous exploration to be formatted correctly.\r\n",
+							"# Note the use of the `header` and `inferSchema` parameters. Header indicates the first row of the file contains column headers,\r\n",
+							"# and `inferSchema` instruct Spark to use data within the file to infer data types.\r\n",
+							"df = spark.read.load(f'abfss://wwi-02@{adls_account_name}.dfs.core.windows.net/sale-poc/sale-20170501.csv', format='csv', header=True, inferSchema=True)"
+						],
+						"outputs": [],
+						"execution_count": 25
+					},
+					{
+						"cell_type": "markdown",
+						"source": [
+							"## View the contents of the DataFrame\r\n",
+							"\r\n",
+							"With the data from the **sale-20170501.csv** file loaded into a data frame, we can now use various methods of a data frame to explore the properties of the data.\r\n",
+							"\r\n",
+							"1. Let's look at the data as it was imported. Execute the cell below to view and inspect the data in the data frame."
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"diagram": {
+								"activateDiagramType": 1,
+								"chartConfig": {
+									"category": "bar",
+									"keys": [
+										"TransactionId"
+									],
+									"values": [
+										"CustomerId"
+									],
+									"yLabel": "CustomerId",
+									"xLabel": "TransactionId",
+									"aggregation": "SUM",
+									"aggByBackend": false
+								},
+								"aggData": "{\"CustomerId\":{\"cdd2ed88-8aae-4295-884a-ac4d40c3c33c\":44,\"e067fc11-e07d-4517-bc93-f7dc4b44f35e\":18}}",
+								"isSummary": false,
+								"previewData": {
+									"filter": null
+								},
+								"isSql": false
+							},
+							"collapsed": false
+						},
+						"source": [
+							"display(df.limit(10))"
+						],
+						"outputs": [],
+						"execution_count": 15
+					},
+					{
+						"cell_type": "markdown",
+						"source": [
+							"2. Like we saw during exploration with the SQL on-demand capabilities of Azure Synapse, Spark allows us to view and query against the data contained within files. \r\n",
+							"\r\n",
+							"3. Now, use the **printSchema()** method of the data frame to view the results of using the **inferSchema** parameter when creating the data frame. Execute the cell below and observe the output."
+						]
+					},
+					{
+						"cell_type": "code",
+						"source": [
+							"# Now, print the inferred schema. We will need this information below to help with the missing headers in the May 2, 2017 file.\r\n",
+							"df.printSchema()"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "markdown",
+						"source": [
+							"4. The **printSchema** method outputs both field names and data types that are based on the Spark engine's evaluation of the data contained within each field.\r\n",
+							"\r\n",
+							"    > We can use this information later to help define the schema for the poorly formed **sale-20170502.csv** file. In addition to the field names and data types, we should note the number of features or columns contained in the file. In this case, note that there are 11 fields. That will be used to determine where to split the single row of data.\r\n",
+							"\r\n",
+							"5. As an example of further exploration we can do, run the cell below to create and display a new data frame that contains an ordered list of distinct Customer and Product Id pairings. We can use these types of functions to find invalid or empty values quickly in targeted fields."
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"diagram": {
+								"activateDiagramType": 1,
+								"chartConfig": {
+									"category": "bar",
+									"keys": [],
+									"values": [
+										"ProductId"
+									],
+									"yLabel": "ProductId",
+									"xLabel": "",
+									"aggregation": "SUM",
+									"aggByBackend": false
+								},
+								"aggData": "{\"ProductId\":{\"\":189206}}",
+								"isSummary": false,
+								"previewData": {
+									"filter": null
+								},
+								"isSql": false
+							}
+						},
+						"source": [
+							"# Create a new data frame containing a list of distinct CustomerId and ProductId values in descending order of the CustomerId.\r\n",
+							"df_distinct_products = df.select('CustomerId', 'ProductId').distinct().orderBy('CustomerId')\r\n",
+							"\r\n",
+							"# Display the first 100 rows of the resulting data frame.\r\n",
+							"display(df_distinct_products.limit(100))"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "markdown",
+						"source": [
+							"6. Next, let's attempt to open and explore the **sale-20170502.csv** file using the **load()** method, as we did above."
+						]
+					},
+					{
+						"cell_type": "code",
+						"source": [
+							"# Next, let's try to read in the May 2, 2017 file using the same `load()` method we used for the first file.\r\n",
+							"df = spark.read.load(f'abfss://wwi-02@{adls_account_name}.dfs.core.windows.net/sale-poc/sale-20170502.csv', format='csv')\r\n",
+							"display(df.limit(10))"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "markdown",
+						"source": [
+							"7. As we saw in T-SQL, we receive a similar error in Spark that the number of columns processed may have exceeded limit of 20480 columns. To work with the data in this file, we need to use more advanced methods, as you will see in the next section below.\n",
+							""
+						]
+					},
+					{
+						"cell_type": "markdown",
+						"source": [
+							"## Handling and fixing poorly formed CSV files\r\n",
+							"\r\n",
+							"> The steps below provide example code for fixing the poorly-formed CSV file, **sale-20170502.csv** we discovered during exploration of the files in the **wwi-02/sale-poc** folder. This is just one of many ways to handle \"fixing\" a poorly-formed CSV file using Spark.\r\n",
+							"\r\n",
+							"1. To \"fix\" the bad file, we need to take a programmatic approach, using Python to read in the contents of the file and then parse them to put them into the proper shape.\r\n",
+							"\r\n",
+							"    > To handle the data being in a single row, we can use the **textFile()** method of our **SparkContext** to read the file as a collection of rows into a resilient distributed dataset (RDD). This allows us to get around the errors around the number of columns because we are essentially getting a single string value stored in a single column.\r\n",
+							"\r\n",
+							"2. Execute the cell below to load the RDD with data from the file."
+						]
+					},
+					{
+						"cell_type": "code",
+						"source": [
+							"# Import the NumPy library. NumPy is a python library used for working with arrays.\r\n",
+							"import numpy as np\r\n",
+							"\r\n",
+							"# Read the CSV file into a resilient distributed dataset (RDD) as a text file. This will read each row of the file into rows in an RDD.\r\n",
+							"rdd = sc.textFile(f'abfss://wwi-02@{adls_account_name}.dfs.core.windows.net/sale-poc/sale-20170502.csv')"
+						],
+						"outputs": [],
+						"execution_count": 20
+					},
+					{
+						"cell_type": "markdown",
+						"source": [
+							"3. With the data now stored in an RDD, we can access the first, and only, populated row in the RDD, and split that into individual fields. We know from our inspection of the file in Notepad++ that it all the fields are separated by a comma (,), so let's start by splitting on that to create an array of field values. Execute the cell below to create a data array."
+						]
+					},
+					{
+						"cell_type": "code",
+						"source": [
+							"# Since we know there is only one row, grab the first row of the RDD and split in on the field delimiter (comma).\r\n",
+							"data = rdd.first().split(',')\r\n",
+							"\r\n",
+							"field_count = len(data)\r\n",
+							"# Print out the count of fields read into the array.\r\n",
+							"print(field_count)"
+						],
+						"outputs": [],
+						"execution_count": 21
+					},
+					{
+						"cell_type": "markdown",
+						"source": [
+							"4. By splitting the row on the field delimiter, we created an array of all the individual field values in the file, the count of which you can see above.\n",
+							"\n",
+							"5. Now, run the cell below to do a quick calculation on the expected number of rows that will be generated by parsing every 11 fields into a single row."
+						]
+					},
+					{
+						"cell_type": "code",
+						"source": [
+							"import math\r\n",
+							"\r\n",
+							"expected_row_count = math.floor(field_count / 11)\r\n",
+							"print(f'The expected row count is: {expected_row_count}')"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "markdown",
+						"source": [
+							"6. Next, let's create an array to store the data associated with each \"row\".\r\n",
+							"\r\n",
+							"    > We will set the max_index to the number of columns that are expected in each row. We know from our exploration of other files in the **wwi-02/sale-poc** folder that they contain 11 columns, so that is the value we will set.\r\n",
+							"\r\n",
+							"7. In addition to setting variables, we will use the cell below to loop through the **data** array and assign every 11 values to a row. By doing this, we are able to \"split\" the data that was once a single row into appropriate rows containing the proper data and columns from the file.\r\n",
+							"\r\n",
+							"8. Execute the cell below to create an array of rows from the file data."
+						]
+					},
+					{
+						"cell_type": "code",
+						"source": [
+							"# Create an array to store the data associated with each \"row\". Set the max_index to the number of columns that are in each row. This is 11, which we noted above when viewing the schema of the May 1 file.\r\n",
+							"row_list = []\r\n",
+							"max_index = 11\r\n",
+							"\r\n",
+							"# Now, we are going to loop through the array of values extracted from the single row of the file and build rows consisting of 11 columns.\r\n",
+							"while max_index <= len(data):\r\n",
+							"    row = [data[i] for i in np.arange(max_index-11, max_index)]\r\n",
+							"    row_list.append(row)\r\n",
+							"\r\n",
+							"    max_index += 11\r\n",
+							"\r\n",
+							"print(f'The row array contains {len(row_list)} rows. The expected number of rows was {expected_row_count}.')"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "markdown",
+						"source": [
+							"9. The last thing we need to do to be able to work with the file data as rows is to read it into a Spark DataFrame. In the cell below, we use the **createDataFrame()** method to convert the **row_list** array into a data frame, which also adding names for the columns. Column names are based on the schema we observed in the well formatted files in the **wwi-02/sale-poc** directory.\r\n",
+							"\r\n",
+							"10. Execute the cell below to create a data frame containing row data from the file and then display the first 10 rows."
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"diagram": {
+								"activateDiagramType": 1,
+								"chartConfig": {
+									"category": "bar",
+									"keys": [
+										"TransactionId"
+									],
+									"values": [
+										"TransactionId"
+									],
+									"yLabel": "TransactionId",
+									"xLabel": "TransactionId",
+									"aggregation": "COUNT",
+									"aggByBackend": false
+								},
+								"aggData": "{\"TransactionId\":{\"5455a4b4-62bd-401a-b5c6-79ea24f30531\":5,\"a4116581-5aad-416a-b767-aefa516737b1\":5}}",
+								"isSummary": false,
+								"previewData": {
+									"filter": null
+								},
+								"isSql": false
+							}
+						},
+						"source": [
+							"# Finally, we can use the row_list we created above to create a DataFrame. We can add to this a schema parameter, which contains the column names we saw in the schema of the first file.\r\n",
+							"df_fixed = spark.createDataFrame(row_list,schema=['TransactionId', 'CustomerId', 'ProductId', 'Quantity', 'Price', 'TotalAmount', 'TransactionDateId', 'ProfitAmount', 'Hour', 'Minute', 'StoreId'])\r\n",
+							"display(df_fixed.limit(10))"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "markdown",
+						"source": [
+							"## Write the \"fixed\" file into the data lake\r\n",
+							"\r\n",
+							"1. The last step we will take as part of our exploration and file fixing process is to write the data back into the data lake, so it can be ingested following the same process as the other files in the **wwi-02/sale-poc** folder.\r\n",
+							"\r\n",
+							"2. Execute the cell below to save the data frame into the data lake a series of files in a folder named **sale-20170502-fixed**.\r\n",
+							"\r\n",
+							"    > Note: Spark parallelizes workloads across worker nodes, so when saving files, you will notice they are saved as a collection \"part\" files, and not as a single file. While there are some libraries you can use to create a single file, it is helpful to get used to working with files generated via Spark notebooks as they are natively created.\r\n",
+							""
+						]
+					},
+					{
+						"cell_type": "code",
+						"source": [
+							"df_fixed.write.format('csv').option('header',True).mode('overwrite').option('sep',',').save(f'abfss://wwi-02@{adls_account_name}.dfs.core.windows.net/sale-poc/sale-20170502-fixed')"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "markdown",
+						"source": [
+							"## Inspect the fixed file in the data lake\r\n",
+							"\r\n",
+							"1. With the fixed file written to the data lake, you can quickly inpsect it to verify the files are now formatted properly. Select the **wwi-02** tab above to view the **sale-poc** folder.\r\n",
+							"2. Refresh the folder view (expand the **More** menu if necessary) and then open the **sale-20170502-fixed** folder.\r\n",
+							"3. In the **sale-20170502-fixed** folder, right-click the first file whose name begins with **part** and whose extension is **.csv** and select **Preview** from the context menu.\r\n",
+							"4. In the **Preview** dialog, verify you see the proper columns and that the data looks valid in each field.\r\n",
+							"\r\n",
+							"## Wrap-up\r\n",
+							"\r\n",
+							"Throughout this exercise, you used a Spark notebook to explore data stored within files in the data lake. You used Python code to extract data from a poorly formatted CSV file, assemble the data from that file into proper rows, and then write the \"fixed\" file back out into your data lake.\r\n",
+							"\r\n",
+							"You can now return to the lab guide to continue with the next section of Lab 2.\r\n",
+							""
+						]
+					}
+				]
 			},
 			"dependsOn": []
 		},
@@ -8294,16 +10037,835 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('workspaceName'), '/SQLPool01')]",
-			"type": "Microsoft.Synapse/workspaces/sqlPools",
+			"name": "[concat(parameters('workspaceName'), '/L04_Ex2_transform')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
-				"collation": "SQL_Latin1_General_CP1_CI_AS",
-				"maxSizeBytes": 263882790666240,
-				"annotations": []
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "SparkPool01",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "28g",
+					"driverCores": 4,
+					"executorMemory": "28g",
+					"executorCores": 4,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "6bb2168c-adee-46c6-b1cc-43df5ac80717"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "Synapse PySpark"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/bf55d59f-9a89-4c29-9b5f-a906c8355065/resourceGroups/data-engineering-synapse-19hvmew/providers/Microsoft.Synapse/workspaces/asaworkspace19hvmew/bigDataPools/SparkPool01",
+						"name": "SparkPool01",
+						"type": "Spark",
+						"endpoint": "https://asaworkspace19hvmew.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/SparkPool01",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "2.4",
+						"nodeCount": 3,
+						"cores": 4,
+						"memory": 28
+					},
+					"sessionKeepAliveTimeout": 30
+				},
+				"cells": [
+					{
+						"cell_type": "code",
+						"metadata": {
+							"microsoft": {
+								"language": "python"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%pyspark\r\n",
+							"df = spark.read.load('abfss://wwi-02@asadatalake19hvmew.dfs.core.windows.net/sale-small/Year=2019/Quarter=Q4/Month=12/Day=20191231/sale-small-20191231-snappy.parquet', format='parquet')\r\n",
+							"display(df.limit(10))"
+						],
+						"outputs": [],
+						"execution_count": 4
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"df.printSchema()"
+						],
+						"outputs": [],
+						"execution_count": 5
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"from pyspark.sql import SparkSession\r\n",
+							"from pyspark.sql.types import *\r\n",
+							"from pyspark.sql.functions import *\r\n",
+							"\r\n",
+							"profitByDateProduct = (df.groupBy(\"TransactionDate\",\"ProductId\")\r\n",
+							"    .agg(\r\n",
+							"        sum(\"ProfitAmount\").alias(\"(sum)ProfitAmount\"),\r\n",
+							"        round(avg(\"Quantity\"), 4).alias(\"(avg)Quantity\"),\r\n",
+							"        sum(\"Quantity\").alias(\"(sum)Quantity\"))\r\n",
+							"    .orderBy(\"TransactionDate\"))\r\n",
+							"display(profitByDateProduct.limit(100))"
+						],
+						"outputs": [],
+						"execution_count": 6
+					}
+				]
 			},
-			"dependsOn": [],
-			"location": "australiaeast"
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/L04_Ex3_json_sort')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "SparkPool01",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "28g",
+					"driverCores": 4,
+					"executorMemory": "28g",
+					"executorCores": 4,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "7971302d-0b66-436d-9ce6-2c5de58d7251"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "Synapse PySpark"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/bf55d59f-9a89-4c29-9b5f-a906c8355065/resourceGroups/data-engineering-synapse-19hvmew/providers/Microsoft.Synapse/workspaces/asaworkspace19hvmew/bigDataPools/SparkPool01",
+						"name": "SparkPool01",
+						"type": "Spark",
+						"endpoint": "https://asaworkspace19hvmew.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/SparkPool01",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "2.4",
+						"nodeCount": 3,
+						"cores": 4,
+						"memory": 28
+					},
+					"sessionKeepAliveTimeout": 30
+				},
+				"cells": [
+					{
+						"cell_type": "code",
+						"source": [
+							"df = (spark.read \\\r\n",
+							"        .option('inferSchema', 'true') \\\r\n",
+							"        .json('abfss://wwi-02@asadatalake19hvmew.dfs.core.windows.net/online-user-profiles-02/*.json', multiLine=True)\r\n",
+							"    )\r\n",
+							"\r\n",
+							"df.printSchema()"
+						],
+						"outputs": [],
+						"execution_count": 1
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"df.createOrReplaceTempView(\"user_profiles\")"
+						],
+						"outputs": [],
+						"execution_count": 2
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "sparksql"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%sql\r\n",
+							"\r\n",
+							"SELECT * FROM user_profiles LIMIT 10"
+						],
+						"outputs": [],
+						"execution_count": 3
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"from pyspark.sql.functions import udf, explode\r\n",
+							"\r\n",
+							"flat=df.select('visitorId',explode('topProductPurchases').alias('topProductPurchases_flat'))\r\n",
+							"#flat.show(100)"
+						],
+						"outputs": [],
+						"execution_count": 5
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"topPurchases = (flat.select('visitorId','topProductPurchases_flat.productId','topProductPurchases_flat.itemsPurchasedLast12Months')\r\n",
+							"    .orderBy('visitorId'))\r\n",
+							"\r\n",
+							"#topPurchases.show(10)\r\n",
+							"df.createOrReplaceTempView(\"topPurchases\")"
+						],
+						"outputs": [],
+						"execution_count": 20
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"# order  \r\n",
+							"sortedTopPurchases = topPurchases.orderBy(\"itemsPurchasedLast12Months\")\r\n",
+							"#sortedTopPurchases = (topPurchases.orderBy( col(\"itemsPurchasedLast12Months\").desc() ))\r\n",
+							"\r\n",
+							"display(sortedTopPurchases.limit(10))\r\n",
+							"df.createOrReplaceTempView(\"sortedTopPurchases\")"
+						],
+						"outputs": [],
+						"execution_count": 27
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"from pyspark.sql.functions import *\r\n",
+							"sortedTopPurchasesDesc = (topPurchases.orderBy( col(\"itemsPurchasedLast12Months\").desc() ))\r\n",
+							"display(sortedTopPurchasesDesc.limit(10))"
+						],
+						"outputs": [],
+						"execution_count": 29
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "sparksql"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%sql \r\n",
+							"select * from topPurchases\r\n",
+							"-- order by itemsPurchasedLast12Months desc"
+						],
+						"outputs": [],
+						"execution_count": 23
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"#10\r\n",
+							"groupedTopPurchases = (sortedTopPurchases.select(\"visitorId\")\r\n",
+							"    .groupBy(\"visitorId\")\r\n",
+							"    .agg(count(\"*\").alias(\"total\"))\r\n",
+							"    .orderBy(\"visitorId\") )\r\n",
+							"\r\n",
+							"display(groupedTopPurchases.limit(100))"
+						],
+						"outputs": [],
+						"execution_count": 30
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"groupedTopPurchases = (sortedTopPurchases.select(\"visitorId\",\"itemsPurchasedLast12Months\")\r\n",
+							"    .groupBy(\"visitorId\")\r\n",
+							"    .agg(sum(\"itemsPurchasedLast12Months\").alias(\"totalItemsPurchased\"))\r\n",
+							"    .orderBy(\"visitorId\") )\r\n",
+							"\r\n",
+							"display(groupedTopPurchases.limit(100))"
+						],
+						"outputs": [],
+						"execution_count": 31
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/L4_Ex4_SQL_Spark_pools_Synapse')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "SparkPool01",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "28g",
+					"driverCores": 4,
+					"executorMemory": "28g",
+					"executorCores": 4,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "b293d8cc-1caf-4efd-855b-415e8c017df0"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "Synapse PySpark"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/bf55d59f-9a89-4c29-9b5f-a906c8355065/resourceGroups/data-engineering-synapse-19hvmew/providers/Microsoft.Synapse/workspaces/asaworkspace19hvmew/bigDataPools/SparkPool01",
+						"name": "SparkPool01",
+						"type": "Spark",
+						"endpoint": "https://asaworkspace19hvmew.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/SparkPool01",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "2.4",
+						"nodeCount": 3,
+						"cores": 4,
+						"memory": 28
+					},
+					"sessionKeepAliveTimeout": 30
+				},
+				"cells": [
+					{
+						"cell_type": "code",
+						"metadata": {
+							"microsoft": {
+								"language": "python"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%pyspark\r\n",
+							"# integrate Synapse SQL (SQLPool1) with Spark Database Serverless\r\n",
+							"# read using pyspark Spark Pools\r\n",
+							"#1 View top_purchases created from purchares\r\n",
+							"from pyspark.sql.functions import udf, explode\r\n",
+							"df = (spark.read \\\r\n",
+							"        .option('inferSchema', 'true') \\\r\n",
+							"        .json('abfss://wwi-02@asadatalake19hvmew.dfs.core.windows.net/online-user-profiles-02/*.json', multiLine=True)\r\n",
+							"    )\r\n",
+							"flat=df.select('visitorId',explode('topProductPurchases').alias('topProductPurchases_flat'))\r\n",
+							"topPurchases = (flat.select('visitorId','topProductPurchases_flat.productId','topProductPurchases_flat.itemsPurchasedLast12Months')\r\n",
+							"    .orderBy('visitorId'))\r\n",
+							"topPurchases.createOrReplaceTempView(\"top_purchases\")\r\n",
+							"display(topPurchases.limit(10))"
+						],
+						"outputs": [],
+						"execution_count": 61
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "scala"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%spark\r\n",
+							"// Make sure the name of the dedcated SQL pool (SQLPool01 below) matches the name of your SQL pool.\r\n",
+							"// Read from SQL to scala\r\n",
+							"val df = spark.sqlContext.sql(\"select * from top_purchases\")\r\n",
+							"df.describe()\r\n",
+							"display(df.limit(5))"
+						],
+						"outputs": [],
+						"execution_count": 59
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "scala"
+							}
+						},
+						"source": [
+							"%%spark\r\n",
+							"//The Apache Spark pool to Synapse SQL connector is a data source implementation for Apache Spark. It uses the Azure Data Lake Storage Gen2 and PolyBase in dedicated SQL pools to efficiently transfer data between the Spark cluster and the Synapse SQL instance.\r\n",
+							"// \r\n",
+							"//write to SQLPool by synapsesql\r\n",
+							"df.write.synapsesql(\"SQLPool01.wwi.TopPurchases\", Constants.INTERNAL)"
+						],
+						"outputs": [],
+						"execution_count": 39
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "python"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%pyspark\r\n",
+							"dfsales = spark.read.load('abfss://wwi-02@asadatalake19hvmew.dfs.core.windows.net/sale-small/Year=2019/Quarter=Q4/Month=12/*/*.parquet', format='parquet')\r\n",
+							"display(dfsales.limit(10))"
+						],
+						"outputs": [],
+						"execution_count": 45
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "scala"
+							}
+						},
+						"source": [
+							"%%spark\r\n",
+							"// Make sure the name of the SQL pool (SQLPool01 below) matches the name of your SQL pool.\r\n",
+							"val df2 = spark.read.synapsesql(\"SQLPool01.wwi.TopPurchases\")\r\n",
+							"df2.createTempView(\"top_purchases_sql\")"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "scala"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%spark\r\n",
+							"df2.head(10)\r\n",
+							"df2.describe()\r\n",
+							"display(df2.limit(10))"
+						],
+						"outputs": [],
+						"execution_count": 48
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "python"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%pyspark\r\n",
+							"dfTopPurchasesFromSql = sqlContext.table(\"top_purchases_sql\")\r\n",
+							"display(dfTopPurchasesFromSql.limit(5))"
+						],
+						"outputs": [],
+						"execution_count": 60
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "python"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%pyspark\r\n",
+							"from pyspark.sql.functions import *\r\n",
+							"inner_join = dfsales.join(dfTopPurchasesFromSql,\r\n",
+							"    (dfsales.CustomerId == dfTopPurchasesFromSql.visitorId) & (dfsales.ProductId == dfTopPurchasesFromSql.productId))\r\n",
+							"\r\n",
+							"inner_join_agg = (inner_join.select(\"CustomerId\",\"TotalAmount\",\"Quantity\",\"itemsPurchasedLast12Months\",\"top_purchases_sql.productId\")\r\n",
+							"    .groupBy([\"CustomerId\",\"top_purchases_sql.productId\"])\r\n",
+							"    .agg(\r\n",
+							"        sum(\"TotalAmount\").alias(\"TotalAmountDecember\"),\r\n",
+							"        sum(\"Quantity\").alias(\"TotalQuantityDecember\"),\r\n",
+							"        sum(\"itemsPurchasedLast12Months\").alias(\"TotalItemsPurchasedLast12Months\"))\r\n",
+							"    .orderBy(\"CustomerId\") )\r\n",
+							"\r\n",
+							"display(inner_join_agg.limit(100))"
+						],
+						"outputs": [],
+						"execution_count": 52
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/fix_csv')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "SparkPool01",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "28g",
+					"driverCores": 4,
+					"executorMemory": "28g",
+					"executorCores": 4,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "8345b38c-9b9f-4e3c-84e4-131807193126"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "Synapse PySpark"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/bf55d59f-9a89-4c29-9b5f-a906c8355065/resourceGroups/data-engineering-synapse-19hvmew/providers/Microsoft.Synapse/workspaces/asaworkspace19hvmew/bigDataPools/SparkPool01",
+						"name": "SparkPool01",
+						"type": "Spark",
+						"endpoint": "https://asaworkspace19hvmew.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/SparkPool01",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "2.4",
+						"nodeCount": 3,
+						"cores": 4,
+						"memory": 28
+					},
+					"sessionKeepAliveTimeout": 30
+				},
+				"cells": [
+					{
+						"cell_type": "code",
+						"source": [
+							"import numpy as np\r\n",
+							"\r\n",
+							"#rdd = sc.textFile(f'abfss://csv@kzlongtermbackupstorage.dfs.core.windows.net/broken_CSV/broken_CSV.csv') \r\n",
+							"rdd = sc.textFile(f'abfss://wwi-02@asadatalake19hvmew.dfs.core.windows.net/sale-poc/sale-20170502.csv')"
+						],
+						"outputs": [],
+						"execution_count": 14
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"#read and split by ','\r\n",
+							"data = rdd.first().split(',')\r\n",
+							"# count rows \r\n",
+							"field_count = len(data)\r\n",
+							"print(field_count)"
+						],
+						"outputs": [],
+						"execution_count": 15
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"row_list = []\r\n",
+							"max_index = 11\r\n",
+							"\r\n",
+							"# wiersz ma 11 kolumn\r\n",
+							"while max_index <= len(data):\r\n",
+							"    row = [data[i] for i in np.arange(max_index-11, max_index)]\r\n",
+							"    row_list.append(row)\r\n",
+							"\r\n",
+							"    max_index += 11\r\n",
+							" "
+						],
+						"outputs": [],
+						"execution_count": 16
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"df_fixed = spark.createDataFrame(row_list,schema=['TransactionId', 'CustomerId', 'ProductId', 'Quantity', 'Price', 'TotalAmount', 'TransactionDateId', 'ProfitAmount', 'Hour', 'Minute', 'StoreId'])\r\n",
+							"display(df_fixed.limit(10))"
+						],
+						"outputs": [],
+						"execution_count": 17
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"#df_fixed.write.format('csv').option('header',True).mode('overwrite').option('sep',',').save(f'abfss://csv@kzlongtermbackupstorage.dfs.core.windows.net/fixedcsv/')\r\n",
+							"df_fixed.write.format('csv').option('header',True).mode('overwrite').option('sep',',').save(f'abfss://wwi-02@asadatalake19hvmew.dfs.core.windows.net/sale-poc/sale-20170502-fixed2')"
+						],
+						"outputs": [],
+						"execution_count": 12
+					}
+				]
+			},
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('workspaceName'), '/SparkPool01')]",
@@ -8325,6 +10887,18 @@
 				"sparkVersion": "2.4",
 				"isComputeIsolationEnabled": false,
 				"sessionLevelPackagesEnabled": false,
+				"annotations": []
+			},
+			"dependsOn": [],
+			"location": "australiaeast"
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SQLPool01')]",
+			"type": "Microsoft.Synapse/workspaces/sqlPools",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"collation": "SQL_Latin1_General_CP1_CI_AS",
+				"maxSizeBytes": 263882790666240,
 				"annotations": []
 			},
 			"dependsOn": [],

@@ -11,6 +11,9 @@
 		"AzureDataLakeStorage_kzbackup_accountKey": {
 			"value": ""
 		},
+		"asacosmosdb01_connectionString": {
+			"value": ""
+		},
 		"asadatalake19hvmew_accountKey": {
 			"value": ""
 		},
