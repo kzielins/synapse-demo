@@ -7558,6 +7558,97 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/User Profiles to Datalake')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "User Profiles to Datalake",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "user_profiles_to_datalake",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"EcommerceUserProfiles": {},
+									"UserProfiles": {},
+									"DataLake": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "Calculate Top 5 Products",
+						"type": "SynapseNotebook",
+						"dependsOn": [
+							{
+								"activity": "User Profiles to Datalake",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebook": {
+								"referenceName": "L07_Ex1_Calculate Top 5 Products",
+								"type": "NotebookReference"
+							},
+							"parameters": {
+								"runId": {
+									"value": {
+										"value": "@pipeline().RunId",
+										"type": "Expression"
+									},
+									"type": "string"
+								}
+							},
+							"snapshot": true,
+							"conf": {
+								"spark.dynamicAllocation.enabled": null,
+								"spark.dynamicAllocation.minExecutors": null,
+								"spark.dynamicAllocation.maxExecutors": null
+							},
+							"numExecutors": null
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/dataflows/user_profiles_to_datalake')]",
+				"[concat(variables('workspaceId'), '/notebooks/L07_Ex1_Calculate Top 5 Products')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/Write Campaign Analytics to ASA')]",
 			"type": "Microsoft.Synapse/workspaces/pipelines",
 			"apiVersion": "2019-06-01-preview",
@@ -7665,8 +7756,7 @@
 			},
 			"dependsOn": [
 				"[concat(variables('workspaceId'), '/dataflows/write_user_profile_to_asa')]",
-				"[concat(variables('workspaceId'), '/linkedServices/asastore19hvmew')]",
-				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+				"[concat(variables('workspaceId'), '/linkedServices/asastore19hvmew')]"
 			]
 		},
 		{
@@ -9010,6 +9100,70 @@
 			"dependsOn": [
 				"[concat(variables('workspaceId'), '/datasets/asal400_campaign_analytics_source')]",
 				"[concat(variables('workspaceId'), '/datasets/asal400_wwi_campaign_analytics_asa')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/user_profiles_to_datalake')]",
+			"type": "Microsoft.Synapse/workspaces/dataflows",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "asal400_ecommerce_userprofiles_source",
+								"type": "DatasetReference"
+							},
+							"name": "EcommerceUserProfiles"
+						},
+						{
+							"dataset": {
+								"referenceName": "asal400_customerprofile_cosmosdb",
+								"type": "DatasetReference"
+							},
+							"name": "UserProfiles"
+						}
+					],
+					"sinks": [
+						{
+							"linkedService": {
+								"referenceName": "asadatalake19hvmew",
+								"type": "LinkedServiceReference"
+							},
+							"name": "DataLake"
+						}
+					],
+					"transformations": [
+						{
+							"name": "userId"
+						},
+						{
+							"name": "UserTopProducts"
+						},
+						{
+							"name": "DerivedProductColumns"
+						},
+						{
+							"name": "UserPreferredProducts"
+						},
+						{
+							"name": "JoinTopProductsWithPreferredProducts"
+						},
+						{
+							"name": "DerivedColumnsForMerge"
+						},
+						{
+							"name": "Filter1"
+						}
+					],
+					"script": "source(output(\n\t\tvisitorId as string,\n\t\ttopProductPurchases as (productId as string, itemsPurchasedLast12Months as string)[]\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tdocumentForm: 'arrayOfDocuments',\n\twildcardPaths:['online-user-profiles-02/*.json']) ~> EcommerceUserProfiles\nsource(output(\n\t\tcartId as string,\n\t\tpreferredProducts as integer[],\n\t\tproductReviews as (productId as integer, reviewDate as string, reviewText as string)[],\n\t\tuserId as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'document') ~> UserProfiles\nEcommerceUserProfiles derive(visitorId = toInteger(visitorId)) ~> userId\nuserId foldDown(unroll(topProductPurchases),\n\tmapColumn(\n\t\tvisitorId,\n\t\tproductId = topProductPurchases.productId,\n\t\titemsPurchasedLast12Months = topProductPurchases.itemsPurchasedLast12Months\n\t),\n\tskipDuplicateMapInputs: false,\n\tskipDuplicateMapOutputs: false) ~> UserTopProducts\nUserTopProducts derive(productId = toInteger(productId),\n\t\titemsPurchasedLast12Months = toInteger(itemsPurchasedLast12Months)) ~> DerivedProductColumns\nUserProfiles foldDown(unroll(preferredProducts),\n\tmapColumn(\n\t\tpreferredProductId = preferredProducts,\n\t\tuserId\n\t),\n\tskipDuplicateMapInputs: false,\n\tskipDuplicateMapOutputs: false) ~> UserPreferredProducts\nDerivedProductColumns, UserPreferredProducts join(visitorId == userId,\n\tjoinType:'outer',\n\tmatchType:'exact',\n\tignoreSpaces: false,\n\tpartitionBy('hash', 30,\n\t\tproductId\n\t),\n\tbroadcast: 'left')~> JoinTopProductsWithPreferredProducts\nJoinTopProductsWithPreferredProducts derive(isTopProduct = toBoolean(iif(isNull(productId), 'false', 'true')),\n\t\tisPreferredProduct = toBoolean(iif(isNull(preferredProductId), 'false', 'true')),\n\t\tproductId = iif(isNull(productId), preferredProductId, productId),\n\t\tuserId = iif(isNull(userId), visitorId, userId)) ~> DerivedColumnsForMerge\nDerivedColumnsForMerge filter(!isNull(productId)) ~> Filter1\nFilter1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'delta',\n\tcompressionType: 'snappy',\n\tcompressionLevel: 'Fastest',\n\tfileSystem: 'wwi-02',\n\tfolderPath: 'top-products',\n\ttruncate: true,\n\tmergeSchema: false,\n\tautoCompact: false,\n\toptimizedWrite: false,\n\tvacuum: 0,\n\tdeletable: false,\n\tinsertable: true,\n\tupdateable: false,\n\tupsertable: false,\n\tumask: 0022,\n\tpreCommands: [],\n\tpostCommands: [],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tmapColumn(\n\t\tvisitorId,\n\t\tproductId,\n\t\titemsPurchasedLast12Months,\n\t\tpreferredProductId,\n\t\tuserId,\n\t\tisTopProduct,\n\t\tisPreferredProduct\n\t)) ~> DataLake"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/datasets/asal400_ecommerce_userprofiles_source')]",
+				"[concat(variables('workspaceId'), '/datasets/asal400_customerprofile_cosmosdb')]",
+				"[concat(variables('workspaceId'), '/linkedServices/asadatalake19hvmew')]"
 			]
 		},
 		{
@@ -10431,6 +10585,307 @@
 						],
 						"outputs": [],
 						"execution_count": 31
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/L07_Ex1_Calculate Top 5 Products')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"description": "Calculate Top 5 Products",
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "SparkPool01",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "28g",
+					"driverCores": 4,
+					"executorMemory": "28g",
+					"executorCores": 4,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "90624e39-276f-4da0-b204-07e99679d713"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "Synapse PySpark"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/bf55d59f-9a89-4c29-9b5f-a906c8355065/resourceGroups/data-engineering-synapse-19hvmew/providers/Microsoft.Synapse/workspaces/asaworkspace19hvmew/bigDataPools/SparkPool01",
+						"name": "SparkPool01",
+						"type": "Spark",
+						"endpoint": "https://asaworkspace19hvmew.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/SparkPool01",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "2.4",
+						"nodeCount": 3,
+						"cores": 4,
+						"memory": 28
+					},
+					"sessionKeepAliveTimeout": 30
+				},
+				"cells": [
+					{
+						"cell_type": "code",
+						"metadata": {
+							"microsoft": {
+								"language": "python"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%pyspark\r\n",
+							"df = spark.read.load('abfss://wwi-02@asadatalake19hvmew.dfs.core.windows.net/top-products/*.parquet', format='parquet')\r\n",
+							"display(df.limit(10))"
+						],
+						"outputs": [],
+						"execution_count": 2
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"topPurchases = df.select(\r\n",
+							"    \"UserId\", \"ProductId\",\r\n",
+							"    \"ItemsPurchasedLast12Months\", \"IsTopProduct\",\r\n",
+							"    \"IsPreferredProduct\")\r\n",
+							"\r\n",
+							"# create temp  view top_purchases\r\n",
+							"topPurchases.createOrReplaceTempView(\"top_purchases\")\r\n",
+							"\r\n",
+							"topPurchases.show(11)"
+						],
+						"outputs": [],
+						"execution_count": 3
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "sparksql"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%sql\r\n",
+							"select * from top_purchases LIMIT 11"
+						],
+						"outputs": [],
+						"execution_count": 4
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"from pyspark.sql.functions import *\r\n",
+							"\r\n",
+							"topPreferredProducts = (topPurchases\r\n",
+							"    .filter( col(\"IsTopProduct\") == True)\r\n",
+							"    .filter( col(\"IsPreferredProduct\") == True)\r\n",
+							"    .orderBy( col(\"ItemsPurchasedLast12Months\").desc() ))\r\n",
+							"\r\n",
+							"topPreferredProducts.show(11)"
+						],
+						"outputs": [],
+						"execution_count": 6
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "sparksql"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%sql\r\n",
+							"\r\n",
+							"CREATE OR REPLACE TEMPORARY VIEW top_5_products\r\n",
+							"AS\r\n",
+							"    select \r\n",
+							"        UserId,\r\n",
+							"        ProductId, \r\n",
+							"        ItemsPurchasedLast12Months\r\n",
+							"    from (\r\n",
+							"            select *,\r\n",
+							"                row_number() over (partition by UserId order by ItemsPurchasedLast12Months desc) as seqnum\r\n",
+							"            from top_purchases\r\n",
+							"        ) a\r\n",
+							"    where \r\n",
+							"        seqnum <= 5 and \r\n",
+							"        IsTopProduct == true and \r\n",
+							"        IsPreferredProduct = true\r\n",
+							"    order by\r\n",
+							"        a.UserId"
+						],
+						"outputs": [],
+						"execution_count": 7
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"top5Products = sqlContext.table(\"top_5_products\")\r\n",
+							"\r\n",
+							"top5Products.show(11)"
+						],
+						"outputs": [],
+						"execution_count": 8
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"print('topPreferredProducts(IsTopProduct=T,IsPreferredProduct=T): ', topPreferredProducts.count(), ', top5Products (filter: ', top5Products.count())"
+						],
+						"outputs": [],
+						"execution_count": 9
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"top5ProductsOverall = (top5Products.select(\"ProductId\",\"ItemsPurchasedLast12Months\")\r\n",
+							"    .groupBy(\"ProductId\")\r\n",
+							"    .agg( sum(\"ItemsPurchasedLast12Months\").alias(\"Total\") )\r\n",
+							"    .orderBy( col(\"Total\").desc() )\r\n",
+							"    .limit(5))\r\n",
+							"\r\n",
+							"top5ProductsOverall.show()"
+						],
+						"outputs": [],
+						"execution_count": 10
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"import uuid\r\n",
+							"\r\n",
+							"# Generate random GUID\r\n",
+							"runId = uuid.uuid4()"
+						],
+						"outputs": [],
+						"execution_count": 11
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "python"
+							}
+						},
+						"source": [
+							"%%pyspark\r\n",
+							"\r\n",
+							"top5ProductsOverall.write.parquet('abfss://wwi-02@asadatalake19hvmew.dfs.core.windows.net/top5-products/' + str(runId) + '.parquet')"
+						],
+						"outputs": [],
+						"execution_count": 12
 					}
 				]
 			},
