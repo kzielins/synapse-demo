@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Data flow1",
+				"name": "User Profiles to Datalake",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
@@ -20,11 +20,7 @@
 						"type": "DataFlowReference"
 					},
 					"staging": {
-						"linkedService": {
-							"referenceName": "asadatalake19hvmew",
-							"type": "LinkedServiceReference"
-						},
-						"folderPath": "staging"
+						"folderPath": ""
 					},
 					"compute": {
 						"coreCount": 8,
