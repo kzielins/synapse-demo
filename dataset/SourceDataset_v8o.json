@@ -10,7 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"folderPath": "online-user-profiles-01/UserIdBucket=001",
+				"folderPath": "online-user-profiles-01/",
 				"fileSystem": "wwi-02"
 			}
 		},
