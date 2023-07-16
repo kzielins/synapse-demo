@@ -19,6 +19,13 @@
 						"referenceName": "asal400_lab2_writecampaignanalyticstoasa",
 						"type": "DataFlowReference"
 					},
+					"staging": {
+						"linkedService": {
+							"referenceName": "asadatalake19hvmew",
+							"type": "LinkedServiceReference"
+						},
+						"folderPath": "wwi-02/campaign-analytics-write"
+					},
 					"compute": {
 						"coreCount": 8,
 						"computeType": "General"
