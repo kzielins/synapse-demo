@@ -4,6 +4,7 @@
 		"activities": [
 			{
 				"name": "write_user_profile_to_asa",
+				"description": "userprofiles",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
@@ -24,7 +25,7 @@
 							"referenceName": "asastore19hvmew",
 							"type": "LinkedServiceReference"
 						},
-						"folderPath": "staging/userprofiles"
+						"folderPath": "staging"
 					},
 					"compute": {
 						"coreCount": 8,
