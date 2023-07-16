@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "aba00e35-cccf-489f-9096-17abc9952aa7"
+				"spark.autotune.trackingId": "8345b38c-9b9f-4e3c-84e4-131807193126"
 			}
 		},
 		"metadata": {
@@ -72,11 +72,10 @@
 					}
 				},
 				"source": [
-					"#rozdzielenie ,\r\n",
+					"#read and split by ','\r\n",
 					"data = rdd.first().split(',')\r\n",
-					"\r\n",
+					"# count rows \r\n",
 					"field_count = len(data)\r\n",
-					"# policz \r\n",
 					"print(field_count)"
 				],
 				"execution_count": 15
