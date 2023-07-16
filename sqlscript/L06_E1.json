@@ -1,0 +1,17 @@
+{
+	"name": "L06_E1",
+	"properties": {
+		"content": {
+			"query": "CREATE TABLE [wwi].[UserTopProductPurchases]\n(\n    [UserId] [int]  NOT NULL,\n    [ProductId] [int]  NOT NULL,\n    [ItemsPurchasedLast12Months] [int]  NULL,\n    [IsTopProduct] [bit]  NOT NULL,\n    [IsPreferredProduct] [bit]  NOT NULL\n)\nWITH\n(\n    DISTRIBUTION = HASH ( [UserId] ),\n    CLUSTERED COLUMNSTORE INDEX\n);\nGO\n\nCREATE TABLE [wwi].[CampaignAnalytics]\n(\n    [Region] [nvarchar](50)  NOT NULL,\n    [Country] [nvarchar](30)  NOT NULL,\n    [ProductCategory] [nvarchar](50)  NOT NULL,\n    [CampaignName] [nvarchar](500)  NOT NULL,\n    [Revenue] [decimal](10,2)  NULL,\n    [RevenueTarget] [decimal](10,2)  NULL,\n    [City] [nvarchar](50)  NULL,\n    [State] [nvarchar](25)  NULL\n)\nWITH\n(\n    DISTRIBUTION = HASH ( [Region] ),\n    CLUSTERED COLUMNSTORE INDEX\n);\nGO",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "SQLPool01",
+				"poolName": "SQLPool01"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

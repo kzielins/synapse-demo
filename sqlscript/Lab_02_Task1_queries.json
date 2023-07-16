@@ -1,0 +1,17 @@
+{
+	"name": "Lab_02_Task1_queries",
+	"properties": {
+		"content": {
+			"query": "\n-- Q1\n-- This is auto-generated code\nSELECT\n    TOP 100 *\nFROM\n    OPENROWSET(\n        BULK 'https://asadatalake19hvmew.dfs.core.windows.net/wwi-02/sale-small/Year=2019/Quarter=Q4/Month=12/Day=20191231/sale-small-20191231-snappy.parquet',\n        FORMAT = 'PARQUET'\n    ) AS [result]\n\n;\n\n--Q2\nSELECT\n    TransactionDate, ProductId,\n        CAST(SUM(ProfitAmount) AS decimal(18,2)) AS [(sum) Profit],\n        CAST(AVG(ProfitAmount) AS decimal(18,2)) AS [(avg) Profit],\n        SUM(Quantity) AS [(sum) Quantity]\nFROM\n    OPENROWSET(\n        BULK 'https://asadatalake19hvmew.dfs.core.windows.net/wwi-02/sale-small/Year=2019/Quarter=Q4/Month=12/Day=20191231/sale-small-20191231-snappy.parquet',\n        FORMAT = 'PARQUET'\n    ) AS [r] GROUP BY r.TransactionDate, r.ProductId;\n-- Q3\nSELECT\n    count(*)\nFROM\n    OPENROWSET(\n        BULK 'https://asadatalake19hvmew.dfs.core.windows.net/wwi-02/sale-small/Year=2019/*/*/*/*',\n        FORMAT = 'PARQUET'\n    ) AS [result]\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "master",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

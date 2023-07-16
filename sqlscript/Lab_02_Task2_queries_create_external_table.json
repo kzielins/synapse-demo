@@ -1,0 +1,17 @@
+{
+	"name": "Lab_02_Task2_queries_create_external_table",
+	"properties": {
+		"content": {
+			"query": "IF NOT EXISTS (SELECT * FROM sys.external_file_formats WHERE name = 'SynapseParquetFormat') \n\tCREATE EXTERNAL FILE FORMAT [SynapseParquetFormat] \n\tWITH ( FORMAT_TYPE = PARQUET)\nGO\n\nIF NOT EXISTS (SELECT * FROM sys.external_data_sources WHERE name = 'wwi-02_asadatalake19hvmew_dfs_core_windows_net') \n\tCREATE EXTERNAL DATA SOURCE [wwi-02_asadatalake19hvmew_dfs_core_windows_net] \n\tWITH (\n\t\tLOCATION = 'abfss://wwi-02@asadatalake19hvmew.dfs.core.windows.net' \n\t)\nGO\n\nCREATE EXTERNAL TABLE dbo.All2019Sales (\n\t[TransactionId] nvarchar(4000),\n\t[CustomerId] int,\n\t[ProductId] smallint,\n\t[Quantity] smallint,\n\t[Price] numeric(38,18),\n\t[TotalAmount] numeric(38,18),\n\t[TransactionDate] int,\n\t[ProfitAmount] numeric(38,18),\n\t[Hour] smallint,\n\t[Minute] smallint,\n\t[StoreId] smallint\n\t)\n\tWITH (\n\tLOCATION = 'sale-small/Year=2019/*/*/*/*.parquet',\n\tDATA_SOURCE = [wwi-02_asadatalake19hvmew_dfs_core_windows_net],\n\tFILE_FORMAT = [SynapseParquetFormat]\n\t)\nGO\n\n--------------------------------------------\n--- https://kzlongtermbackupstorage.blob.core.windows.net/wwi?st=2023-07-15T16:21:26Z&se=2028-07-16T00:21:26Z&si=kzz&spr=https&sv=2022-11-02&sr=c&sig=cJhI7pKAc8nBKRGYPiOkil0kdWvfg8FgWSy%2Bwzf83Bg%3D\n--\n \nUSE [demo];\nGO\nCREATE MASTER KEY ENCRYPTION BY PASSWORD ='123qewASD!@#$' ;\nGO\n\nDROP EXTERNAL DATA SOURCE [MyDataSourceWWI];\nGO\n\nDROP  DATABASE SCOPED CREDENTIAL [SasTokenWriteWWI];\nGO \nCREATE DATABASE SCOPED CREDENTIAL [SasTokenWriteWWI]\nWITH IDENTITY = 'SHARED ACCESS SIGNATURE',\n     SECRET = 'st=2023-07-15T16:21:26Z&se=2028-07-16T00:21:26Z&si=kzz&spr=https&sv=2022-11-02&sr=c&sig=cJhI7pKAc8nBKRGYPiOkil0kdWvfg8FgWSy%2Bwzf83Bg%3D';\nGO\nCREATE EXTERNAL DATA SOURCE [MyDataSourceWWI] WITH (\n    LOCATION = 'https://kzlongtermbackupstorage.blob.core.windows.net/wwi', CREDENTIAL = [SasTokenWriteWWI]\n);\nGO\n\nCREATE EXTERNAL FILE FORMAT parquetfile \nWITH ( FORMAT_TYPE = PARQUET, DATA_COMPRESSION = 'org.apache.hadoop.io.compress.SnappyCodec' );\n GO\n \nCREATE EXTERNAL FILE FORMAT QuotedCsvWithHeader\nWITH (  \n    FORMAT_TYPE = DELIMITEDTEXT,\n    FORMAT_OPTIONS (\n        FIELD_TERMINATOR = ',',\n        STRING_DELIMITER = '\"',\n        FIRST_ROW = 2\n    )\n);\nGO\nCREATE EXTERNAL FILE FORMAT QuotedCsvWithoutHeader\nWITH (  \n    FORMAT_TYPE = DELIMITEDTEXT,\n    FORMAT_OPTIONS (\n        FIELD_TERMINATOR = ',',\n        STRING_DELIMITER = '\"',\n        FIRST_ROW = 1\n    )\n);\nGO \n\n\nCREATE EXTERNAL TABLE All2019SalesCSV\nWITH (\n\tLOCATION = '/csv/all2019Sales',\n\tDATA_SOURCE = MyDataSourceWWI,\n\tFILE_FORMAT = QuotedCsvWithHeader\n\t)\nAS\nselect * from dbo.All2019Sales\nGO\n\nCREATE EXTERNAL TABLE All2019SalesParquet\nWITH (\n\tLOCATION = '/parquet/all2019Sales',\n\tDATA_SOURCE = MyDataSourceWWI,\n\tFILE_FORMAT = parquetfile\n\t)\nAS\nselect * from dbo.All2019Sales\nGO\n \n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "demo",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
