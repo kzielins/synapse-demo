@@ -1,0 +1,17 @@
+{
+	"name": "SQL script 1",
+	"properties": {
+		"content": {
+			"query": "SELECT TOP (100) [TransactionId]\n,[CustomerId]\n,[ProductId]\n,[Quantity]\n,[Price]\n,[TotalAmount]\n,[TransactionDateId]\n,[ProfitAmount]\n,[Hour]\n,[Minute]\n,[StoreId]\n FROM [wwi_perf].[Sale_Heap]",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "SQLPool01",
+				"poolName": "SQLPool01"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
