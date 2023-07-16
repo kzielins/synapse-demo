@@ -1,0 +1,52 @@
+{
+	"name": "SourceDataset_v8o",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "asadatalake19hvmew",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "online-user-profiles-01/UserIdBucket=001",
+				"fileSystem": "wwi-02"
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"userId": {
+					"type": "integer"
+				},
+				"cartId": {
+					"type": "string"
+				},
+				"preferredProducts": {
+					"type": "array",
+					"items": {
+						"type": "integer"
+					}
+				},
+				"productReviews": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"properties": {
+							"productId": {
+								"type": "integer"
+							},
+							"reviewText": {
+								"type": "string"
+							},
+							"reviewDate": {
+								"type": "string"
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
