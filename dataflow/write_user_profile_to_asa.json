@@ -1,0 +1,77 @@
+{
+	"name": "write_user_profile_to_asa",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "asal400_ecommerce_userprofiles_source",
+						"type": "DatasetReference"
+					},
+					"name": "EcommerceUserProfiles"
+				},
+				{
+					"dataset": {
+						"referenceName": "asal400_customerprofile_cosmosdb",
+						"type": "DatasetReference"
+					},
+					"name": "UserProfiles"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "userId"
+				},
+				{
+					"name": "UserTopProducts"
+				},
+				{
+					"name": "DeriveProductColumns"
+				},
+				{
+					"name": "UserPreferredProducts"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          visitorId as string,",
+				"          topProductPurchases as (productId as string, itemsPurchasedLast12Months as string)[]",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     documentForm: 'arrayOfDocuments',",
+				"     wildcardPaths:['online-user-profiles-02/*.json']) ~> EcommerceUserProfiles",
+				"source(output(",
+				"          cartId as string,",
+				"          preferredProducts as integer[],",
+				"          productReviews as (productId as integer, reviewDate as string, reviewText as string)[],",
+				"          userId as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'document') ~> UserProfiles",
+				"EcommerceUserProfiles derive(visitorId = toInteger(visitorId)) ~> userId",
+				"userId foldDown(unroll(topProductPurchases),",
+				"     mapColumn(",
+				"          visitorId,",
+				"          productId = topProductPurchases.productId,",
+				"          itemsPurchasedLast12Months = topProductPurchases.itemsPurchasedLast12Months",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> UserTopProducts",
+				"UserTopProducts derive(productId = toInteger(productId),",
+				"          itemsPurchasedLast12Months = toInteger(itemsPurchasedLast12Months)) ~> DeriveProductColumns",
+				"UserProfiles foldDown(unroll(preferredProducts),",
+				"     mapColumn(",
+				"          preferredProductId = preferredProducts,",
+				"          userId",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> UserPreferredProducts"
+			]
+		}
+	}
+}
