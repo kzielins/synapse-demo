@@ -1,5 +1,5 @@
 {
-	"name": "Lab04_exc3_json_sort",
+	"name": "L04_Ex3_json_sort",
 	"properties": {
 		"nbformat": 4,
 		"nbformat_minor": 2,
@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "88da1c66-f277-46fb-9a1a-cccb5ff4f7d5"
+				"spark.autotune.trackingId": "7971302d-0b66-436d-9ce6-2c5de58d7251"
 			}
 		},
 		"metadata": {
@@ -229,6 +229,7 @@
 					"collapsed": false
 				},
 				"source": [
+					"#10\r\n",
 					"groupedTopPurchases = (sortedTopPurchases.select(\"visitorId\")\r\n",
 					"    .groupBy(\"visitorId\")\r\n",
 					"    .agg(count(\"*\").alias(\"total\"))\r\n",
