@@ -18,7 +18,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "15da0aec-4c14-4bb0-b8fc-54d4352268e6"
+				"spark.autotune.trackingId": "9416ced4-dd16-4479-884d-2824946ba685"
 			}
 		},
 		"metadata": {
@@ -59,7 +59,7 @@
 				},
 				"source": [
 					"%%pyspark\r\n",
-					"df = spark.read.load('abfss://wwi-02@asadatalake19hvmew.dfs.core.windows.net/top-products/*.parquet', format='parquet')\r\n",
+					"df = spark.read.load('abfss://asa-kz@asadatalake19hvmew.dfs.core.windows.net/top-products/*.parquet', format='parquet')\r\n",
 					"display(df.limit(10))"
 				],
 				"execution_count": 2
@@ -280,7 +280,7 @@
 				"source": [
 					"%%pyspark\r\n",
 					"\r\n",
-					"top5ProductsOverall.write.parquet('abfss://wwi-02@asadatalake19hvmew.dfs.core.windows.net/top5-products/' + str(runId) + '.parquet')"
+					"top5ProductsOverall.write.parquet('abfss://asa-kz@asadatalake19hvmew.dfs.core.windows.net/top5-products/' + str(runId) + '.parquet')"
 				],
 				"execution_count": 12
 			}
