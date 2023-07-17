@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "5cbfdc1d-5a2d-4922-aae6-50cf52e4a301"
+				"spark.autotune.trackingId": "0a88b8d6-5b11-413e-b173-2cc28fd944d8"
 			}
 		},
 		"metadata": {
@@ -54,10 +54,12 @@
 					"import numpy as np\r\n",
 					"\r\n",
 					"##rdd = sc.textFile(f'abfss://wwi-02@asadatalake19hvmew.dfs.core.windows.net/sale-poc/sale-20170502.csv')\r\n",
-					"rdd = sc.textFile(f'abfss://csv@kzlongtermbackupstorage.dfs.core.windows.net/broken_CSV/broken_CSV.csv') \r\n",
+					"\r\n",
+					"rdd = sc.textFile(f'abfss://asa-kz@asadatalake19hvmew.dfs.core.windows.net/sale-poc/sale-20170502.csv')\r\n",
+					"#rdd = sc.textFile(f'abfss://csv@kzlongtermbackupstorage.dfs.core.windows.net/broken_CSV/broken_CSV.csv') \r\n",
 					""
 				],
-				"execution_count": 14
+				"execution_count": 1
 			},
 			{
 				"cell_type": "code",
