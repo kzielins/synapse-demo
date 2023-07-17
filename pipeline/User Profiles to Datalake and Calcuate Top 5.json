@@ -1,5 +1,5 @@
 {
-	"name": "User Profiles to Datalake",
+	"name": "User Profiles to Datalake and Calcuate Top 5",
 	"properties": {
 		"activities": [
 			{
