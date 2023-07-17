@@ -1,7 +1,7 @@
 {
-	"name": "Velu_10_Calculate Top10_Products",
+	"name": "Velu_10_Calculate Top10_ProductsUsers",
 	"properties": {
-		"description": "Calculate Top 10 Products\nl07_Ex1",
+		"description": "Calculate Top 10 ProductsUsers\nTOP 10 Products overral\n\n\nl07_Ex1",
 		"nbformat": 4,
 		"nbformat_minor": 2,
 		"bigDataPool": {
@@ -18,7 +18,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "83083389-9ee6-43c4-93e0-34ff79608d6b"
+				"spark.autotune.trackingId": "ebb6e8e3-0b64-43b7-9b5f-c06a73020d94"
 			}
 		},
 		"metadata": {
