@@ -1,0 +1,17 @@
+{
+	"name": "Velu_02-insert-db1",
+	"properties": {
+		"content": {
+			"query": "--https://asadatalake19hvmew.blob.core.windows.net/data?sp=racwdlmeop&st=2023-07-17T12:23:25Z&se=2029-07-17T20:23:25Z&spr=https&sv=2022-11-02&sr=c&sig=WgWgTkfU9IgRdSFF3coyX9lgffA3WCbWhBkCHyQOcvU%3D\nCREATE DATABASE SCOPED CREDENTIAL VeluDataCredential\n WITH IDENTITY = 'SHARED ACCESS SIGNATURE',\n SECRET = 'sp=racwdlmeop&st=2023-07-17T12:23:25Z&se=2029-07-17T20:23:25Z&spr=https&sv=2022-11-02&sr=c&sig=WgWgTkfU9IgRdSFF3coyX9lgffA3WCbWhBkCHyQOcvU%3D';\nGO\n\nCREATE EXTERNAL DATA SOURCE VeluDataDataSource\nWITH (       LOCATION = 'https://asadatalake19hvmew.blob.core.windows.net/data/'\n          , CREDENTIAL= VeluDataCredential  \n)\nGO\n\nSELECT * FROM OPENROWSET(\n   BULK  'FactInternetSales.txt',\n   DATA_SOURCE = 'VeluDataDataSource',\n   FORMAT ='CSV',\n   PARSER_VERSION = '2.0',\n   FIELDTERMINATOR ='\\t',\n    ROWTERMINATOR = '0x0a'\n    ) \n    WITH(\n        [SalesOrderNumber] [varchar](20) ,\n\t[SalesOrderLineNumber] [tinyint]  ,\n\t[CustomerKey] [int]  ,\n\t[ProductKey] [int] ,\n\t[OrderDateKey] [int]  ,\n\t[DueDateKey] [int]  ,\n\t[ShipDateKey] [int]  ,\n\t[PromotionKey] [int] ,\n\t[CurrencyKey] [int] ,\n\t[SalesTerritoryKey] [int] ,\n\t[OrderQuantity] [smallint] ,\n\t[UnitPrice] [money] ,\n\t[ExtendedAmount] [money] ,\n\t[UnitPriceDiscountPct] [decimal](7, 4) ,\n\t[DiscountAmount] [float] ,\n\t[ProductStandardCost] [money] ,\n\t[TotalProductCost] [money] ,\n\t[SalesAmount] [money] ,\n\t[TaxAmount] [money] ,\n\t[FreightAmount] [money] ,\n\t[CarrierTrackingNumber] [varchar](25) ,\n\t[CustomerPONumber] [varchar](25) ,\n\t[RevisionNumber] [tinyint]\n    )\n    AS DataFile;\n\n\n\nSELECT a.* FROM OPENROWSET\n(\n    BULK 'https://asadatalake19hvmew.blob.core.windows.net/data/FactInternetSales.txt',\n    FORMATFILE = 'https://asadatalake19hvmew.dfs.core.windows.net/data/FactInternetSales.fmt'\n) AS a;\n \n\n CREATE TABLE [velu].[StageProduct](\n    [ProductID] [nvarchar](30) NULL,\n    [ProductName] [nvarchar](50) NULL,\n    [ProductCategory] [nvarchar](24) NULL,\n    [Color] [nvarchar](30) NULL,\n    [Size] [nvarchar](50) NULL,\n    [ListPrice] [money] NULL,\n    [Discontinued] [bit] NULL)\nWITH\n(\n\tDISTRIBUTION = ROUND_ROBIN,\n\tCLUSTERED COLUMNSTORE INDEX\n)\nGO\n\n\n\n/*\nTRUNCATE TABLE [velu].[FactInternetSales];  \nBULK INSERT [velu].[FactInternetSales]\n   FROM 'https://asadatalake19hvmew.blob.core.windows.net/data/FactInternetSales.txt'\n   WITH (\n\t\tFORMATFILE = 'https://asadatalake19hvmew.dfs.core.windows.net/data/FactInternetSales.fmt'\n\t\t);\n GO\n */",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "demo",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
