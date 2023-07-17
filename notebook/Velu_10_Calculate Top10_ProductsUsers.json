@@ -18,7 +18,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "ebb6e8e3-0b64-43b7-9b5f-c06a73020d94"
+				"spark.autotune.trackingId": "cde70818-48d9-42dc-8fe2-dd049e73b828"
 			}
 		},
 		"metadata": {
@@ -79,7 +79,7 @@
 					"df = spark.read.load('abfss://asa-kz@asadatalake19hvmew.dfs.core.windows.net/top-products/*.parquet', format='parquet')\r\n",
 					"display(df.limit(10))"
 				],
-				"execution_count": 2
+				"execution_count": 1
 			},
 			{
 				"cell_type": "code",
@@ -107,7 +107,7 @@
 					"\r\n",
 					"topPurchases.show(11)"
 				],
-				"execution_count": 3
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -132,7 +132,7 @@
 					"\r\n",
 					"topPreferredProducts.show(11)"
 				],
-				"execution_count": 6
+				"execution_count": null
 			},
 			{
 				"cell_type": "markdown",
@@ -185,7 +185,7 @@
 					"    order by\r\n",
 					"        a.UserId"
 				],
-				"execution_count": 7
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -204,7 +204,7 @@
 					"top10ProductsUser = sqlContext.table(\"top_10_productsUser\")\r\n",
 					"top10ProductsUser.show(11)"
 				],
-				"execution_count": 8
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -241,7 +241,7 @@
 				"source": [
 					"print('topPreferredProducts(IsTopProduct=T,IsPreferredProduct=T): ', topPreferredProducts.count(), ', top10ProductsUser (filter: ', top10ProductsUser.count())"
 				],
-				"execution_count": 9
+				"execution_count": null
 			},
 			{
 				"cell_type": "markdown",
@@ -278,7 +278,7 @@
 					"\r\n",
 					"top10ProductsOverall.show(11)"
 				],
-				"execution_count": 10
+				"execution_count": null
 			},
 			{
 				"cell_type": "markdown",
@@ -310,7 +310,7 @@
 					"runId = uuid.uuid4()\r\n",
 					"top10ProductsOverall.write.parquet('abfss://asa-kz@asadatalake19hvmew.dfs.core.windows.net/top10-products/' + str(runId) + '.parquet')"
 				],
-				"execution_count": 12
+				"execution_count": null
 			}
 		]
 	}

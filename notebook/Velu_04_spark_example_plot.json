@@ -18,7 +18,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "cf97c5b3-020c-4838-8583-43f7a22ee020"
+				"spark.autotune.trackingId": "3c9798b8-2be2-4f82-bad6-c5fc90d67283"
 			}
 		},
 		"metadata": {
@@ -93,7 +93,7 @@
 					" df = spark.read.load('abfss://files@asadatalake19hvmew.dfs.core.windows.net/sales/orders/*.csv', format='csv', schema=orderSchema)\r\n",
 					" display(df.limit(100))"
 				],
-				"execution_count": 1
+				"execution_count": 17
 			},
 			{
 				"cell_type": "code",
@@ -111,7 +111,7 @@
 				"source": [
 					" df.printSchema()"
 				],
-				"execution_count": 2
+				"execution_count": 8
 			},
 			{
 				"cell_type": "code",
@@ -132,7 +132,7 @@
 					"spark_df = spark.sql(\"SELECT * FROM salesorders\")\r\n",
 					"display(spark_df)"
 				],
-				"execution_count": 3
+				"execution_count": 18
 			},
 			{
 				"cell_type": "code",
@@ -159,7 +159,7 @@
 					" GROUP BY YEAR(OrderDate)\r\n",
 					" ORDER BY OrderYear;"
 				],
-				"execution_count": 4
+				"execution_count": 19
 			},
 			{
 				"cell_type": "code",
@@ -179,10 +179,10 @@
 					"collapsed": false
 				},
 				"source": [
-					" %%sql\r\n",
-					" SELECT * FROM salesorders"
+					"%%sql\r\n",
+					"SELECT * FROM salesorders"
 				],
-				"execution_count": 5
+				"execution_count": 20
 			},
 			{
 				"cell_type": "code",
@@ -203,10 +203,10 @@
 					"             FROM salesorders \\\r\n",
 					"             GROUP BY CAST(YEAR(OrderDate) AS CHAR(4)) \\\r\n",
 					"             ORDER BY OrderYear\"\r\n",
-					" df_spark = spark.sql(sqlQuery)\r\n",
-					" df_spark.show()"
+					"df_spark = spark.sql(sqlQuery)\r\n",
+					"df_spark.show()"
 				],
-				"execution_count": 6
+				"execution_count": 31
 			},
 			{
 				"cell_type": "markdown",
@@ -235,23 +235,18 @@
 					}
 				},
 				"source": [
-					" # Clear the plot area\r\n",
-					" plt.clf()\r\n",
+					"from matplotlib import pyplot as plt\r\n",
 					"\r\n",
-					" # Create a bar plot of revenue by year\r\n",
-					" plt.bar(x=df_sales['OrderYear'], height=df_sales['GrossRevenue'], color='orange')\r\n",
+					"# Pandas dataframe\r\n",
+					"df_sales = df_spark.toPandas()\r\n",
 					"\r\n",
-					" # Customize the chart\r\n",
-					" plt.title('Revenue by Year')\r\n",
-					" plt.xlabel('Year')\r\n",
-					" plt.ylabel('Revenue')\r\n",
-					" plt.grid(color='#95a5a6', linestyle='--', linewidth=2, axis='y', alpha=0.7)\r\n",
-					" plt.xticks(rotation=45)\r\n",
 					"\r\n",
-					" # Show the figure\r\n",
-					" plt.show()"
+					"plt.bar(x=df_sales['OrderYear'], height=df_sales['GrossRevenue'])\r\n",
+					"\r\n",
+					"# show\r\n",
+					"plt.show()"
 				],
-				"execution_count": null
+				"execution_count": 36
 			},
 			{
 				"cell_type": "code",
@@ -267,17 +262,15 @@
 					}
 				},
 				"source": [
-					" # Clear the plot area\r\n",
-					" plt.clf()\r\n",
+					"import seaborn as sns\r\n",
+					"# Clear the plot area\r\n",
+					"plt.clf()\r\n",
 					"\r\n",
-					" # Set the visual theme for seaborn\r\n",
-					" sns.set_theme(style=\"whitegrid\")\r\n",
-					"\r\n",
-					" # Create a bar chart\r\n",
-					" ax = sns.barplot(x=\"OrderYear\", y=\"GrossRevenue\", data=df_sales)\r\n",
-					" plt.show()"
+					"# Create a bar chart\r\n",
+					"ax = sns.barplot(x=\"OrderYear\", y=\"GrossRevenue\", data=df_sales)\r\n",
+					"plt.show()"
 				],
-				"execution_count": null
+				"execution_count": 41
 			}
 		]
 	}
