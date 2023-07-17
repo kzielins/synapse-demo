@@ -1,6 +1,7 @@
 {
-	"name": "L04_Ex3_json_sort",
+	"name": "Velu_04_spark_example_plot",
 	"properties": {
+		"description": "salse order sun by orderyear\n\nExample plots",
 		"nbformat": 4,
 		"nbformat_minor": 2,
 		"bigDataPool": {
@@ -17,7 +18,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "7971302d-0b66-436d-9ce6-2c5de58d7251"
+				"spark.autotune.trackingId": "3c9798b8-2be2-4f82-bad6-c5fc90d67283"
 			}
 		},
 		"metadata": {
@@ -49,16 +50,50 @@
 		},
 		"cells": [
 			{
-				"cell_type": "code",
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
 				"source": [
-					"df = (spark.read \\\r\n",
-					"        .option('inferSchema', 'true') \\\r\n",
-					"        .json('abfss://wwi-02@asadatalake19hvmew.dfs.core.windows.net/online-user-profiles-02/*.json', multiLine=True)\r\n",
-					"    )\r\n",
+					"Sales order sum by orderyear (price+quantity)+tax\r\n",
 					"\r\n",
-					"df.printSchema()"
+					"Example plots"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"microsoft": {
+						"language": "python"
+					},
+					"collapsed": false
+				},
+				"source": [
+					" %%pyspark\r\n",
+					" from pyspark.sql.types import *\r\n",
+					" from pyspark.sql.functions import *\r\n",
+					"\r\n",
+					"# read from csv - not serverless\r\n",
+					" orderSchema = StructType([\r\n",
+					"     StructField(\"SalesOrderNumber\", StringType()),\r\n",
+					"     StructField(\"SalesOrderLineNumber\", IntegerType()),\r\n",
+					"     StructField(\"OrderDate\", DateType()),\r\n",
+					"     StructField(\"CustomerName\", StringType()),\r\n",
+					"     StructField(\"Email\", StringType()),\r\n",
+					"     StructField(\"Item\", StringType()),\r\n",
+					"     StructField(\"Quantity\", IntegerType()),\r\n",
+					"     StructField(\"UnitPrice\", FloatType()),\r\n",
+					"     StructField(\"Tax\", FloatType())\r\n",
+					"     ])\r\n",
+					"\r\n",
+					" df = spark.read.load('abfss://files@asadatalake19hvmew.dfs.core.windows.net/sales/orders/*.csv', format='csv', schema=orderSchema)\r\n",
+					" display(df.limit(100))"
 				],
-				"execution_count": 1
+				"execution_count": 17
 			},
 			{
 				"cell_type": "code",
@@ -74,9 +109,57 @@
 					}
 				},
 				"source": [
-					"df.createOrReplaceTempView(\"user_profiles\")"
+					" df.printSchema()"
 				],
-				"execution_count": 2
+				"execution_count": 8
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": false
+				},
+				"source": [
+					"df.createOrReplaceTempView(\"salesorders\")\r\n",
+					"spark_df = spark.sql(\"SELECT * FROM salesorders\")\r\n",
+					"display(spark_df)"
+				],
+				"execution_count": 18
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					" %%sql\r\n",
+					" SELECT YEAR(OrderDate) AS OrderYear,\r\n",
+					"        SUM((UnitPrice * Quantity) + Tax) AS GrossRevenue\r\n",
+					" FROM salesorders\r\n",
+					" GROUP BY YEAR(OrderDate)\r\n",
+					" ORDER BY OrderYear;"
+				],
+				"execution_count": 19
 			},
 			{
 				"cell_type": "code",
@@ -97,51 +180,7 @@
 				},
 				"source": [
 					"%%sql\r\n",
-					"\r\n",
-					"SELECT * FROM user_profiles LIMIT 10"
-				],
-				"execution_count": 3
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"from pyspark.sql.functions import udf, explode\r\n",
-					"\r\n",
-					"flat=df.select('visitorId',explode('topProductPurchases').alias('topProductPurchases_flat'))\r\n",
-					"#flat.show(100)"
-				],
-				"execution_count": 5
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"topPurchases = (flat.select('visitorId','topProductPurchases_flat.productId','topProductPurchases_flat.itemsPurchasedLast12Months')\r\n",
-					"    .orderBy('visitorId'))\r\n",
-					"\r\n",
-					"#topPurchases.show(10)\r\n",
-					"df.createOrReplaceTempView(\"topPurchases\")"
+					"SELECT * FROM salesorders"
 				],
 				"execution_count": 20
 			},
@@ -156,112 +195,82 @@
 						"transient": {
 							"deleting": false
 						}
-					},
-					"collapsed": false
+					}
 				},
 				"source": [
-					"# order  \r\n",
-					"sortedTopPurchases = topPurchases.orderBy(\"itemsPurchasedLast12Months\")\r\n",
-					"#sortedTopPurchases = (topPurchases.orderBy( col(\"itemsPurchasedLast12Months\").desc() ))\r\n",
-					"\r\n",
-					"display(sortedTopPurchases.limit(10))\r\n",
-					"df.createOrReplaceTempView(\"sortedTopPurchases\")"
-				],
-				"execution_count": 27
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					},
-					"collapsed": false
-				},
-				"source": [
-					"from pyspark.sql.functions import *\r\n",
-					"sortedTopPurchasesDesc = (topPurchases.orderBy( col(\"itemsPurchasedLast12Months\").desc() ))\r\n",
-					"display(sortedTopPurchasesDesc.limit(10))"
-				],
-				"execution_count": 29
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					},
-					"microsoft": {
-						"language": "sparksql"
-					},
-					"collapsed": false
-				},
-				"source": [
-					"%%sql \r\n",
-					"select * from topPurchases\r\n",
-					"-- order by itemsPurchasedLast12Months desc"
-				],
-				"execution_count": 23
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					},
-					"collapsed": false
-				},
-				"source": [
-					"#10\r\n",
-					"groupedTopPurchases = (sortedTopPurchases.select(\"visitorId\")\r\n",
-					"    .groupBy(\"visitorId\")\r\n",
-					"    .agg(count(\"*\").alias(\"total\"))\r\n",
-					"    .orderBy(\"visitorId\") )\r\n",
-					"\r\n",
-					"display(groupedTopPurchases.limit(100))"
-				],
-				"execution_count": 30
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					},
-					"collapsed": false
-				},
-				"source": [
-					"groupedTopPurchases = (sortedTopPurchases.select(\"visitorId\",\"itemsPurchasedLast12Months\")\r\n",
-					"    .groupBy(\"visitorId\")\r\n",
-					"    .agg(sum(\"itemsPurchasedLast12Months\").alias(\"totalItemsPurchased\"))\r\n",
-					"    .orderBy(\"visitorId\") )\r\n",
-					"\r\n",
-					"display(groupedTopPurchases.limit(100))"
+					"sqlQuery = \"SELECT CAST(YEAR(OrderDate) AS CHAR(4)) AS OrderYear, \\\r\n",
+					"                 SUM((UnitPrice * Quantity) + Tax) AS GrossRevenue \\\r\n",
+					"             FROM salesorders \\\r\n",
+					"             GROUP BY CAST(YEAR(OrderDate) AS CHAR(4)) \\\r\n",
+					"             ORDER BY OrderYear\"\r\n",
+					"df_spark = spark.sql(sqlQuery)\r\n",
+					"df_spark.show()"
 				],
 				"execution_count": 31
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"PlotLib"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"from matplotlib import pyplot as plt\r\n",
+					"\r\n",
+					"# Pandas dataframe\r\n",
+					"df_sales = df_spark.toPandas()\r\n",
+					"\r\n",
+					"\r\n",
+					"plt.bar(x=df_sales['OrderYear'], height=df_sales['GrossRevenue'])\r\n",
+					"\r\n",
+					"# show\r\n",
+					"plt.show()"
+				],
+				"execution_count": 36
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"import seaborn as sns\r\n",
+					"# Clear the plot area\r\n",
+					"plt.clf()\r\n",
+					"\r\n",
+					"# Create a bar chart\r\n",
+					"ax = sns.barplot(x=\"OrderYear\", y=\"GrossRevenue\", data=df_sales)\r\n",
+					"plt.show()"
+				],
+				"execution_count": 41
 			}
 		]
 	}

@@ -1,5 +1,5 @@
 {
-	"name": "write_user_profile_to_asa",
+	"name": "velu_write_user_profile_to_asa",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {

@@ -1,5 +1,5 @@
 {
-	"name": "asal400_lab2_writecampaignanalyticstoasa",
+	"name": "velu_writecampaignanalyticstoasa",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {

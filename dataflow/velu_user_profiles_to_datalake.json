@@ -1,5 +1,5 @@
 {
-	"name": "user_profiles_to_datalake",
+	"name": "velu_user_profiles_to_datalake",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {

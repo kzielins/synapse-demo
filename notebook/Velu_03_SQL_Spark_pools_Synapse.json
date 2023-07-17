@@ -1,6 +1,7 @@
 {
-	"name": "L4_Ex4_SQL_Spark_pools_Synapse",
+	"name": "Velu_03_SQL_Spark_pools_Synapse",
 	"properties": {
+		"description": "Integrate SQLPoll with servlerless\n\n\n\nL4_Ex4_",
 		"nbformat": 4,
 		"nbformat_minor": 2,
 		"bigDataPool": {
@@ -17,7 +18,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "b293d8cc-1caf-4efd-855b-415e8c017df0"
+				"spark.autotune.trackingId": "a149b04b-d13f-467d-9152-14db843885d2"
 			}
 		},
 		"metadata": {
@@ -64,7 +65,7 @@
 					"from pyspark.sql.functions import udf, explode\r\n",
 					"df = (spark.read \\\r\n",
 					"        .option('inferSchema', 'true') \\\r\n",
-					"        .json('abfss://wwi-02@asadatalake19hvmew.dfs.core.windows.net/online-user-profiles-02/*.json', multiLine=True)\r\n",
+					"        .json('abfss://asa-kz@asadatalake19hvmew.dfs.core.windows.net/online-user-profiles-02/*.json', multiLine=True)\r\n",
 					"    )\r\n",
 					"flat=df.select('visitorId',explode('topProductPurchases').alias('topProductPurchases_flat'))\r\n",
 					"topPurchases = (flat.select('visitorId','topProductPurchases_flat.productId','topProductPurchases_flat.itemsPurchasedLast12Months')\r\n",
@@ -72,7 +73,7 @@
 					"topPurchases.createOrReplaceTempView(\"top_purchases\")\r\n",
 					"display(topPurchases.limit(10))"
 				],
-				"execution_count": 61
+				"execution_count": 2
 			},
 			{
 				"cell_type": "code",
@@ -99,7 +100,7 @@
 					"df.describe()\r\n",
 					"display(df.limit(5))"
 				],
-				"execution_count": 59
+				"execution_count": 3
 			},
 			{
 				"cell_type": "code",
@@ -122,9 +123,9 @@
 					"//The Apache Spark pool to Synapse SQL connector is a data source implementation for Apache Spark. It uses the Azure Data Lake Storage Gen2 and PolyBase in dedicated SQL pools to efficiently transfer data between the Spark cluster and the Synapse SQL instance.\r\n",
 					"// \r\n",
 					"//write to SQLPool by synapsesql\r\n",
-					"df.write.synapsesql(\"SQLPool01.wwi.TopPurchases\", Constants.INTERNAL)"
+					"df.write.synapsesql(\"SQLPool01.velu.TopPurchases\", Constants.INTERNAL)"
 				],
-				"execution_count": 39
+				"execution_count": 4
 			},
 			{
 				"cell_type": "code",
@@ -145,10 +146,10 @@
 				},
 				"source": [
 					"%%pyspark\r\n",
-					"dfsales = spark.read.load('abfss://wwi-02@asadatalake19hvmew.dfs.core.windows.net/sale-small/Year=2019/Quarter=Q4/Month=12/*/*.parquet', format='parquet')\r\n",
+					"dfsales = spark.read.load('abfss://asa-kz@asadatalake19hvmew.dfs.core.windows.net/sale-small/Year=2019/Quarter=Q4/Month=12/*/*.parquet', format='parquet')\r\n",
 					"display(dfsales.limit(10))"
 				],
-				"execution_count": 45
+				"execution_count": 5
 			},
 			{
 				"cell_type": "code",
@@ -169,10 +170,10 @@
 				"source": [
 					"%%spark\r\n",
 					"// Make sure the name of the SQL pool (SQLPool01 below) matches the name of your SQL pool.\r\n",
-					"val df2 = spark.read.synapsesql(\"SQLPool01.wwi.TopPurchases\")\r\n",
+					"val df2 = spark.read.synapsesql(\"SQLPool01.velu.TopPurchases\")\r\n",
 					"df2.createTempView(\"top_purchases_sql\")"
 				],
-				"execution_count": null
+				"execution_count": 6
 			},
 			{
 				"cell_type": "code",
@@ -197,7 +198,7 @@
 					"df2.describe()\r\n",
 					"display(df2.limit(10))"
 				],
-				"execution_count": 48
+				"execution_count": 7
 			},
 			{
 				"cell_type": "code",
@@ -221,7 +222,7 @@
 					"dfTopPurchasesFromSql = sqlContext.table(\"top_purchases_sql\")\r\n",
 					"display(dfTopPurchasesFromSql.limit(5))"
 				],
-				"execution_count": 60
+				"execution_count": 8
 			},
 			{
 				"cell_type": "code",
@@ -256,7 +257,7 @@
 					"\r\n",
 					"display(inner_join_agg.limit(100))"
 				],
-				"execution_count": 52
+				"execution_count": 9
 			}
 		]
 	}

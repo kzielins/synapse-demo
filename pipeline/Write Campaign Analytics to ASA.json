@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "asal400_lab2_writecampaignanalyticstoasa",
+						"referenceName": "velu_writecampaignanalyticstoasa",
 						"type": "DataFlowReference"
 					},
 					"staging": {

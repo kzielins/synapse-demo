@@ -1,7 +1,7 @@
 {
-	"name": "L07_Ex1_Calculate Top 5 Products",
+	"name": "__oldVELU_10_Calculate_Top10-Products",
 	"properties": {
-		"description": "Calculate Top 5 Products",
+		"description": "Calculate Top 10 Products\n________ old_____ L07_Ex1_",
 		"nbformat": 4,
 		"nbformat_minor": 2,
 		"bigDataPool": {
@@ -18,7 +18,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "90624e39-276f-4da0-b204-07e99679d713"
+				"spark.autotune.trackingId": "b129d0c2-3fdd-4d59-ae69-35ba410380c2"
 			}
 		},
 		"metadata": {
@@ -59,7 +59,7 @@
 				},
 				"source": [
 					"%%pyspark\r\n",
-					"df = spark.read.load('abfss://wwi-02@asadatalake19hvmew.dfs.core.windows.net/top-products/*.parquet', format='parquet')\r\n",
+					"df = spark.read.load('abfss://asa-kz@asadatalake19hvmew.dfs.core.windows.net/top-products/*.parquet', format='parquet')\r\n",
 					"display(df.limit(10))"
 				],
 				"execution_count": 2
@@ -79,8 +79,10 @@
 				},
 				"source": [
 					"topPurchases = df.select(\r\n",
-					"    \"UserId\", \"ProductId\",\r\n",
-					"    \"ItemsPurchasedLast12Months\", \"IsTopProduct\",\r\n",
+					"    \"UserId\", \r\n",
+					"    \"ProductId\",\r\n",
+					"    \"ItemsPurchasedLast12Months\", \r\n",
+					"    \"IsTopProduct\",\r\n",
 					"    \"IsPreferredProduct\")\r\n",
 					"\r\n",
 					"# create temp  view top_purchases\r\n",
@@ -89,29 +91,6 @@
 					"topPurchases.show(11)"
 				],
 				"execution_count": 3
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					},
-					"microsoft": {
-						"language": "sparksql"
-					},
-					"collapsed": false
-				},
-				"source": [
-					"%%sql\r\n",
-					"select * from top_purchases LIMIT 11"
-				],
-				"execution_count": 4
 			},
 			{
 				"cell_type": "code",
@@ -158,7 +137,7 @@
 				"source": [
 					"%%sql\r\n",
 					"\r\n",
-					"CREATE OR REPLACE TEMPORARY VIEW top_5_products\r\n",
+					"CREATE OR REPLACE TEMPORARY VIEW top_10_products\r\n",
 					"AS\r\n",
 					"    select \r\n",
 					"        UserId,\r\n",
@@ -166,11 +145,11 @@
 					"        ItemsPurchasedLast12Months\r\n",
 					"    from (\r\n",
 					"            select *,\r\n",
-					"                row_number() over (partition by UserId order by ItemsPurchasedLast12Months desc) as seqnum\r\n",
+					"                row_number() over (partition by UserId order by ItemsPurchasedLast12Months desc) as rownumber\r\n",
 					"            from top_purchases\r\n",
 					"        ) a\r\n",
 					"    where \r\n",
-					"        seqnum <= 5 and \r\n",
+					"        rownumber <= 10 and \r\n",
 					"        IsTopProduct == true and \r\n",
 					"        IsPreferredProduct = true\r\n",
 					"    order by\r\n",
@@ -192,9 +171,9 @@
 					}
 				},
 				"source": [
-					"top5Products = sqlContext.table(\"top_5_products\")\r\n",
+					"top10Products = sqlContext.table(\"top_19_products\")\r\n",
 					"\r\n",
-					"top5Products.show(11)"
+					"top10Products.show(11)"
 				],
 				"execution_count": 8
 			},
@@ -212,7 +191,7 @@
 					}
 				},
 				"source": [
-					"print('topPreferredProducts(IsTopProduct=T,IsPreferredProduct=T): ', topPreferredProducts.count(), ', top5Products (filter: ', top5Products.count())"
+					"print('topPreferredProducts(IsTopProduct=T,IsPreferredProduct=T): ', topPreferredProducts.count(), ', top10Products (filter: ', top10Products.count())"
 				],
 				"execution_count": 9
 			},
@@ -230,13 +209,13 @@
 					}
 				},
 				"source": [
-					"top5ProductsOverall = (top5Products.select(\"ProductId\",\"ItemsPurchasedLast12Months\")\r\n",
+					"top10ProductsOverall = (top10Products.select(\"ProductId\",\"ItemsPurchasedLast12Months\")\r\n",
 					"    .groupBy(\"ProductId\")\r\n",
 					"    .agg( sum(\"ItemsPurchasedLast12Months\").alias(\"Total\") )\r\n",
 					"    .orderBy( col(\"Total\").desc() )\r\n",
-					"    .limit(5))\r\n",
+					"    .limit(10))\r\n",
 					"\r\n",
-					"top5ProductsOverall.show()"
+					"top10ProductsOverall.show()"
 				],
 				"execution_count": 10
 			},
@@ -280,7 +259,7 @@
 				"source": [
 					"%%pyspark\r\n",
 					"\r\n",
-					"top5ProductsOverall.write.parquet('abfss://wwi-02@asadatalake19hvmew.dfs.core.windows.net/top5-products/' + str(runId) + '.parquet')"
+					"top10ProductsOverall.write.parquet('abfss://asa-kz@asadatalake19hvmew.dfs.core.windows.net/top10-products/' + str(runId) + '.parquet')"
 				],
 				"execution_count": 12
 			}

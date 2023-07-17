@@ -19,14 +19,11 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "840a7ec8-874b-4dfe-bf2c-366921740bfc"
+				"spark.autotune.trackingId": "fc6cd371-f1ee-436f-9b47-3db60d4c0d3b"
 			}
 		},
 		"metadata": {
 			"saveOutput": true,
-			"synapse_widget": {
-				"version": "0.1"
-			},
 			"enableDebugMode": false,
 			"kernelspec": {
 				"name": "synapse_pyspark",
@@ -42,14 +39,13 @@
 				"endpoint": "https://asaworkspace19hvmew.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/SparkPool01",
 				"auth": {
 					"type": "AAD",
-					"authResource": "https://dev.azuresynapse.net",
-					"authHeader": null
+					"authResource": "https://dev.azuresynapse.net"
 				},
 				"sparkVersion": "2.4",
 				"nodeCount": 3,
 				"cores": 4,
 				"memory": 28,
-				"extraHeader": null
+				"automaticScaleJobs": false
 			},
 			"sessionKeepAliveTimeout": 30
 		},
@@ -64,13 +60,11 @@
 					"# Disable BroadcastHashJoin, so Spark will use standard SortMergeJoin. Currently, Hyperspace indexes utilize SortMergeJoin to speed up query.\r\n",
 					"spark.conf.set(\"spark.sql.autoBroadcastJoinThreshold\", -1)\r\n",
 					"\r\n",
-					"# Replace the value below with the name of your primary ADLS Gen2 account for your Synapse workspace\r\n",
-					"datalake = 'asadatalakenz4uojt'\r\n",
 					"\r\n",
-					"dfSales = spark.read.parquet(\"abfss://wwi-02@\" + datalake + \".dfs.core.windows.net/sale-small/Year=2019/Quarter=Q4/Month=12/*/*.parquet\")\r\n",
+					"dfSales = spark.read.parquet(\"abfss://asa-kz@asadatalakenz4uojt.dfs.core.windows.net/sale-small/Year=2019/Quarter=Q4/Month=12/*/*.parquet\")\r\n",
 					"dfSales.show(10)\r\n",
 					"\r\n",
-					"dfCustomers = spark.read.load(\"abfss://wwi-02@\" + datalake + \".dfs.core.windows.net/data-generators/generator-customer-clean.csv\", format=\"csv\", header=True)\r\n",
+					"dfCustomers = spark.read.load(\"abfss://asa-kz@asadatalakenz4uojt.dfs.core.windows.net/data-generators/generator-customer-clean.csv\", format=\"csv\", header=True)\r\n",
 					"dfCustomers.show(10)\r\n",
 					""
 				],
