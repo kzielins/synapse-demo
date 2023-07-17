@@ -96,7 +96,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"notebook": {
-						"referenceName": "VELU_03_fix_csv_python_notebook",
+						"referenceName": "Velu_03_fix_csv_python_notebook",
 						"type": "NotebookReference"
 					},
 					"snapshot": true
@@ -123,7 +123,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"notebook": {
-						"referenceName": "VELU_09_json_sort_explode_save",
+						"referenceName": "Velu_09_json_sort_explode_save",
 						"type": "NotebookReference"
 					},
 					"snapshot": true

@@ -1,7 +1,7 @@
 {
-	"name": "VELU_09_json_sort_explode_save",
+	"name": "Velu_09_json_sort_explode_save",
 	"properties": {
-		"description": "L04_Ex3_json_sort",
+		"description": "reading json file for User_prrifiles \nexplode json elements (productId, itemsPurchased last 12 mc) \nAgregates by visitor/userid , with count tocal visits,\n\nAgregates by visitor/userid , with sum purchasedvisits,\n,  \n\nWrites results to \n/sum-purchases/' + str(runId) + '.parquet' , \n/count-purchases/' + str(runId) + '.parquet'",
 		"nbformat": 4,
 		"nbformat_minor": 2,
 		"bigDataPool": {
@@ -18,7 +18,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "4929e25b-cb47-48f7-950d-7c17d756eab8"
+				"spark.autotune.trackingId": "449acef5-100c-479b-b1bf-45176d40471f"
 			}
 		},
 		"metadata": {
@@ -59,7 +59,16 @@
 					}
 				},
 				"source": [
-					"read json"
+					"reading json file for User_prrifiles \r\n",
+					"explode json elements (productId, itemsPurchased last 12 mc) \r\n",
+					"Agregates by visitor/userid , with count tocal visits,\r\n",
+					"\r\n",
+					"Agregates by visitor/userid , with sum purchasedvisits,\r\n",
+					",  \r\n",
+					"\r\n",
+					"Writes results to \r\n",
+					"/sum-purchases/' + str(runId) + '.parquet' , \r\n",
+					"/count-purchases/' + str(runId) + '.parquet'"
 				]
 			},
 			{
@@ -291,12 +300,12 @@
 					"collapsed": false
 				},
 				"source": [
-					"groupedTopPurchases = (sortedTopPurchases.select(\"visitorId\",\"itemsPurchasedLast12Months\")\r\n",
+					"groupedSumPurchases = (sortedTopPurchases.select(\"visitorId\",\"itemsPurchasedLast12Months\")\r\n",
 					"    .groupBy(\"visitorId\")\r\n",
 					"    .agg(sum(\"itemsPurchasedLast12Months\").alias(\"totalItemsPurchased\"))\r\n",
 					"    .orderBy(\"visitorId\") )\r\n",
 					"\r\n",
-					"display(groupedTopPurchases.limit(100))"
+					"display(groupedSumPurchases.limit(100))"
 				],
 				"execution_count": 16
 			},
@@ -321,7 +330,8 @@
 					"import uuid\r\n",
 					"# Generate random GUID\r\n",
 					"runId = uuid.uuid4()\r\n",
-					"groupedTopPurchases.write.parquet('abfss://asa-kz@asadatalake19hvmew.dfs.core.windows.net/top-purchases/' + str(runId) + '.parquet')"
+					"groupedSumPurchases.write.parquet('abfss://asa-kz@asadatalake19hvmew.dfs.core.windows.net/sum-purchases/' + str(runId) + '.parquet')\r\n",
+					"groupedTopPurchases.write.parquet('abfss://asa-kz@asadatalake19hvmew.dfs.core.windows.net/count-purchases/' + str(runId) + '.parquet')"
 				],
 				"execution_count": 17
 			}

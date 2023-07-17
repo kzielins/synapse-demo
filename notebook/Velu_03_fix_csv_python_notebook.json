@@ -1,6 +1,7 @@
 {
-	"name": "VELU_03_fix_csv_python_notebook",
+	"name": "Velu_03_fix_csv_python_notebook",
 	"properties": {
+		"description": "sample fix csv file with line delimieter error, save to fixed dir ",
 		"nbformat": 4,
 		"nbformat_minor": 2,
 		"bigDataPool": {
@@ -17,7 +18,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "f9d5ee08-2a96-49ef-860a-6663ea13e9d2"
+				"spark.autotune.trackingId": "0f686b2a-6ca8-4a4e-a943-cb2abf5b186e"
 			}
 		},
 		"metadata": {
