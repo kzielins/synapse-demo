@@ -23,7 +23,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "user_profiles_to_datalake",
+						"referenceName": "velu_user_profiles_to_datalake",
 						"type": "DataFlowReference"
 					},
 					"compute": {

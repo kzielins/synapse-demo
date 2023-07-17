@@ -17,7 +17,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "write_user_profile_to_asa",
+						"referenceName": "velu_write_user_profile_to_asa",
 						"type": "DataFlowReference"
 					},
 					"staging": {
