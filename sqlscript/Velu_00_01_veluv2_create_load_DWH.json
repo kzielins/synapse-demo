@@ -1,0 +1,17 @@
+{
+	"name": "Velu_00_01_veluv2_create_load_DWH",
+	"properties": {
+		"content": {
+			"query": "\nCREATE SCHEMA velv2;\nGO\n\n\n---\n/*\nDimension DISTRIBUTION = REPLICATE,\nFacts     DISTRIBUTION = HASH([Movement Key])\n*/\n---\nCREATE TABLE [velv2].[dimension_City]\nWITH\n(\n    DISTRIBUTION = REPLICATE,\n    CLUSTERED COLUMNSTORE INDEX\n)\nAS\nSELECT * FROM [ext].[dimension_City]\nOPTION (LABEL = 'CTAS : Load [velv2].[dimension_City]')\n;\n\nCREATE TABLE [velv2].[dimension_Customer]\nWITH\n(\n    DISTRIBUTION = REPLICATE,\n    CLUSTERED COLUMNSTORE INDEX\n)\nAS\nSELECT * FROM [ext].[dimension_Customer]\nOPTION (LABEL = 'CTAS : Load [velv2].[dimension_Customer]')\n;\n\nCREATE TABLE [velv2].[dimension_Employee]\nWITH\n(\n    DISTRIBUTION = REPLICATE,\n    CLUSTERED COLUMNSTORE INDEX\n)\nAS\nSELECT * FROM [ext].[dimension_Employee]\nOPTION (LABEL = 'CTAS : Load [velv2].[dimension_Employee]')\n;\n\nCREATE TABLE [velv2].[dimension_PaymentMethod]\nWITH\n(\n    DISTRIBUTION = REPLICATE,\n    CLUSTERED COLUMNSTORE INDEX\n)\nAS\nSELECT * FROM [ext].[dimension_PaymentMethod]\nOPTION (LABEL = 'CTAS : Load [velv2].[dimension_PaymentMethod]')\n;\n\nCREATE TABLE [velv2].[dimension_StockItem]\nWITH\n(\n    DISTRIBUTION = REPLICATE,\n    CLUSTERED COLUMNSTORE INDEX\n)\nAS\nSELECT * FROM [ext].[dimension_StockItem]\nOPTION (LABEL = 'CTAS : Load [velv2].[dimension_StockItem]')\n;\n\nCREATE TABLE [velv2].[dimension_Supplier]\nWITH\n(\n    DISTRIBUTION = REPLICATE,\n    CLUSTERED COLUMNSTORE INDEX\n)\nAS\nSELECT * FROM [ext].[dimension_Supplier]\nOPTION (LABEL = 'CTAS : Load [velv2].[dimension_Supplier]')\n;\n\nCREATE TABLE [velv2].[dimension_TransactionType]\nWITH\n(\n    DISTRIBUTION = REPLICATE,\n    CLUSTERED COLUMNSTORE INDEX\n)\nAS\nSELECT * FROM [ext].[dimension_TransactionType]\nOPTION (LABEL = 'CTAS : Load [velv2].[dimension_TransactionType]')\n;\n\nCREATE TABLE [velv2].[fact_Movement]\nWITH\n(\n    DISTRIBUTION = HASH([Movement Key]),\n    CLUSTERED COLUMNSTORE INDEX\n)\nAS\nSELECT * FROM [ext].[fact_Movement]\nOPTION (LABEL = 'CTAS : Load [velv2].[fact_Movement]')\n;\n\nCREATE TABLE [velv2].[fact_Order]\nWITH\n(\n    DISTRIBUTION = HASH([Order Key]),\n    CLUSTERED COLUMNSTORE INDEX\n)\nAS\nSELECT * FROM [ext].[fact_Order]\nOPTION (LABEL = 'CTAS : Load [velv2].[fact_Order]')\n;\n\nCREATE TABLE [velv2].[fact_Purchase]\nWITH\n(\n    DISTRIBUTION = HASH([Purchase Key]),\n    CLUSTERED COLUMNSTORE INDEX\n)\nAS\nSELECT * FROM [ext].[fact_Purchase]\nOPTION (LABEL = 'CTAS : Load [velv2].[fact_Purchase]')\n;\n\nCREATE TABLE [velv2].[seed_Sale]\nWITH\n(\n    DISTRIBUTION = HASH([WWI Invoice ID]),\n    CLUSTERED COLUMNSTORE INDEX\n)\nAS\nSELECT * FROM [ext].[fact_Sale]\nOPTION (LABEL = 'CTAS : Load [velv2].[seed_Sale]')\n;\n\nCREATE TABLE [velv2].[fact_StockHolding]\nWITH\n(\n    DISTRIBUTION = HASH([Stock Holding Key]),\n    CLUSTERED COLUMNSTORE INDEX\n)\nAS\nSELECT * FROM [ext].[fact_StockHolding]\nOPTION (LABEL = 'CTAS : Load [velv2].[fact_StockHolding]')\n;\n\nCREATE TABLE [velv2].[fact_Transaction]\nWITH\n(\n    DISTRIBUTION = HASH([Transaction Key]),\n    CLUSTERED COLUMNSTORE INDEX\n)\nAS\nSELECT * FROM [ext].[fact_Transaction]\nOPTION (LABEL = 'CTAS : Load [velv2].[fact_Transaction]')\n;",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "SQLPool01",
+				"poolName": "SQLPool01"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
