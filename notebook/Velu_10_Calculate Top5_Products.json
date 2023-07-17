@@ -1,7 +1,7 @@
 {
-	"name": "________ old_____ L07_Ex1_Calculate Top 5 Products",
+	"name": "Velu_10_Calculate Top5_Products",
 	"properties": {
-		"description": "Calculate Top 5 Products",
+		"description": "Calculate Top 5 Products\nl07_Ex1",
 		"nbformat": 4,
 		"nbformat_minor": 2,
 		"bigDataPool": {
@@ -18,7 +18,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "fa879fb3-200c-4ade-bf1e-61519cdfeb97"
+				"spark.autotune.trackingId": "5d7e8992-38e9-40fc-b02a-34daa3893510"
 			}
 		},
 		"metadata": {
@@ -50,6 +50,20 @@
 		},
 		"cells": [
 			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"Calculate top 5 products read from parquet and \r\n",
+					"result written to top5_product"
+				]
+			},
+			{
 				"cell_type": "code",
 				"metadata": {
 					"microsoft": {
@@ -59,7 +73,7 @@
 				},
 				"source": [
 					"%%pyspark\r\n",
-					"df = spark.read.load('abfss://wwi-02@asadatalake19hvmew.dfs.core.windows.net/top-products/*.parquet', format='parquet')\r\n",
+					"df = spark.read.load('abfss://asa-kz@asadatalake19hvmew.dfs.core.windows.net/top-products/*.parquet', format='parquet')\r\n",
 					"display(df.limit(10))"
 				],
 				"execution_count": 2
@@ -79,8 +93,10 @@
 				},
 				"source": [
 					"topPurchases = df.select(\r\n",
-					"    \"UserId\", \"ProductId\",\r\n",
-					"    \"ItemsPurchasedLast12Months\", \"IsTopProduct\",\r\n",
+					"    \"UserId\", \r\n",
+					"    \"ProductId\",\r\n",
+					"    \"ItemsPurchasedLast12Months\",\r\n",
+					"    \"IsTopProduct\",\r\n",
 					"    \"IsPreferredProduct\")\r\n",
 					"\r\n",
 					"# create temp  view top_purchases\r\n",
@@ -111,7 +127,7 @@
 					"%%sql\r\n",
 					"select * from top_purchases LIMIT 11"
 				],
-				"execution_count": 4
+				"execution_count": 5
 			},
 			{
 				"cell_type": "code",
@@ -137,6 +153,21 @@
 					"topPreferredProducts.show(11)"
 				],
 				"execution_count": 6
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"Additional transofrmation in SQL \r\n",
+					"row)numbser \r\n",
+					"where"
+				]
 			},
 			{
 				"cell_type": "code",
@@ -262,6 +293,19 @@
 				"execution_count": 11
 			},
 			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"Write calculated results  to datalake storage as parquet in top5-products dir "
+				]
+			},
+			{
 				"cell_type": "code",
 				"metadata": {
 					"jupyter": {
@@ -280,7 +324,7 @@
 				"source": [
 					"%%pyspark\r\n",
 					"\r\n",
-					"top5ProductsOverall.write.parquet('abfss://wwi-02@asadatalake19hvmew.dfs.core.windows.net/top5-products/' + str(runId) + '.parquet')"
+					"top5ProductsOverall.write.parquet('abfss://asa-kz@asadatalake19hvmew.dfs.core.windows.net/top5-products/' + str(runId) + '.parquet')"
 				],
 				"execution_count": 12
 			}

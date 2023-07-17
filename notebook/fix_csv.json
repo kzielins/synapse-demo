@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "8345b38c-9b9f-4e3c-84e4-131807193126"
+				"spark.autotune.trackingId": "5cbfdc1d-5a2d-4922-aae6-50cf52e4a301"
 			}
 		},
 		"metadata": {
@@ -53,8 +53,9 @@
 				"source": [
 					"import numpy as np\r\n",
 					"\r\n",
-					"#rdd = sc.textFile(f'abfss://csv@kzlongtermbackupstorage.dfs.core.windows.net/broken_CSV/broken_CSV.csv') \r\n",
-					"rdd = sc.textFile(f'abfss://wwi-02@asadatalake19hvmew.dfs.core.windows.net/sale-poc/sale-20170502.csv')"
+					"##rdd = sc.textFile(f'abfss://wwi-02@asadatalake19hvmew.dfs.core.windows.net/sale-poc/sale-20170502.csv')\r\n",
+					"rdd = sc.textFile(f'abfss://csv@kzlongtermbackupstorage.dfs.core.windows.net/broken_CSV/broken_CSV.csv') \r\n",
+					""
 				],
 				"execution_count": 14
 			},
@@ -141,8 +142,8 @@
 					}
 				},
 				"source": [
-					"#df_fixed.write.format('csv').option('header',True).mode('overwrite').option('sep',',').save(f'abfss://csv@kzlongtermbackupstorage.dfs.core.windows.net/fixedcsv/')\r\n",
-					"df_fixed.write.format('csv').option('header',True).mode('overwrite').option('sep',',').save(f'abfss://wwi-02@asadatalake19hvmew.dfs.core.windows.net/sale-poc/sale-20170502-fixed2')"
+					"#df_fixed.write.format('csv').option('header',True).mode('overwrite').option('sep',',').save(f'abfss://wwi-02@asadatalake19hvmew.dfs.core.windows.net/sale-poc/sale-20170502-fixed2')\r\n",
+					"df_fixed.write.format('csv').option('header',True).mode('overwrite').option('sep',',').save(f'abfss://csv@kzlongtermbackupstorage.dfs.core.windows.net/fixedcsv/')"
 				],
 				"execution_count": 12
 			}
