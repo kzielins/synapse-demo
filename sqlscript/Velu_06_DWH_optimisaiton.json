@@ -1,0 +1,18 @@
+{
+	"name": "Velu_06_DWH_optimisaiton",
+	"properties": {
+		"description": "https://github.com/solliancenet/azure-synapse-analytics-workshop-400/blob/master/day-02/activity03-dw-optimization.md",
+		"content": {
+			"query": "---optimisation query\n/* \n*/\n\nSELECT\n    MIN(AvgPrice) as MinCustomerAvgPrice\n    ,MAX(AvgPrice) as MaxCustomerAvgPrice\n    ,MIN(AvgTotalAmount) as MinCustomerAvgTotalAmount\n    ,MAX(AvgTotalAmount) as MaxCustomerAvgTotalAmount\n    ,MIN(AvgProfitAmount) as MinAvgProfitAmount\n    ,MAX(AvgProfitAmount) as MaxAvgProfitAmount\nFROM\n(\n    SELECT\n        FS.CustomerID\n        ,MIN(FS.Quantity) as MinQuantity\n        ,MAX(FS.Quantity) as MaxQuantity\n        ,AVG(FS.Price) as AvgPrice\n        ,AVG(FS.TotalAmount) as AvgTotalAmount\n        ,AVG(FS.ProfitAmount) as AvgProfitAmount\n        ,COUNT(DISTINCT FS.StoreId) as DistinctStores\n    FROM\n        wwi_perf.Sale_Heap FS\n    GROUP BY\n        FS.CustomerId\n) T\n\n\n-----\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "SQLPool01",
+				"poolName": "SQLPool01"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

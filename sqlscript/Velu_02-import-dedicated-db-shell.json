@@ -2,7 +2,7 @@
 	"name": "Velu_02-import-dedicated-db-shell",
 	"properties": {
 		"content": {
-			"query": "/*\nuse PowerShell to import data to SQLPool01 (dedicated SQL )\n\nsample DimDate\nbcp 'velu.DimDate' in ./DimDate.txt -S \"asaworkspace19hvmew.sql.azuresynapse.net\"  -f ./DimDate.fmt -q -k -E -b 5000 -U asa.sql.admin -P '123qweASD!' -d 'SQLPool01'\n\nGet-ChildItem \"./data/*.txt\" -File | Foreach-Object {\n    $file = $_.FullName\n\t$table = $_.Name.Replace(\".txt\",\"\")\n\tbcp velu.$table in $file -S \"asaworkspace19hvmew.sql.azuresynapse.net\"  -f -f $file.Replace(\"txt\", \"fmt\") -q -k -E -b 5000 -U asa.sql.admin -P '123qweASD!' -d 'SQLPool01'\n}\t\n\t\n \n */",
+			"query": "/*\nuse PowerShell to import data to SQLPool01 (dedicated SQL )\n\nsample DimDate\nbcp 'velu.DimDate' in ./DimDate.txt -S \"asaworkspace19hvmew.sql.azuresynapse.net\"  -f ./DimDate.fmt -q -k -E -b 5000 -U asa.sql.admin -P '123qweASD!' -d 'SQLPool01'\nbcp 'velu.DimProduct' in ./DimProduct.txt -S \"asaworkspace19hvmew.sql.azuresynapse.net\"  -f ./DimProduct.fmt -q -k -E -b 5000 -U asa.sql.admin -P '123qweASD!' -d 'SQLPool01'\n\nGet-ChildItem \"./data/*.txt\" -File | Foreach-Object {\n    $file = $_.FullName\n\t$table = $_.Name.Replace(\".txt\",\"\")\n\tbcp velu.$table in $file -S \"asaworkspace19hvmew.sql.azuresynapse.net\"  -f -f $file.Replace(\"txt\", \"fmt\") -q -k -E -b 5000 -U asa.sql.admin -P '123qweASD!' -d 'SQLPool01'\n}\t\n\t\n \n */",
 			"metadata": {
 				"language": "sql"
 			},
