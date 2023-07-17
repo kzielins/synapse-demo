@@ -1,6 +1,7 @@
 {
-	"name": "L04_Ex2_transform",
+	"name": "Velu_02_sparc_profit",
 	"properties": {
+		"description": "L04_Ex2_transform",
 		"nbformat": 4,
 		"nbformat_minor": 2,
 		"bigDataPool": {
@@ -17,7 +18,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "96417187-73b7-4ea9-9feb-33918c29b00c"
+				"spark.autotune.trackingId": "1817a1b8-3035-4d11-b51e-aa0ce924d029"
 			}
 		},
 		"metadata": {
@@ -61,7 +62,7 @@
 					"df = spark.read.load('abfss://asa-kz@asadatalake19hvmew.dfs.core.windows.net/sale-small/*/*/*/*/*.parquet', format='parquet')\r\n",
 					"display(df.limit(10))"
 				],
-				"execution_count": 1
+				"execution_count": 4
 			},
 			{
 				"cell_type": "code",
@@ -77,9 +78,80 @@
 					}
 				},
 				"source": [
-					"df.printSchema()"
+					"df.createOrReplaceTempView(\"sale_small\")"
 				],
 				"execution_count": 5
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\r\n",
+					"\r\n",
+					"CREATE OR REPLACE TEMPORARY VIEW sale_product_profit\r\n",
+					"AS\r\n",
+					"    select \r\n",
+					"        TransactionDate,\r\n",
+					"        ProductId, \r\n",
+					"        sum(ProfitAmount) as sum_ProfitAmount,\r\n",
+					"        avg(Quantity) as avg_Quantity,\r\n",
+					"        sum(Quantity) as sum_Quantity\r\n",
+					"    from sale_small\r\n",
+					"    group by\r\n",
+					"        TransactionDate,\r\n",
+					"        ProductId"
+				],
+				"execution_count": 6
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\r\n",
+					"select * from sale_product_profit"
+				],
+				"execution_count": 7
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"count product profit for transaction"
+				]
 			},
 			{
 				"cell_type": "code",
@@ -102,13 +174,33 @@
 					"\r\n",
 					"profitByDateProduct = (df.groupBy(\"TransactionDate\",\"ProductId\")\r\n",
 					"    .agg(\r\n",
-					"        sum(\"ProfitAmount\").alias(\"(sum)ProfitAmount\"),\r\n",
-					"        round(avg(\"Quantity\"), 4).alias(\"(avg)Quantity\"),\r\n",
-					"        sum(\"Quantity\").alias(\"(sum)Quantity\"))\r\n",
+					"        sum(\"ProfitAmount\").alias(\"sum_ProfitAmount\"),\r\n",
+					"        round(avg(\"Quantity\"), 4).alias(\"avg_Quantity\"),\r\n",
+					"        sum(\"Quantity\").alias(\"sum_Quantity\"))\r\n",
 					"    .orderBy(\"TransactionDate\"))\r\n",
-					"display(profitByDateProduct.limit(100))"
+					"display(profitByDateProduct.limit(11))"
 				],
-				"execution_count": 6
+				"execution_count": 12
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"import uuid\r\n",
+					"runId = uuid.uuid4()\r\n",
+					"profitByDateProduct.write.parquet('abfss://asa-kz@asadatalake19hvmew.dfs.core.windows.net/sale-product-profit/' + str(runId) + '.parquet')"
+				],
+				"execution_count": 13
 			}
 		]
 	}
