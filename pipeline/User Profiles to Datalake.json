@@ -47,7 +47,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"notebook": {
-						"referenceName": "________ old_____ L07_Ex1_Calculate Top 5 Products",
+						"referenceName": "VELU_10_Calculate_Top5-Products",
 						"type": "NotebookReference"
 					},
 					"parameters": {
