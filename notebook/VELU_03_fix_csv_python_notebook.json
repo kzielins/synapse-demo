@@ -1,5 +1,5 @@
 {
-	"name": "fix_csv",
+	"name": "VELU_03_fix_csv_python_notebook",
 	"properties": {
 		"nbformat": 4,
 		"nbformat_minor": 2,
@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "0a88b8d6-5b11-413e-b173-2cc28fd944d8"
+				"spark.autotune.trackingId": "f9d5ee08-2a96-49ef-860a-6663ea13e9d2"
 			}
 		},
 		"metadata": {
@@ -49,17 +49,28 @@
 		},
 		"cells": [
 			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"read broken csv - bad row delimiter , only column as ,"
+				]
+			},
+			{
 				"cell_type": "code",
 				"source": [
 					"import numpy as np\r\n",
-					"\r\n",
-					"##rdd = sc.textFile(f'abfss://wwi-02@asadatalake19hvmew.dfs.core.windows.net/sale-poc/sale-20170502.csv')\r\n",
 					"\r\n",
 					"rdd = sc.textFile(f'abfss://asa-kz@asadatalake19hvmew.dfs.core.windows.net/sale-poc/sale-20170502.csv')\r\n",
 					"#rdd = sc.textFile(f'abfss://csv@kzlongtermbackupstorage.dfs.core.windows.net/broken_CSV/broken_CSV.csv') \r\n",
 					""
 				],
-				"execution_count": 1
+				"execution_count": 3
 			},
 			{
 				"cell_type": "code",
@@ -81,7 +92,7 @@
 					"field_count = len(data)\r\n",
 					"print(field_count)"
 				],
-				"execution_count": 15
+				"execution_count": 4
 			},
 			{
 				"cell_type": "code",
@@ -108,7 +119,7 @@
 					"    max_index += 11\r\n",
 					" "
 				],
-				"execution_count": 16
+				"execution_count": 5
 			},
 			{
 				"cell_type": "code",
@@ -128,7 +139,20 @@
 					"df_fixed = spark.createDataFrame(row_list,schema=['TransactionId', 'CustomerId', 'ProductId', 'Quantity', 'Price', 'TotalAmount', 'TransactionDateId', 'ProfitAmount', 'Hour', 'Minute', 'StoreId'])\r\n",
 					"display(df_fixed.limit(10))"
 				],
-				"execution_count": 17
+				"execution_count": 6
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"write to datalake   "
+				]
 			},
 			{
 				"cell_type": "code",
@@ -144,8 +168,27 @@
 					}
 				},
 				"source": [
-					"#df_fixed.write.format('csv').option('header',True).mode('overwrite').option('sep',',').save(f'abfss://wwi-02@asadatalake19hvmew.dfs.core.windows.net/sale-poc/sale-20170502-fixed2')\r\n",
-					"df_fixed.write.format('csv').option('header',True).mode('overwrite').option('sep',',').save(f'abfss://csv@kzlongtermbackupstorage.dfs.core.windows.net/fixedcsv/')"
+					"df_fixed.write.format('csv').option('header',True).mode('overwrite').option('sep',',').save(f'abfss://asa-kz@asadatalake19hvmew.dfs.core.windows.net/sale-poc/sale-20170502-fixed2')\r\n",
+					"#df_fixed.write.format('csv').option('header',True).mode('overwrite').option('sep',',').save(f'abfss://csv@kzlongtermbackupstorage.dfs.core.windows.net/fixedcsv/')"
+				],
+				"execution_count": 9
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					" \r\n",
+					"mssparkutils.fs.ls(\"abfss://asa-kz@asadatalake19hvmew.dfs.core.windows.net/sale-poc\")"
 				],
 				"execution_count": 12
 			}
