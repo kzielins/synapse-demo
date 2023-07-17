@@ -1,7 +1,7 @@
 {
-	"name": "Velu_10_Calculate Top5_Products",
+	"name": "Velu_10_Calculate Top10_Products",
 	"properties": {
-		"description": "Calculate Top 5 Products\nl07_Ex1",
+		"description": "Calculate Top 10 Products\nl07_Ex1",
 		"nbformat": 4,
 		"nbformat_minor": 2,
 		"bigDataPool": {
@@ -18,7 +18,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "5d7e8992-38e9-40fc-b02a-34daa3893510"
+				"spark.autotune.trackingId": "83083389-9ee6-43c4-93e0-34ff79608d6b"
 			}
 		},
 		"metadata": {
@@ -59,8 +59,8 @@
 					}
 				},
 				"source": [
-					"Calculate top 5 products read from parquet and \r\n",
-					"result written to top5_product"
+					"Calculate top 10 products read from parquet and \r\n",
+					"result written to top10_product"
 				]
 			},
 			{
@@ -73,6 +73,9 @@
 				},
 				"source": [
 					"%%pyspark\r\n",
+					"import uuid\r\n",
+					"\r\n",
+					"\r\n",
 					"df = spark.read.load('abfss://asa-kz@asadatalake19hvmew.dfs.core.windows.net/top-products/*.parquet', format='parquet')\r\n",
 					"display(df.limit(10))"
 				],
@@ -117,29 +120,6 @@
 						"transient": {
 							"deleting": false
 						}
-					},
-					"microsoft": {
-						"language": "sparksql"
-					},
-					"collapsed": false
-				},
-				"source": [
-					"%%sql\r\n",
-					"select * from top_purchases LIMIT 11"
-				],
-				"execution_count": 5
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
 					}
 				},
 				"source": [
@@ -164,9 +144,7 @@
 					}
 				},
 				"source": [
-					"Additional transofrmation in SQL \r\n",
-					"row)numbser \r\n",
-					"where"
+					"Calcluate top 10 products, user"
 				]
 			},
 			{
@@ -189,7 +167,7 @@
 				"source": [
 					"%%sql\r\n",
 					"\r\n",
-					"CREATE OR REPLACE TEMPORARY VIEW top_5_products\r\n",
+					"CREATE OR REPLACE TEMPORARY VIEW top_10_productsUser\r\n",
 					"AS\r\n",
 					"    select \r\n",
 					"        UserId,\r\n",
@@ -197,11 +175,11 @@
 					"        ItemsPurchasedLast12Months\r\n",
 					"    from (\r\n",
 					"            select *,\r\n",
-					"                row_number() over (partition by UserId order by ItemsPurchasedLast12Months desc) as seqnum\r\n",
+					"                row_number() over (partition by UserId order by ItemsPurchasedLast12Months desc) as rownum\r\n",
 					"            from top_purchases\r\n",
 					"        ) a\r\n",
 					"    where \r\n",
-					"        seqnum <= 5 and \r\n",
+					"        rownum <= 10 and \r\n",
 					"        IsTopProduct == true and \r\n",
 					"        IsPreferredProduct = true\r\n",
 					"    order by\r\n",
@@ -223,9 +201,8 @@
 					}
 				},
 				"source": [
-					"top5Products = sqlContext.table(\"top_5_products\")\r\n",
-					"\r\n",
-					"top5Products.show(11)"
+					"top10ProductsUser = sqlContext.table(\"top_10_productsUser\")\r\n",
+					"top10ProductsUser.show(11)"
 				],
 				"execution_count": 8
 			},
@@ -243,54 +220,28 @@
 					}
 				},
 				"source": [
-					"print('topPreferredProducts(IsTopProduct=T,IsPreferredProduct=T): ', topPreferredProducts.count(), ', top5Products (filter: ', top5Products.count())"
+					"runId = uuid.uuid4()\r\n",
+					"top10ProductsUser.write.parquet('abfss://asa-kz@asadatalake19hvmew.dfs.core.windows.net/top10-productsUser/' + str(runId) + '.parquet')"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"print('topPreferredProducts(IsTopProduct=T,IsPreferredProduct=T): ', topPreferredProducts.count(), ', top10ProductsUser (filter: ', top10ProductsUser.count())"
 				],
 				"execution_count": 9
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"top5ProductsOverall = (top5Products.select(\"ProductId\",\"ItemsPurchasedLast12Months\")\r\n",
-					"    .groupBy(\"ProductId\")\r\n",
-					"    .agg( sum(\"ItemsPurchasedLast12Months\").alias(\"Total\") )\r\n",
-					"    .orderBy( col(\"Total\").desc() )\r\n",
-					"    .limit(5))\r\n",
-					"\r\n",
-					"top5ProductsOverall.show()"
-				],
-				"execution_count": 10
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"import uuid\r\n",
-					"\r\n",
-					"# Generate random GUID\r\n",
-					"runId = uuid.uuid4()"
-				],
-				"execution_count": 11
 			},
 			{
 				"cell_type": "markdown",
@@ -302,7 +253,7 @@
 					}
 				},
 				"source": [
-					"Write calculated results  to datalake storage as parquet in top5-products dir "
+					"Caclulate ALL top 10 products"
 				]
 			},
 			{
@@ -316,15 +267,48 @@
 						"transient": {
 							"deleting": false
 						}
-					},
-					"microsoft": {
-						"language": "python"
 					}
 				},
 				"source": [
-					"%%pyspark\r\n",
+					"top10ProductsOverall = (top10ProductsUser.select(\"ProductId\",\"ItemsPurchasedLast12Months\")\r\n",
+					"    .groupBy(\"ProductId\")\r\n",
+					"    .agg( sum(\"ItemsPurchasedLast12Months\").alias(\"Total\") )\r\n",
+					"    .orderBy( col(\"Total\").desc() )\r\n",
+					"    .limit(10))\r\n",
 					"\r\n",
-					"top5ProductsOverall.write.parquet('abfss://asa-kz@asadatalake19hvmew.dfs.core.windows.net/top5-products/' + str(runId) + '.parquet')"
+					"top10ProductsOverall.show(11)"
+				],
+				"execution_count": 10
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"Write calculated results  to datalake storage as parquet in top10-products dir "
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"runId = uuid.uuid4()\r\n",
+					"top10ProductsOverall.write.parquet('abfss://asa-kz@asadatalake19hvmew.dfs.core.windows.net/top10-products/' + str(runId) + '.parquet')"
 				],
 				"execution_count": 12
 			}
