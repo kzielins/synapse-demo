@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dsql_query number_nodes="1" number_distributions="60" number_distributions_per_node="60">
+  <sql>SELECT TOP 1000 * FROM
+(
+    SELECT
+        S.CustomerId
+        ,SUM(S.TotalAmount) as TotalAmount
+    FROM
+        [velu].[Sale_Heap] S
+    GROUP BY
+        S.CustomerId
+) T</sql>
+  <materialized_view_candidates>
+    <materialized_view_candidates with_constants="False">CREATE MATERIALIZED VIEW View1 WITH (DISTRIBUTION = HASH([Expr0])) AS
+SELECT [S].[CustomerId] AS [Expr0],
+       SUM([S].[TotalAmount]) AS [Expr1]
+FROM [velu].[Sale_Heap] [S]
+GROUP BY [S].[CustomerId]</materialized_view_candidates>
+  </materialized_view_candidates>
+  <dsql_operations total_cost="0.6588816" total_number_operations="5">
+    <dsql_operation operation_type="RND_ID">
+      <identifier>TEMP_ID_175</identifier>
+    </dsql_operation>
+    <dsql_operation operation_type="ON">
+      <location permanent="false" distribution="AllDistributions" />
+      <sql_operations>
+        <sql_operation type="statement">CREATE TABLE [tempdb].[dbo].[TEMP_ID_175] ([CustomerId] INT NOT NULL, [col] DECIMAL(38, 2) NOT NULL ) WITH(DISTRIBUTED_MOVE_FILE='');</sql_operation>
+      </sql_operations>
+    </dsql_operation>
+    <dsql_operation operation_type="SHUFFLE_MOVE">
+      <operation_cost cost="0.6588816" accumulative_cost="0.6588816" average_rowsize="13" output_rows="12670.8" GroupNumber="11" />
+      <source_statement>SELECT [T1_1].[CustomerId] AS [CustomerId], [T1_1].[col] AS [col] FROM (SELECT SUM([T2_1].[TotalAmount]) AS [col], [T2_1].[CustomerId] AS [CustomerId] FROM [SQLPool01].[velu].[Sale_Heap] AS T2_1 GROUP BY [T2_1].[CustomerId]) AS T1_1
+OPTION (MAXDOP 1, MIN_GRANT_PERCENT = [MIN_GRANT], DISTRIBUTED_MOVE(N''))</source_statement>
+      <destination_table>[TEMP_ID_175]</destination_table>
+      <shuffle_columns>CustomerId;</shuffle_columns>
+    </dsql_operation>
+    <dsql_operation operation_type="RETURN">
+      <location distribution="AllDistributions" />
+      <select>SELECT [T1_1].[CustomerId] AS [CustomerId], [T1_1].[col] AS [col] FROM (SELECT TOP (CAST ((1000) AS BIGINT)) SUM([T2_1].[col]) AS [col], [T2_1].[CustomerId] AS [CustomerId] FROM [tempdb].[dbo].[TEMP_ID_175] AS T2_1 GROUP BY [T2_1].[CustomerId]) AS T1_1
+OPTION (MAXDOP 1, MIN_GRANT_PERCENT = [MIN_GRANT])</select>
+    </dsql_operation>
+    <dsql_operation operation_type="ON">
+      <location permanent="false" distribution="AllDistributions" />
+      <sql_operations>
+        <sql_operation type="statement">DROP TABLE [tempdb].[dbo].[TEMP_ID_175]</sql_operation>
+      </sql_operations>
+    </dsql_operation>
+  </dsql_operations>
+</dsql_query>
