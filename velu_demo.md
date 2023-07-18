@@ -2,28 +2,31 @@
 The purpose this repo is demonstrated DWH build in MS Synapse Analytics with variouse data transformation technics presentation
 ## Architecture
 TODO (require preparation)
+
 ## Sample data to build DWH
 ### TPCD-DS
-Sample generative data warehouse 
-### Worldwide
+Sample generative data warehouse
+ - [Synapse TPCDS - data not available](https://www.albertnogues.com/load-data-from-azure-blob-storage-and-run-tpc-ds-queries-on-azure-synapse/)
+ - [Synapse TPC-DS - data not available](https://www.linkedin.com/pulse/automated-tpc-ds-benchmark-testing-azure-synapse-analytics-wang/)
+### Worldwide , AdventureWorks
+[MS sample database] [MS AdventureWorks ](https://github.com/microsoft/sql-server-samples/tree/master/samples/databases )
 ### Sample database
 [SQL create and load DWH](files/Velu_00_01_veluv2_create_load_DWH.sql)
 ## Data load to 'ext' layer
 - create (silver/ext/staging) layer database structure
-[create sample DWH structure](files/Velu_00_02_create_date_sales.sql)
-[import data to serverless ext layer](files/Velu_03_import_serverless_SQL.sql)
-[import files from csv files with manual shell execution](files/Velu_02-import-dedicated-db-shell.sql)
-
-[create sample v2 DWH structure](files/Velu_00_ext_load_dim_fact.sql)
+  - [create sample DWH structure](files/Velu_00_02_create_date_sales.sql)
+  - [import data to serverless ext layer](files/Velu_03_import_serverless_SQL.sql)
+  - [import files from csv files with manual shell execution](files/Velu_02-import-dedicated-db-shell.sql)
+  - [create sample v2 DWH structure](files/Velu_00_ext_load_dim_fact.sql)
 - slowly change dimension 1,2
 [DWH load - Slowly change dimension 1,2](files/velu_05_DHW_build_SCD1-2.sql)
-- repair input files
-[fix broken input csv file](files/Velu_03_fix_csv_python_notebook.py)
-[fix broken csv](files/VELU_03_fix_csv_python_notebook.html)
+- repair input files 
+  - [fix broken input csv file - python](files/Velu_03_fix_csv_python_notebook.py)
+  - [fix broken csv - html](files/VELU_03_fix_csv_python_notebook.html)
 
 - read diffrent files
-* [Process json file and save results ](files/VELU_09_json_sort_explode_save.html) [notebook](files/VELU_09_json_sort_explode_save.ipynb)
-* [input json file processing (explode)](files/Velu_09_json_sort_explode_save (2).html)
+  - [Process json file and save results ](files/VELU_09_json_sort_explode_save.html) [notebook](files/VELU_09_json_sort_explode_save.ipynb)
+  - [input json file processing (explode)](files/Velu_09_json_sort_explode_save \(2\).html)
 
 
 - save files after transformation
