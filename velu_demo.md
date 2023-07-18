@@ -33,22 +33,22 @@ Sample generative data warehouse
 ## Data transformation 
 - [process data and store to external files/gen2](files/Velu_02_create_external_table_csv_parquet.sql)
 - [DWH calculation, data generation/preparation](files/Velu_10_Calculate Top10_ProductsUsers.py)
-- [WDH queries TODO](files/Velu_05_DWH_queries.sql)
+- [WDH queries ](files/Velu_05_DWH_queries.sql)
 
 - [calculation example - calculate profit](files/Velu_02_sparc_profit (1).html)
-- [pools](files/Velu_03_SQL_Spark_pools_Synapse.html)
-- [pools python](files/Velu_03_SQL_Spark_pools_Synapse.py)
+- [Spark transformation - html](files/Velu_03_SQL_Spark_pools_Synapse.html)
+- [Spark transformation - python](files/Velu_03_SQL_Spark_pools_Synapse.py)
 
 
 
 ## Data optimisation
 - Indexes, Cache views
-[DWH optimisation result](files/Velu_06_DWH_optimisaiton.sqlplan)
-[WDH optimisation Heap->Hash, partitions, views](files/Velu_06_DWH_optimisaiton_HEAP_HASH_Partition.sql)
+  - [DWH optimisation result](files/Velu_06_DWH_optimisaiton.sqlplan)
+  - [WDH optimisation Heap->Hash, partitions, views](files/Velu_06_DWH_optimisaiton_HEAP_HASH_Partition.sql)
 
 - Tuning platform
-[tuning process to create dedicated SQL pools for specific users or process (files/Velu_01-setup-dedicated_SQLPool1.sql)
-[Synapse confirm like worload management](files/Velu_12_workload_mgmnt (1).sql)
+  - [tuning process to create dedicated SQL pools for specific users or process](files/Velu_01-setup-dedicated_SQLPool1.sql)
+  - [Synapse worload management](files/Velu_12_workload_mgmnt \(1\).sql)
 ## Piplines examples
 [![Piplene1](files/velu_dataflows_notebooks_sql_scripts.JPG "Piplene1")](https://github.com/kzielins/synapse-demo/blob/velu/pipeline/User%20Profiles%20to%20Datalake%20and%20Calcuate%20Top%205.json "Piplene1")
 [![Piplene2](files/velu_pipline01.JPG "Piplene2")](https://github.com/kzielins/synapse-demo/blob/velu/files/velu_dataflows_notebooks_sql_scripts.JPG "Piplene2")
