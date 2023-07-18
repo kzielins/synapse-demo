@@ -50,10 +50,11 @@ Sample generative data warehouse
   - [tuning process to create dedicated SQL pools for specific users or process](files/Velu_01-setup-dedicated_SQLPool1.sql)
   - [Synapse worload management](files/Velu_12_workload_mgmnt \(1\).sql)
 ## Piplines examples
+Sample Velu: scripts, notebooks, dataflows  
 [![Piplene1](files/velu_dataflows_notebooks_sql_scripts.JPG "Piplene1")](https://github.com/kzielins/synapse-demo/blob/velu/pipeline/User%20Profiles%20to%20Datalake%20and%20Calcuate%20Top%205.json "Piplene1")
+Sample Velu:  pipelines
 [![Piplene2](files/velu_pipline01.JPG "Piplene2")](https://github.com/kzielins/synapse-demo/blob/velu/files/velu_dataflows_notebooks_sql_scripts.JPG "Piplene2")
-[![Piplene3](files/velu_pipline01.JPG "Piplene3")](https://github.com/kzielins/synapse-demo/blob/velu/files/velu_dataflows_notebooks_sql_scripts.JPG "Piplene3")
-
+ 
 ## Other analitics pipelines
 [example analytic notebook python code](files/Velu_04_spark_example_plot.py)
 [example analytic notebook](files/Velu_04_spark_example_plot (1).html)
