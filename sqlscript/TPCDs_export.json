@@ -1,0 +1,17 @@
+{
+	"name": "TPCDs_export",
+	"properties": {
+		"content": {
+			"query": "\n--- https://kzlongtermbackupstorage.blob.core.windows.net/tcpds?sp=racwdl&st=2023-07-15T18:26:44Z&se=2028-07-16T02:26:44Z&spr=https&sv=2022-11-02&sr=c&sig=dSesYyTiP9aOlQeJfOGNyIZmXVVSuLJEJjUfdnVkRQY%3D\n-- errro 105019;External file access failed due to internal error: 'The method or operation is not implemented.'\n \nCREATE DATABASE SCOPED CREDENTIAL [SasTokenTCPDS]\nWITH IDENTITY = 'SHARED ACCESS SIGNATURE',\n     SECRET = 'sp=racwdl&st=2023-07-15T18:26:44Z&se=2028-07-16T02:26:44Z&spr=https&sv=2022-11-02&sr=c&sig=dSesYyTiP9aOlQeJfOGNyIZmXVVSuLJEJjUfdnVkRQY%3D';\nGO\nCREATE EXTERNAL DATA SOURCE [DataSourceTCPDS] WITH (\n    LOCATION = ' https://kzlongtermbackupstorage.blob.core.windows.net/tcpds', CREDENTIAL = [SasTokenTCPDS]\n);\nGO\nCREATE EXTERNAL FILE FORMAT [ParquetFormat] WITH (\n    FORMAT_TYPE = PARQUET,\n    DATA_COMPRESSION = 'org.apache.hadoop.io.compress.SnappyCodec'\n);\nGO\nCREATE EXTERNAL TABLE [customer_parquet] WITH (\n        LOCATION = 'customer/parquet/',\n        DATA_SOURCE = [DataSourceTCPDS],\n        FILE_FORMAT = [ParquetFormat]\n) AS\nSELECT * FROM customer;\nGO\n     \n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "SQLPool01",
+				"poolName": "SQLPool01"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

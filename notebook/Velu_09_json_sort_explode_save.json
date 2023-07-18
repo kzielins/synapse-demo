@@ -1,0 +1,340 @@
+{
+	"name": "Velu_09_json_sort_explode_save",
+	"properties": {
+		"description": "reading json file for User_prrifiles \nexplode json elements (productId, itemsPurchased last 12 mc) \nAgregates by visitor/userid , with count tocal visits,\n\nAgregates by visitor/userid , with sum purchasedvisits,\n,  \n\nWrites results to \n/sum-purchases/' + str(runId) + '.parquet' , \n/count-purchases/' + str(runId) + '.parquet'",
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "SparkPool01",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 2,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "449acef5-100c-479b-b1bf-45176d40471f"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/bf55d59f-9a89-4c29-9b5f-a906c8355065/resourceGroups/data-engineering-synapse-19hvmew/providers/Microsoft.Synapse/workspaces/asaworkspace19hvmew/bigDataPools/SparkPool01",
+				"name": "SparkPool01",
+				"type": "Spark",
+				"endpoint": "https://asaworkspace19hvmew.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/SparkPool01",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": "2.4",
+				"nodeCount": 3,
+				"cores": 4,
+				"memory": 28,
+				"automaticScaleJobs": false
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"reading json file for User_prrifiles \r\n",
+					"explode json elements (productId, itemsPurchased last 12 mc) \r\n",
+					"Agregates by visitor/userid , with count tocal visits,\r\n",
+					"\r\n",
+					"Agregates by visitor/userid , with sum purchasedvisits,\r\n",
+					",  \r\n",
+					"\r\n",
+					"Writes results to \r\n",
+					"/sum-purchases/' + str(runId) + '.parquet' , \r\n",
+					"/count-purchases/' + str(runId) + '.parquet'"
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"df = (spark.read \\\r\n",
+					"        .option('inferSchema', 'true') \\\r\n",
+					"        .json('abfss://asa-kz@asadatalake19hvmew.dfs.core.windows.net/online-user-profiles-02/*.json', multiLine=True)\r\n",
+					"    )\r\n",
+					"\r\n",
+					"df.printSchema()"
+				],
+				"execution_count": 4
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"df.createOrReplaceTempView(\"user_profiles\")"
+				],
+				"execution_count": 5
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\r\n",
+					"\r\n",
+					"SELECT * FROM user_profiles LIMIT 10"
+				],
+				"execution_count": 6
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"explode json "
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"from pyspark.sql.functions import udf, explode\r\n",
+					"\r\n",
+					"flat=df.select('visitorId',explode('topProductPurchases').alias('topProductPurchases_flat'))\r\n",
+					"#flat.show(100)"
+				],
+				"execution_count": 7
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"topPurchases = (flat.select('visitorId','topProductPurchases_flat.productId','topProductPurchases_flat.itemsPurchasedLast12Months')\r\n",
+					"    .orderBy('visitorId'))\r\n",
+					"\r\n",
+					"#topPurchases.show(10)\r\n",
+					"df.createOrReplaceTempView(\"topPurchases\")"
+				],
+				"execution_count": 8
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": false
+				},
+				"source": [
+					"# order  \r\n",
+					"sortedTopPurchases = topPurchases.orderBy(\"itemsPurchasedLast12Months\")\r\n",
+					"display(sortedTopPurchases.limit(10))\r\n",
+					"df.createOrReplaceTempView(\"sortedTopPurchases\")"
+				],
+				"execution_count": 9
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": false
+				},
+				"source": [
+					"from pyspark.sql.functions import *\r\n",
+					"sortedTopPurchasesDesc = (topPurchases.orderBy( col(\"itemsPurchasedLast12Months\").desc() ))\r\n",
+					"display(sortedTopPurchasesDesc.limit(10))"
+				],
+				"execution_count": 13
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql \r\n",
+					"select * from topPurchases"
+				],
+				"execution_count": 14
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"count purchases for each visitor"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": false
+				},
+				"source": [
+					"#10\r\n",
+					"groupedTopPurchases = (sortedTopPurchases.select(\"visitorId\")\r\n",
+					"    .groupBy(\"visitorId\")\r\n",
+					"    .agg(count(\"*\").alias(\"total\"))\r\n",
+					"    .orderBy(\"visitorId\") )\r\n",
+					"\r\n",
+					"display(groupedTopPurchases.limit(100))"
+				],
+				"execution_count": 15
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": false
+				},
+				"source": [
+					"groupedSumPurchases = (sortedTopPurchases.select(\"visitorId\",\"itemsPurchasedLast12Months\")\r\n",
+					"    .groupBy(\"visitorId\")\r\n",
+					"    .agg(sum(\"itemsPurchasedLast12Months\").alias(\"totalItemsPurchased\"))\r\n",
+					"    .orderBy(\"visitorId\") )\r\n",
+					"\r\n",
+					"display(groupedSumPurchases.limit(100))"
+				],
+				"execution_count": 16
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "python"
+					}
+				},
+				"source": [
+					"%%pyspark\r\n",
+					"import uuid\r\n",
+					"# Generate random GUID\r\n",
+					"runId = uuid.uuid4()\r\n",
+					"groupedSumPurchases.write.parquet('abfss://asa-kz@asadatalake19hvmew.dfs.core.windows.net/sum-purchases/' + str(runId) + '.parquet')\r\n",
+					"groupedTopPurchases.write.parquet('abfss://asa-kz@asadatalake19hvmew.dfs.core.windows.net/count-purchases/' + str(runId) + '.parquet')"
+				],
+				"execution_count": 17
+			}
+		]
+	}
+}

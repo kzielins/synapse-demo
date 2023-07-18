@@ -1,0 +1,18 @@
+{
+	"name": "Velu_12_workload_mgmnt",
+	"properties": {
+		"description": "old ____________________ L05_Ex02",
+		"content": {
+			"query": "CREATE USER [krzychzet@gmail.com] FROM EXTERNAL PROVIDER;\nSELECT * FROM sys.database_role_members;\nselect * from sys.database_principals;\nSELECT\n\tr.[name]     AS [Role]\n\t, m.[name]   AS [Member]\n\t, m.Create_date AS [Created Date]\n\t, m.modify_Date AS [Modified Date]\nFROM\n\tsys.database_role_members rm\n\tJOIN sys.database_principals AS r ON rm.[role_principal_id] = r.[principal_id]\n\tJOIN sys.database_principals AS m ON rm.[member_principal_id] = m.[principal_id]\nWHERE\n\tr.[type_desc] = 'DATABASE_ROLE';\n\n\n\n-- Drop objects if they exist\nIF EXISTS (SELECT * FROM sys.workload_management_workload_classifiers WHERE [name] = 'HeavyLoaderKZ')\nBEGIN\n    DROP WORKLOAD CLASSIFIER HeavyLoaderKZ\nEND;\n\nIF EXISTS (SELECT * FROM sys.workload_management_workload_groups WHERE name = 'BigDataLoadKZ')\nBEGIN\n    DROP WORKLOAD GROUP BigDataLoadKZ\nEND;\n\n--Create workload group\nCREATE WORKLOAD GROUP BigDataLoadKZ WITH\n  (\n      MIN_PERCENTAGE_RESOURCE = 50, -- integer value \n      REQUEST_MIN_RESOURCE_GRANT_PERCENT = 25, --  (guaranteed min 4 concurrency)\n      CAP_PERCENTAGE_RESOURCE = 100\n  );\n\n-- Create workload classifier   that assigns the user to the BigDataLoad workload group.\nCREATE WORKLOAD Classifier HeavyLoader_Krzychzet WITH\n(\n    Workload_Group ='BigDataLoad',\n    MemberName='krzychzet@gmail.com',\n    IMPORTANCE = HIGH\n);\n\n\n-------\n\n-- Drop objects if they exist\nIF EXISTS (SELECT * FROM sys.workload_management_workload_classifiers WHERE [name] = 'HeavyLoader')\nBEGIN\n    DROP WORKLOAD CLASSIFIER HeavyLoader\nEND;\n\nIF EXISTS (SELECT * FROM sys.workload_management_workload_groups WHERE name = 'BigDataLoad')\nBEGIN\n    DROP WORKLOAD GROUP BigDataLoad\nEND;\n\n--Create workload group\nCREATE WORKLOAD GROUP BigDataLoad WITH\n  (\n      MIN_PERCENTAGE_RESOURCE = 50, -- integer value\n      REQUEST_MIN_RESOURCE_GRANT_PERCENT = 25, --  (guaranteed min 4 concurrency)\n      CAP_PERCENTAGE_RESOURCE = 100\n  );\n\n-- Create workload classifier  that assigns the asa.sql.import01 user to the BigDataLoad workload group.\nCREATE WORKLOAD Classifier HeavyLoader WITH\n(\n    Workload_Group ='BigDataLoad',\n    MemberName='asa.sql.import01',\n    IMPORTANCE = HIGH\n);\n\n-- View classifiers\nSELECT * FROM sys.workload_management_workload_classifiers",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "SQLPool01",
+				"poolName": "SQLPool01"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

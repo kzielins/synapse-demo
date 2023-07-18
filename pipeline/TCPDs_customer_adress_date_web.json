@@ -1,0 +1,1078 @@
+{
+	"name": "TCPDs_customer_adress_date_web",
+	"properties": {
+		"activities": [
+			{
+				"name": "ForEach_t09",
+				"type": "ForEach",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@pipeline().parameters.cw_items",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Copy_t09",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [
+								{
+									"name": "Source",
+									"value": "@{item().source.tableName}"
+								},
+								{
+									"name": "Destination",
+									"value": "dbo.@{item().destination.table}"
+								}
+							],
+							"typeProperties": {
+								"source": {
+									"type": "MySqlSource"
+								},
+								"sink": {
+									"type": "SqlPoolSink",
+									"writeBehavior": "Insert"
+								},
+								"enableStaging": false,
+								"parallelCopies": 1,
+								"enableSkipIncompatibleRow": true,
+								"translator": {
+									"value": "@item().copyActivity.translator",
+									"type": "Expression"
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "SourceDataset_t09",
+									"type": "DatasetReference",
+									"parameters": {
+										"cw_tableName": "@item().source.tableName"
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "DestinationDataset_t09",
+									"type": "DatasetReference",
+									"parameters": {
+										"cw_table": "@item().destination.table"
+									}
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"cw_items": {
+				"type": "Array",
+				"defaultValue": [
+					{
+						"source": {
+							"tableName": "`customer_address`"
+						},
+						"destination": {
+							"table": "customer_address"
+						},
+						"copyActivity": {
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "ca_address_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "ca_address_sk",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "ca_address_id",
+											"type": "String"
+										},
+										"sink": {
+											"name": "ca_address_id",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "ca_street_number",
+											"type": "String"
+										},
+										"sink": {
+											"name": "ca_street_number",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "ca_street_name",
+											"type": "String"
+										},
+										"sink": {
+											"name": "ca_street_name",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "ca_street_type",
+											"type": "String"
+										},
+										"sink": {
+											"name": "ca_street_type",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "ca_suite_number",
+											"type": "String"
+										},
+										"sink": {
+											"name": "ca_suite_number",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "ca_city",
+											"type": "String"
+										},
+										"sink": {
+											"name": "ca_city",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "ca_county",
+											"type": "String"
+										},
+										"sink": {
+											"name": "ca_county",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "ca_state",
+											"type": "String"
+										},
+										"sink": {
+											"name": "ca_state",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "ca_zip",
+											"type": "String"
+										},
+										"sink": {
+											"name": "ca_zip",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "ca_country",
+											"type": "String"
+										},
+										"sink": {
+											"name": "ca_country",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "ca_gmt_offset",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "ca_gmt_offset",
+											"type": "Double",
+											"physicalType": "float"
+										}
+									},
+									{
+										"source": {
+											"name": "ca_location_type",
+											"type": "String"
+										},
+										"sink": {
+											"name": "ca_location_type",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						}
+					},
+					{
+						"source": {
+							"tableName": "`customer`"
+						},
+						"destination": {
+							"table": "customer"
+						},
+						"copyActivity": {
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "c_customer_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "c_customer_sk",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "c_customer_id",
+											"type": "String"
+										},
+										"sink": {
+											"name": "c_customer_id",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "c_current_cdemo_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "c_current_cdemo_sk",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "c_current_hdemo_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "c_current_hdemo_sk",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "c_current_addr_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "c_current_addr_sk",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "c_first_shipto_date_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "c_first_shipto_date_sk",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "c_first_sales_date_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "c_first_sales_date_sk",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "c_salutation",
+											"type": "String"
+										},
+										"sink": {
+											"name": "c_salutation",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "c_first_name",
+											"type": "String"
+										},
+										"sink": {
+											"name": "c_first_name",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "c_last_name",
+											"type": "String"
+										},
+										"sink": {
+											"name": "c_last_name",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "c_preferred_cust_flag",
+											"type": "String"
+										},
+										"sink": {
+											"name": "c_preferred_cust_flag",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "c_birth_day",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "c_birth_day",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "c_birth_month",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "c_birth_month",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "c_birth_year",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "c_birth_year",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "c_birth_country",
+											"type": "String"
+										},
+										"sink": {
+											"name": "c_birth_country",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "c_login",
+											"type": "String"
+										},
+										"sink": {
+											"name": "c_login",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "c_email_address",
+											"type": "String"
+										},
+										"sink": {
+											"name": "c_email_address",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "c_last_review_date",
+											"type": "String"
+										},
+										"sink": {
+											"name": "c_last_review_date",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						}
+					},
+					{
+						"source": {
+							"tableName": "`date_dim`"
+						},
+						"destination": {
+							"table": "date_dim"
+						},
+						"copyActivity": {
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "d_date_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "d_date_sk",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "d_date_id",
+											"type": "String"
+										},
+										"sink": {
+											"name": "d_date_id",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "d_date",
+											"type": "DateTime"
+										},
+										"sink": {
+											"name": "d_date",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "d_month_seq",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "d_month_seq",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "d_week_seq",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "d_week_seq",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "d_quarter_seq",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "d_quarter_seq",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "d_year",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "d_year",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "d_dow",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "d_dow",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "d_moy",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "d_moy",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "d_dom",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "d_dom",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "d_qoy",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "d_qoy",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "d_fy_year",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "d_fy_year",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "d_fy_quarter_seq",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "d_fy_quarter_seq",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "d_fy_week_seq",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "d_fy_week_seq",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "d_day_name",
+											"type": "String"
+										},
+										"sink": {
+											"name": "d_day_name",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "d_quarter_name",
+											"type": "String"
+										},
+										"sink": {
+											"name": "d_quarter_name",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "d_holiday",
+											"type": "String"
+										},
+										"sink": {
+											"name": "d_holiday",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "d_weekend",
+											"type": "String"
+										},
+										"sink": {
+											"name": "d_weekend",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "d_following_holiday",
+											"type": "String"
+										},
+										"sink": {
+											"name": "d_following_holiday",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "d_first_dom",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "d_first_dom",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "d_last_dom",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "d_last_dom",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "d_same_day_ly",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "d_same_day_ly",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "d_same_day_lq",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "d_same_day_lq",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "d_current_day",
+											"type": "String"
+										},
+										"sink": {
+											"name": "d_current_day",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "d_current_week",
+											"type": "String"
+										},
+										"sink": {
+											"name": "d_current_week",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "d_current_month",
+											"type": "String"
+										},
+										"sink": {
+											"name": "d_current_month",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "d_current_quarter",
+											"type": "String"
+										},
+										"sink": {
+											"name": "d_current_quarter",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "d_current_year",
+											"type": "String"
+										},
+										"sink": {
+											"name": "d_current_year",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						}
+					},
+					{
+						"source": {
+							"tableName": "`web_returns`"
+						},
+						"destination": {
+							"table": "web_returns"
+						},
+						"copyActivity": {
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "wr_returned_date_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "wr_returned_date_sk",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "wr_returned_time_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "wr_returned_time_sk",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "wr_item_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "wr_item_sk",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "wr_refunded_customer_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "wr_refunded_customer_sk",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "wr_refunded_cdemo_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "wr_refunded_cdemo_sk",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "wr_refunded_hdemo_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "wr_refunded_hdemo_sk",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "wr_refunded_addr_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "wr_refunded_addr_sk",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "wr_returning_customer_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "wr_returning_customer_sk",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "wr_returning_cdemo_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "wr_returning_cdemo_sk",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "wr_returning_hdemo_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "wr_returning_hdemo_sk",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "wr_returning_addr_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "wr_returning_addr_sk",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "wr_web_page_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "wr_web_page_sk",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "wr_reason_sk",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "wr_reason_sk",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "wr_order_number",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "wr_order_number",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "wr_return_quantity",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "wr_return_quantity",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "wr_return_amt",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "wr_return_amt",
+											"type": "Double",
+											"physicalType": "float"
+										}
+									},
+									{
+										"source": {
+											"name": "wr_return_tax",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "wr_return_tax",
+											"type": "Double",
+											"physicalType": "float"
+										}
+									},
+									{
+										"source": {
+											"name": "wr_return_amt_inc_tax",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "wr_return_amt_inc_tax",
+											"type": "Double",
+											"physicalType": "float"
+										}
+									},
+									{
+										"source": {
+											"name": "wr_fee",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "wr_fee",
+											"type": "Double",
+											"physicalType": "float"
+										}
+									},
+									{
+										"source": {
+											"name": "wr_return_ship_cost",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "wr_return_ship_cost",
+											"type": "Double",
+											"physicalType": "float"
+										}
+									},
+									{
+										"source": {
+											"name": "wr_refunded_cash",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "wr_refunded_cash",
+											"type": "Double",
+											"physicalType": "float"
+										}
+									},
+									{
+										"source": {
+											"name": "wr_reversed_charge",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "wr_reversed_charge",
+											"type": "Double",
+											"physicalType": "float"
+										}
+									},
+									{
+										"source": {
+											"name": "wr_account_credit",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "wr_account_credit",
+											"type": "Double",
+											"physicalType": "float"
+										}
+									},
+									{
+										"source": {
+											"name": "wr_net_loss",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "wr_net_loss",
+											"type": "Double",
+											"physicalType": "float"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						}
+					}
+				]
+			}
+		},
+		"annotations": []
+	}
+}

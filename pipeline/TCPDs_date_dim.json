@@ -1,0 +1,371 @@
+{
+	"name": "TCPDs_date_dim",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy_vpc",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "Source",
+						"value": "`date_dim`"
+					},
+					{
+						"name": "Destination",
+						"value": "dbo.date_dim"
+					}
+				],
+				"typeProperties": {
+					"source": {
+						"type": "MySqlSource"
+					},
+					"sink": {
+						"type": "SqlPoolSink",
+						"writeBehavior": "Insert"
+					},
+					"enableStaging": false,
+					"enableSkipIncompatibleRow": true,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "d_date_sk",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "d_date_sk",
+									"type": "Int64",
+									"physicalType": "bigint"
+								}
+							},
+							{
+								"source": {
+									"name": "d_date_id",
+									"type": "String"
+								},
+								"sink": {
+									"name": "d_date_id",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "d_date",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "d_date",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "d_month_seq",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "d_month_seq",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "d_week_seq",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "d_week_seq",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "d_quarter_seq",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "d_quarter_seq",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "d_year",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "d_year",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "d_dow",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "d_dow",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "d_moy",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "d_moy",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "d_dom",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "d_dom",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "d_qoy",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "d_qoy",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "d_fy_year",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "d_fy_year",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "d_fy_quarter_seq",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "d_fy_quarter_seq",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "d_fy_week_seq",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "d_fy_week_seq",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "d_day_name",
+									"type": "String"
+								},
+								"sink": {
+									"name": "d_day_name",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "d_quarter_name",
+									"type": "String"
+								},
+								"sink": {
+									"name": "d_quarter_name",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "d_holiday",
+									"type": "String"
+								},
+								"sink": {
+									"name": "d_holiday",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "d_weekend",
+									"type": "String"
+								},
+								"sink": {
+									"name": "d_weekend",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "d_following_holiday",
+									"type": "String"
+								},
+								"sink": {
+									"name": "d_following_holiday",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "d_first_dom",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "d_first_dom",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "d_last_dom",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "d_last_dom",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "d_same_day_ly",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "d_same_day_ly",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "d_same_day_lq",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "d_same_day_lq",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "d_current_day",
+									"type": "String"
+								},
+								"sink": {
+									"name": "d_current_day",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "d_current_week",
+									"type": "String"
+								},
+								"sink": {
+									"name": "d_current_week",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "d_current_month",
+									"type": "String"
+								},
+								"sink": {
+									"name": "d_current_month",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "d_current_quarter",
+									"type": "String"
+								},
+								"sink": {
+									"name": "d_current_quarter",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "d_current_year",
+									"type": "String"
+								},
+								"sink": {
+									"name": "d_current_year",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "SourceDataset_vpc",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DestinationDataset_vpc",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"annotations": []
+	}
+}

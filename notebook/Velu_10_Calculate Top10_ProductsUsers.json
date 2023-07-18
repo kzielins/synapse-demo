@@ -1,0 +1,317 @@
+{
+	"name": "Velu_10_Calculate Top10_ProductsUsers",
+	"properties": {
+		"description": "Calculate Top 10 ProductsUsers\nTOP 10 Products overral\n\n\nl07_Ex1",
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "SparkPool01",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 2,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "cde70818-48d9-42dc-8fe2-dd049e73b828"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/bf55d59f-9a89-4c29-9b5f-a906c8355065/resourceGroups/data-engineering-synapse-19hvmew/providers/Microsoft.Synapse/workspaces/asaworkspace19hvmew/bigDataPools/SparkPool01",
+				"name": "SparkPool01",
+				"type": "Spark",
+				"endpoint": "https://asaworkspace19hvmew.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/SparkPool01",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": "2.4",
+				"nodeCount": 3,
+				"cores": 4,
+				"memory": 28,
+				"automaticScaleJobs": false
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"Calculate top 10 products read from parquet and \r\n",
+					"result written to top10_product"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"microsoft": {
+						"language": "python"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%pyspark\r\n",
+					"import uuid\r\n",
+					"\r\n",
+					"\r\n",
+					"df = spark.read.load('abfss://asa-kz@asadatalake19hvmew.dfs.core.windows.net/top-products/*.parquet', format='parquet')\r\n",
+					"display(df.limit(10))"
+				],
+				"execution_count": 1
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"topPurchases = df.select(\r\n",
+					"    \"UserId\", \r\n",
+					"    \"ProductId\",\r\n",
+					"    \"ItemsPurchasedLast12Months\",\r\n",
+					"    \"IsTopProduct\",\r\n",
+					"    \"IsPreferredProduct\")\r\n",
+					"\r\n",
+					"# create temp  view top_purchases\r\n",
+					"topPurchases.createOrReplaceTempView(\"top_purchases\")\r\n",
+					"\r\n",
+					"topPurchases.show(11)"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"from pyspark.sql.functions import *\r\n",
+					"\r\n",
+					"topPreferredProducts = (topPurchases\r\n",
+					"    .filter( col(\"IsTopProduct\") == True)\r\n",
+					"    .filter( col(\"IsPreferredProduct\") == True)\r\n",
+					"    .orderBy( col(\"ItemsPurchasedLast12Months\").desc() ))\r\n",
+					"\r\n",
+					"topPreferredProducts.show(11)"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"Calcluate top 10 products, user"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\r\n",
+					"\r\n",
+					"CREATE OR REPLACE TEMPORARY VIEW top_10_productsUser\r\n",
+					"AS\r\n",
+					"    select \r\n",
+					"        UserId,\r\n",
+					"        ProductId, \r\n",
+					"        ItemsPurchasedLast12Months\r\n",
+					"    from (\r\n",
+					"            select *,\r\n",
+					"                row_number() over (partition by UserId order by ItemsPurchasedLast12Months desc) as rownum\r\n",
+					"            from top_purchases\r\n",
+					"        ) a\r\n",
+					"    where \r\n",
+					"        rownum <= 10 and \r\n",
+					"        IsTopProduct == true and \r\n",
+					"        IsPreferredProduct = true\r\n",
+					"    order by\r\n",
+					"        a.UserId"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"top10ProductsUser = sqlContext.table(\"top_10_productsUser\")\r\n",
+					"top10ProductsUser.show(11)"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"runId = uuid.uuid4()\r\n",
+					"top10ProductsUser.write.parquet('abfss://asa-kz@asadatalake19hvmew.dfs.core.windows.net/top10-productsUser/' + str(runId) + '.parquet')"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"print('topPreferredProducts(IsTopProduct=T,IsPreferredProduct=T): ', topPreferredProducts.count(), ', top10ProductsUser (filter: ', top10ProductsUser.count())"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"Caclulate ALL top 10 products"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"top10ProductsOverall = (top10ProductsUser.select(\"ProductId\",\"ItemsPurchasedLast12Months\")\r\n",
+					"    .groupBy(\"ProductId\")\r\n",
+					"    .agg( sum(\"ItemsPurchasedLast12Months\").alias(\"Total\") )\r\n",
+					"    .orderBy( col(\"Total\").desc() )\r\n",
+					"    .limit(10))\r\n",
+					"\r\n",
+					"top10ProductsOverall.show(11)"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"Write calculated results  to datalake storage as parquet in top10-products dir "
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"runId = uuid.uuid4()\r\n",
+					"top10ProductsOverall.write.parquet('abfss://asa-kz@asadatalake19hvmew.dfs.core.windows.net/top10-products/' + str(runId) + '.parquet')"
+				],
+				"execution_count": null
+			}
+		]
+	}
+}

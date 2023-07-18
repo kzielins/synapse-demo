@@ -1,0 +1,23 @@
+{
+	"name": "SourceDataset_t09",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "tpcdmysql",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"cw_tableName": {
+				"type": "String"
+			}
+		},
+		"annotations": [],
+		"type": "MySqlTable",
+		"schema": [],
+		"typeProperties": {
+			"tableName": {
+				"value": "@dataset().cw_tableName",
+				"type": "Expression"
+			}
+		}
+	}
+}

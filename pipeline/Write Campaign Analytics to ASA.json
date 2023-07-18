@@ -1,0 +1,39 @@
+{
+	"name": "Write Campaign Analytics to ASA",
+	"properties": {
+		"activities": [
+			{
+				"name": "asal400_lab2_writecampaignanalyticstoasa",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "velu_writecampaignanalyticstoasa",
+						"type": "DataFlowReference"
+					},
+					"staging": {
+						"linkedService": {
+							"referenceName": "asadatalake19hvmew",
+							"type": "LinkedServiceReference"
+						},
+						"folderPath": "wwi-02/campaign-analytics-write"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"annotations": []
+	}
+}

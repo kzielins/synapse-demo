@@ -1,0 +1,18 @@
+{
+	"name": "TCPD_export_GEN2",
+	"properties": {
+		"description": "export TCPD to GEN2",
+		"content": {
+			"query": "---https://kzlongtermbackupstorage.blob.core.windows.net/tcpds?sp=racwdl&st=2023-07-15T16:41:35Z&se=2029-07-16T00:41:35Z&spr=https&sv=2022-11-02&sr=c&sig=%2FkSouIEQb8iSsPoKVGtdA%2Baobq7QeSq9ZKblnOIiMKY%3D\n\n\n\n\nCREATE MASTER KEY ENCRYPTION BY PASSWORD ='123qewASD!@#$' ;\nGO\nCREATE DATABASE SCOPED CREDENTIAL [SasToken_tcpds]\nWITH IDENTITY = 'SHARED ACCESS SIGNATURE',\n     SECRET = 'sp=racwdl&st=2023-07-15T16:41:35Z&se=2029-07-16T00:41:35Z&spr=https&sv=2022-11-02&sr=c&sig=%2FkSouIEQb8iSsPoKVGtdA%2Baobq7QeSq9ZKblnOIiMKY%3D';\nGO\nCREATE EXTERNAL DATA SOURCE [MyDataSource_tcpds] WITH (\n    LOCATION = 'https://kzlongtermbackupstorage.blob.core.windows.net/tcpds', CREDENTIAL = [SasToken_tcpds]\n);\nGO\nCREATE EXTERNAL FILE FORMAT [ParquetF] WITH (\n    FORMAT_TYPE = PARQUET,\n    DATA_COMPRESSION = 'org.apache.hadoop.io.compress.SnappyCodec'\n);\nGO\n\n\nCREATE EXTERNAL TABLE [customer_tcpds] WITH (\n        LOCATION = 'customer/parquet/',\n        DATA_SOURCE = [MyDataSource_tcpds],\n        FILE_FORMAT = [ParquetF]\n) AS\nSELECT * FROM [dbo].[customer];\nGO;\nCREATE EXTERNAL TABLE [customer_address_tcpd] WITH (\n        LOCATION = 'customer_address/',\n        DATA_SOURCE = [MyDataSource_tcpd],\n        FILE_FORMAT = [Parquet]\n) AS\nSELECT * FROM [dbo].[customer_address];\nGO;",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "SQLPool01",
+				"poolName": "SQLPool01"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

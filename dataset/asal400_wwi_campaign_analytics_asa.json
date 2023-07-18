@@ -1,0 +1,53 @@
+{
+	"name": "asal400_wwi_campaign_analytics_asa",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "sqlpool01",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": [
+			{
+				"name": "Region",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Country",
+				"type": "nvarchar"
+			},
+			{
+				"name": "ProductCategory",
+				"type": "nvarchar"
+			},
+			{
+				"name": "CampaignName",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Revenue",
+				"type": "decimal",
+				"precision": 10,
+				"scale": 2
+			},
+			{
+				"name": "RevenueTarget",
+				"type": "decimal",
+				"precision": 10,
+				"scale": 2
+			},
+			{
+				"name": "City",
+				"type": "nvarchar"
+			},
+			{
+				"name": "State",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "wwi",
+			"table": "CampaignAnalytics"
+		}
+	}
+}

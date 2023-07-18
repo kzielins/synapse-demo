@@ -1,0 +1,198 @@
+{
+	"name": "Velu_03_fix_csv_python_notebook",
+	"properties": {
+		"description": "sample fix csv file with line delimieter error, save to fixed dir ",
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "SparkPool01",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 2,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "0f686b2a-6ca8-4a4e-a943-cb2abf5b186e"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/bf55d59f-9a89-4c29-9b5f-a906c8355065/resourceGroups/data-engineering-synapse-19hvmew/providers/Microsoft.Synapse/workspaces/asaworkspace19hvmew/bigDataPools/SparkPool01",
+				"name": "SparkPool01",
+				"type": "Spark",
+				"endpoint": "https://asaworkspace19hvmew.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/SparkPool01",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": "2.4",
+				"nodeCount": 3,
+				"cores": 4,
+				"memory": 28,
+				"automaticScaleJobs": false
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"read broken csv - bad row delimiter , only column as ,"
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"import numpy as np\r\n",
+					"\r\n",
+					"rdd = sc.textFile(f'abfss://asa-kz@asadatalake19hvmew.dfs.core.windows.net/sale-poc/sale-20170502.csv')\r\n",
+					"#rdd = sc.textFile(f'abfss://csv@kzlongtermbackupstorage.dfs.core.windows.net/broken_CSV/broken_CSV.csv') \r\n",
+					""
+				],
+				"execution_count": 3
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"#read and split by ','\r\n",
+					"data = rdd.first().split(',')\r\n",
+					"# count rows \r\n",
+					"field_count = len(data)\r\n",
+					"print(field_count)"
+				],
+				"execution_count": 4
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"row_list = []\r\n",
+					"max_index = 11\r\n",
+					"\r\n",
+					"# wiersz ma 11 kolumn\r\n",
+					"while max_index <= len(data):\r\n",
+					"    row = [data[i] for i in np.arange(max_index-11, max_index)]\r\n",
+					"    row_list.append(row)\r\n",
+					"\r\n",
+					"    max_index += 11\r\n",
+					" "
+				],
+				"execution_count": 5
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": false
+				},
+				"source": [
+					"df_fixed = spark.createDataFrame(row_list,schema=['TransactionId', 'CustomerId', 'ProductId', 'Quantity', 'Price', 'TotalAmount', 'TransactionDateId', 'ProfitAmount', 'Hour', 'Minute', 'StoreId'])\r\n",
+					"display(df_fixed.limit(10))"
+				],
+				"execution_count": 6
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"write to datalake   "
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"df_fixed.write.format('csv').option('header',True).mode('overwrite').option('sep',',').save(f'abfss://asa-kz@asadatalake19hvmew.dfs.core.windows.net/sale-poc/sale-20170502-fixed2')\r\n",
+					"#df_fixed.write.format('csv').option('header',True).mode('overwrite').option('sep',',').save(f'abfss://csv@kzlongtermbackupstorage.dfs.core.windows.net/fixedcsv/')"
+				],
+				"execution_count": 9
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					" \r\n",
+					"mssparkutils.fs.ls(\"abfss://asa-kz@asadatalake19hvmew.dfs.core.windows.net/sale-poc\")"
+				],
+				"execution_count": 12
+			}
+		]
+	}
+}

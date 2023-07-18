@@ -1,0 +1,264 @@
+{
+	"name": "Velu_03_SQL_Spark_pools_Synapse",
+	"properties": {
+		"description": "Integrate SQLPoll with servlerless\n\n\n\nL4_Ex4_",
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "SparkPool01",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 2,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "a149b04b-d13f-467d-9152-14db843885d2"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/bf55d59f-9a89-4c29-9b5f-a906c8355065/resourceGroups/data-engineering-synapse-19hvmew/providers/Microsoft.Synapse/workspaces/asaworkspace19hvmew/bigDataPools/SparkPool01",
+				"name": "SparkPool01",
+				"type": "Spark",
+				"endpoint": "https://asaworkspace19hvmew.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/SparkPool01",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": "2.4",
+				"nodeCount": 3,
+				"cores": 4,
+				"memory": 28,
+				"automaticScaleJobs": false
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"metadata": {
+					"microsoft": {
+						"language": "python"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%pyspark\r\n",
+					"# integrate Synapse SQL (SQLPool1) with Spark Database Serverless\r\n",
+					"# read using pyspark Spark Pools\r\n",
+					"#1 View top_purchases created from purchares\r\n",
+					"from pyspark.sql.functions import udf, explode\r\n",
+					"df = (spark.read \\\r\n",
+					"        .option('inferSchema', 'true') \\\r\n",
+					"        .json('abfss://asa-kz@asadatalake19hvmew.dfs.core.windows.net/online-user-profiles-02/*.json', multiLine=True)\r\n",
+					"    )\r\n",
+					"flat=df.select('visitorId',explode('topProductPurchases').alias('topProductPurchases_flat'))\r\n",
+					"topPurchases = (flat.select('visitorId','topProductPurchases_flat.productId','topProductPurchases_flat.itemsPurchasedLast12Months')\r\n",
+					"    .orderBy('visitorId'))\r\n",
+					"topPurchases.createOrReplaceTempView(\"top_purchases\")\r\n",
+					"display(topPurchases.limit(10))"
+				],
+				"execution_count": 2
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "scala"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%spark\r\n",
+					"// Make sure the name of the dedcated SQL pool (SQLPool01 below) matches the name of your SQL pool.\r\n",
+					"// Read from SQL to scala\r\n",
+					"val df = spark.sqlContext.sql(\"select * from top_purchases\")\r\n",
+					"df.describe()\r\n",
+					"display(df.limit(5))"
+				],
+				"execution_count": 3
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "scala"
+					}
+				},
+				"source": [
+					"%%spark\r\n",
+					"//The Apache Spark pool to Synapse SQL connector is a data source implementation for Apache Spark. It uses the Azure Data Lake Storage Gen2 and PolyBase in dedicated SQL pools to efficiently transfer data between the Spark cluster and the Synapse SQL instance.\r\n",
+					"// \r\n",
+					"//write to SQLPool by synapsesql\r\n",
+					"df.write.synapsesql(\"SQLPool01.velu.TopPurchases\", Constants.INTERNAL)"
+				],
+				"execution_count": 4
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "python"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%pyspark\r\n",
+					"dfsales = spark.read.load('abfss://asa-kz@asadatalake19hvmew.dfs.core.windows.net/sale-small/Year=2019/Quarter=Q4/Month=12/*/*.parquet', format='parquet')\r\n",
+					"display(dfsales.limit(10))"
+				],
+				"execution_count": 5
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "scala"
+					}
+				},
+				"source": [
+					"%%spark\r\n",
+					"// Make sure the name of the SQL pool (SQLPool01 below) matches the name of your SQL pool.\r\n",
+					"val df2 = spark.read.synapsesql(\"SQLPool01.velu.TopPurchases\")\r\n",
+					"df2.createTempView(\"top_purchases_sql\")"
+				],
+				"execution_count": 6
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "scala"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%spark\r\n",
+					"df2.head(10)\r\n",
+					"df2.describe()\r\n",
+					"display(df2.limit(10))"
+				],
+				"execution_count": 7
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "python"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%pyspark\r\n",
+					"dfTopPurchasesFromSql = sqlContext.table(\"top_purchases_sql\")\r\n",
+					"display(dfTopPurchasesFromSql.limit(5))"
+				],
+				"execution_count": 8
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "python"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%pyspark\r\n",
+					"from pyspark.sql.functions import *\r\n",
+					"inner_join = dfsales.join(dfTopPurchasesFromSql,\r\n",
+					"    (dfsales.CustomerId == dfTopPurchasesFromSql.visitorId) & (dfsales.ProductId == dfTopPurchasesFromSql.productId))\r\n",
+					"\r\n",
+					"inner_join_agg = (inner_join.select(\"CustomerId\",\"TotalAmount\",\"Quantity\",\"itemsPurchasedLast12Months\",\"top_purchases_sql.productId\")\r\n",
+					"    .groupBy([\"CustomerId\",\"top_purchases_sql.productId\"])\r\n",
+					"    .agg(\r\n",
+					"        sum(\"TotalAmount\").alias(\"TotalAmountDecember\"),\r\n",
+					"        sum(\"Quantity\").alias(\"TotalQuantityDecember\"),\r\n",
+					"        sum(\"itemsPurchasedLast12Months\").alias(\"TotalItemsPurchasedLast12Months\"))\r\n",
+					"    .orderBy(\"CustomerId\") )\r\n",
+					"\r\n",
+					"display(inner_join_agg.limit(100))"
+				],
+				"execution_count": 9
+			}
+		]
+	}
+}
