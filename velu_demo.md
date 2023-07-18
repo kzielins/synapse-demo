@@ -33,7 +33,7 @@ Sample generative data warehouse
 ## Data transformation 
 - [process data and store to external files/gen2](files/Velu_02_create_external_table_csv_parquet.sql)
 - [DWH calculation, data generation/preparation](files/Velu_10_Calculate Top10_ProductsUsers.py)
-- [WDH queries ](files/Velu_05_DWH_queries.sql)
+- [Variouse WDH queries like query Internet sales](files/Velu_05_DWH_queries.sql)
 
 - [calculation example - calculate profit](files/Velu_02_sparc_profit (1).html)
 - [Spark transformation - html](files/Velu_03_SQL_Spark_pools_Synapse.html)
